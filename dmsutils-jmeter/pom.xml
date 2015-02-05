@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>DmsUtils</artifactId>
+        <groupId>DmsUtils</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dmsutils-jmeter</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>dmsutils-jmeter</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ApacheJMeter.version>2.12</ApacheJMeter.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-core</artifactId>
+            <version>[1.0-SNAPSHOT,)</version>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-cmis</artifactId>
+            <version>[1.0-SNAPSHOT,)</version>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jms</artifactId>
+            <version>[1.0-SNAPSHOT,)</version>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-metadata-service-db</artifactId>
+            <version>[1.0-SNAPSHOT,)</version>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-integration</artifactId>
+            <version>[1.0-SNAPSHOT,)</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jmeter</groupId>
+            <artifactId>ApacheJMeter_core</artifactId>
+            <version>${ApacheJMeter.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>d-haven-managed-pool</groupId>
+                    <artifactId>d-haven-managed-pool</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jmeter</groupId>
+            <artifactId>ApacheJMeter_java</artifactId>
+            <version>${ApacheJMeter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>db2jcc4</groupId>
+            <artifactId>db2jcc4</artifactId>
+            <version>4.17.29</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.ibm.ws.ejb.thinclient</groupId>
+            <artifactId>ejb-thinclient</artifactId>
+            <version>8.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.ws.orb</groupId>
+            <artifactId>orb</artifactId>
+            <version>8.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.ws.sib.client.thin.jms</groupId>
+            <artifactId>sib-client-thin-jms</artifactId>
+            <version>8.5.0</version>
+        </dependency>
+    </dependencies>
+</project>
