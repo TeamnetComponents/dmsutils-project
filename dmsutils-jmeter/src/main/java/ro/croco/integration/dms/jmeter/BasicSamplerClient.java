@@ -183,22 +183,23 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-fo.properties");
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms.properties");
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-local.properties");
-        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-sibiac.properties");
+        //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-sibiac.properties");
+        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms-prod.properties");
 
-        StoreServiceImpl_Integration storeServiceImpl_integration = (StoreServiceImpl_Integration) storeService;
 
-        storeServiceImpl_integration.getIntegrationService().addStoreServiceMessageListener(new StoreServiceMessageListener() {
-            @Override
-            public void onReceive(StoreServiceMessageEvent storeServiceMessageEvent) {
-
-            }
-        });
+//        StoreServiceImpl_Integration storeServiceImpl_integration = (StoreServiceImpl_Integration) storeService;
+//
+//        storeServiceImpl_integration.getIntegrationService().addStoreServiceMessageListener(new StoreServiceMessageListener() {
+//            @Override
+//            public void onReceive(StoreServiceMessageEvent storeServiceMessageEvent) {
+//
+//            }
+//        });
 
 
         StoreContext storeContext = StoreContext.builder()
                 .communicationType(StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS)
-
-                .loginAs("Mihai.Viscea")
+                //.loginAs("Mihai.Viscea")
                 .build();
         String destinationPathNameRoot = "/JMeter/upload3";
         String sourcePathNameRoot = "C:\\__JAVA\\jmeter\\test\\dmsutils\\upload";
@@ -216,6 +217,8 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
                 sourcePathNameRoot,
                 sourceDocumentPathName,
                 documentProperties, documentType);
+
+        System.out.println(documentIdentifier.toString());
 
     }
 
