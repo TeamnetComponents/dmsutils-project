@@ -41,6 +41,9 @@
     <packaging>pom</packaging>
 
     <repositories>
+
+
+
         <repository>
             <id>tni-hq-artifact</id>
             <name>tni-hq-artifact-releases</name>
