@@ -26,6 +26,7 @@
         <!--integration services modules-->
         <module>dmsutils-is-jms</module>
         <module>dmsutils-is-db</module>
+        <module>dmsutils-ss-db</module>
 
         <!--<module>dmsutils-ss-jms</module>-->
         <!--<module>dmsutils-ss-db</module>-->

@@ -194,10 +194,12 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
 //        storeServiceImpl_integration.getIntegrationService().addStoreServiceMessageListener(new StoreServiceMessageListener() {
 //            @Override
 //            public void onReceive(StoreServiceMessageEvent storeServiceMessageEvent) {
+//                // croco based code
 //
 //            }
 //        });
 
+        storeServiceImpl_integration.storeDocument();
 
         StoreContext storeContext = StoreContext.builder()
                 .communicationType(StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS)
