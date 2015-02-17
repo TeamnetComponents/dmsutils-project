@@ -6,7 +6,7 @@
 
     <groupId>DmsUtils</groupId>
     <artifactId>DmsUtils</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <modules>
 
         <!--core module-->
@@ -33,6 +33,7 @@
     <properties>
         <maven-javadoc-plugin.version>2.10.1</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
+        <artifactory-maven-plugin.version>2.2.1</artifactory-maven-plugin.version>
         <junit.version>3.8.1</junit.version>
     </properties>
 
@@ -41,15 +42,11 @@
     <packaging>pom</packaging>
 
     <repositories>
-
-
-
         <repository>
             <id>tni-hq-artifact</id>
             <name>tni-hq-artifact-releases</name>
             <url>http://tni-hq-artifactory/tn-components</url>
         </repository>
-
     </repositories>
 
     <dependencies>
@@ -111,4 +108,35 @@
             </build>
         </profile>
     </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jfrog.buildinfo</groupId>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <version>${artifactory-maven-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <deployProperties>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <version>${project.version}</version>
+                            </deployProperties>
+                            <publisher>
+                                <contextUrl>http://tni-hq-artifactory</contextUrl>
+                                <username>lucian.dragomir</username>
+                                <password>lucian1234</password>
+                                <repoKey>tn-components</repoKey>
+                            </publisher>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

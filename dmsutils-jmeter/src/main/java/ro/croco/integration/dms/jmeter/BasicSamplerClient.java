@@ -185,6 +185,8 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-local.properties");
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-sibiac.properties");
         storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms-prod.properties");
+        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-pos-fo-staging.properties");
+
 
 
 //        StoreServiceImpl_Integration storeServiceImpl_integration = (StoreServiceImpl_Integration) storeService;

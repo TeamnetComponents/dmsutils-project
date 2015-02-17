@@ -78,6 +78,8 @@ public abstract class ServiceFactory_Abstract<T extends InitableService> {
         }
         //add META-INF folder as the last searched folder
         pathList.add("META-INF");
+        pathList.add("WEB-INF/classes");
+
 
         if (contextName.endsWith(PROPERTIES_FILE_SUFFIX)) {
             //in case the configurationName ends with .properties it is assumed
@@ -105,6 +107,8 @@ public abstract class ServiceFactory_Abstract<T extends InitableService> {
     }
 
     private Properties loadContextFromFileSystem(String contextName, ContextType contextType, List<String> contextPaths) {
+        System.out.println("---------------------------------------------------------------------------------------------");
+        System.out.println("loadContextFromFileSystem");
         Properties properties = null;
         if (contextPaths == null) {
             contextPaths = new ArrayList<String>();
@@ -123,7 +127,8 @@ public abstract class ServiceFactory_Abstract<T extends InitableService> {
                         FileUtils fileUtils = (path.contains(FileUtils.getFileUtilsOS().getPathDelimiter())) ? FileUtils.getFileUtilsOS() : FileUtils.getFileUtilsDMS();
                         configurationFilePathName = fileUtils.concatenate(path, contextName);
                     }
-                    properties = convertResourceBundleToProperties(ResourceBundle.getBundle("profiles/" + configurationFilePathName));
+                    System.out.print("ResourceBundle.getBundle: " + configurationFilePathName);
+                    properties = convertResourceBundleToProperties(ResourceBundle.getBundle(/*"profiles/" +*/ configurationFilePathName));
                     properties.put(INSTANCE_SOURCE, configurationFilePathName);
                     properties.put(INSTANCE_SOURCE_TYPE, ContextType.RESOURCE.name());
                 } catch (Exception e) {
@@ -145,6 +150,7 @@ public abstract class ServiceFactory_Abstract<T extends InitableService> {
                         FileUtils fileUtils = (path.contains(FileUtils.getFileUtilsOS().getPathDelimiter())) ? FileUtils.getFileUtilsOS() : FileUtils.getFileUtilsDMS();
                         configurationFilePathName = fileUtils.concatenate(path, contextName + PROPERTIES_FILE_SUFFIX);
                     }
+                    System.out.print("FileUtils.openOsResource: " + configurationFilePathName);
                     properties = FileUtils.openOsResource(configurationFilePathName);
                     properties.put(INSTANCE_SOURCE, configurationFilePathName);
                     properties.put(INSTANCE_SOURCE_TYPE, ContextType.ABSOLUTE.name());
