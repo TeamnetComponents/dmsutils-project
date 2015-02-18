@@ -2,6 +2,7 @@ package ro.croco.integration.dms.jmeter;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
@@ -26,6 +27,7 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
     public static String RUN_USER = "RUN_USER";
     public static String RUN_PASSWORD = "RUN_PASSWORD";
     public static String PROCESS_FILE_PATH = "PROCESS_FILE_PATH";
+
 
     protected StoreService storeService;
 
@@ -122,7 +124,7 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
             //set error info
             sampleResult.setSuccessful(false);
             sampleResult.setResponseCode("500");
-            sampleResult.setResponseMessage(e.toString());
+            sampleResult.setResponseMessage(ExceptionUtils.getStackTrace(e));
 
             throw e;
         } finally {
@@ -143,20 +145,51 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
 
 
     public static String testDownloadDocument(SampleResult sampleResult, StoreService storeService, StoreContext storeContext, String destinationPathNameRoot, String sourcePathNameRoot, String sourceDocumentPathName) throws Exception {
+        InputStream inputStream = null;
+        try {
+            sampleResult.sampleStart();
 
-        String filePartName = sourceDocumentPathName.substring(sourcePathNameRoot.length());
+            String filePartName = sourceDocumentPathName.substring(sourcePathNameRoot.length());
 
-        String sourceDocumentPathNameRelative = fileUtilsDMS.convertPathNameWithoutNormalize(filePartName, fileUtilsOS);
-        String destinationDocumentPathName = destinationPathNameRoot + sourceDocumentPathNameRelative;
-        String destinationPathName = fileUtilsDMS.getParentFolderPathName(destinationDocumentPathName);
+            String sourceDocumentPathNameRelative = fileUtilsDMS.convertPathNameWithoutNormalize(filePartName, fileUtilsOS);
+            String destinationDocumentPathName = destinationPathNameRoot + sourceDocumentPathNameRelative;
+            String destinationPathName = fileUtilsDMS.getParentFolderPathName(destinationDocumentPathName);
 
-        DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath(sourceDocumentPathName).build();
-        DocumentInfo documentInfo = storeService.getDocumentInfo(storeContext, documentIdentifier);
-        DocumentStream documentStream = storeService.downloadDocument(storeContext, documentIdentifier);
+            DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath(sourceDocumentPathName).build();
+            DocumentInfo documentInfo = storeService.getDocumentInfo(storeContext, documentIdentifier);
+            DocumentStream documentStream = storeService.downloadDocument(storeContext, documentIdentifier);
+            inputStream = documentStream.getInputStream();
+            File targetFile = new File(destinationDocumentPathName);
+            org.apache.commons.io.FileUtils.copyInputStreamToFile(inputStream, targetFile);
 
-        File targetFile = new File(destinationDocumentPathName);
-        org.apache.commons.io.FileUtils.copyInputStreamToFile(documentStream.getInputStream(), targetFile);
-        return destinationDocumentPathName;
+            //set ok info
+            sampleResult.setResponseData(destinationDocumentPathName.toString(), null);
+            sampleResult.setSuccessful(true);
+            sampleResult.setResponseCodeOK();
+            sampleResult.setResponseMessageOK();
+
+            return destinationDocumentPathName;
+        } catch (Exception e) {
+            //set error info
+            sampleResult.setSuccessful(false);
+            sampleResult.setResponseCode("500");
+            sampleResult.setResponseMessage(ExceptionUtils.getStackTrace(e));
+            throw e;
+        } finally {
+
+            try {
+                sampleResult.sampleEnd();
+            } catch (Exception e) {
+                //do nothing
+            }
+            try {
+                inputStream.close();
+            } catch (Exception e) {
+                //do nothing
+            }
+
+        }
+
     }
 
 
@@ -188,7 +221,6 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
         storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-pos-fo-staging.properties");
 
 
-
 //        StoreServiceImpl_Integration storeServiceImpl_integration = (StoreServiceImpl_Integration) storeService;
 //
 //        storeServiceImpl_integration.getIntegrationService().addStoreServiceMessageListener(new StoreServiceMessageListener() {
@@ -199,11 +231,10 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
 //            }
 //        });
 
-        storeServiceImpl_integration.storeDocument();
 
         StoreContext storeContext = StoreContext.builder()
                 .communicationType(StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS)
-                //.loginAs("Mihai.Viscea")
+                        //.loginAs("Mihai.Viscea")
                 .build();
         String destinationPathNameRoot = "/JMeter/upload3";
         String sourcePathNameRoot = "C:\\__JAVA\\jmeter\\test\\dmsutils\\upload";

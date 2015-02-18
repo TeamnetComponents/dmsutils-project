@@ -16,9 +16,6 @@ import java.util.Map;
  * Created by Lucian.Dragomir on 11/13/2014.
  */
 public class DocumentUploadSamplerClient extends BasicSamplerClient {
-    private static String RUN_FILE_NAME = "RUN_FILE_NAME";
-    private static String RUN_USER = "RUN_USER";
-    private static String RUN_PASSWORD = "RUN_PASSWORD";
 
     @Override
     public Arguments getDefaultParameters() {
@@ -56,24 +53,16 @@ public class DocumentUploadSamplerClient extends BasicSamplerClient {
         String password = context.getParameter(RUN_PASSWORD);
         String processFilePath = context.getParameter(PROCESS_FILE_PATH);
 
+        StoreContext.Builder storeContextBuilder = StoreContext.builder();
+        if (StringUtils.isNotEmpty(user)) {
+            storeContextBuilder.loginBasic(user, password);
+        }
+        storeContext = storeContextBuilder.build();
+
         try {
-            StoreContext.Builder storeContextBuilder = StoreContext.builder();
-            if (StringUtils.isNotEmpty(user)) {
-                storeContextBuilder.loginBasic(user, password);
-            }
-            storeContext = storeContextBuilder.build();
             documentIdentifier = testUploadDocument(sampleResult, storeService, storeContext, pathDMS, pathLocal, processFilePath, documentProperties, documentType);
-//            documentIdentifier = testUploadDocument(storeService, storeContext, pathDMS, pathLocal, processFilePath, documentProperties, documentType);
-//            sampleResult.setResponseData(documentIdentifier.toString(), null);
-//            sampleResult.setSuccessful(true);
-//            sampleResult.setResponseCodeOK();
-//            sampleResult.setResponseMessageOK();
         } catch (Exception e) {
-//            sampleResult.setSuccessful(false);
-//            sampleResult.setResponseCode("500");
-//            sampleResult.setResponseMessage(e.toString());
         } finally {
-            //sampleResult.sampleEnd();
         }
         return sampleResult;
     }
