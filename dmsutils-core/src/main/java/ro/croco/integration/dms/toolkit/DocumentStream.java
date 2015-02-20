@@ -5,7 +5,7 @@ import java.io.InputStream;
 /**
  * Created by danielp on 7/1/14.
  */
-public class DocumentStream extends RequestIdentifier {
+public class DocumentStream extends RequestIdentifier{
     private String fileName;
     private InputStream inputStream;
     private String mimeType;

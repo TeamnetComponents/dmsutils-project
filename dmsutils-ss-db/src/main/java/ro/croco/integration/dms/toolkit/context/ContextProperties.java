@@ -11,6 +11,7 @@ final public class ContextProperties {
         public static final String CONNECTION_DRIVER = "jdbc.driver";
         public static final String CONNECTION_USER = "jdbc.user";
         public static final String CONNECTION_PASSWORD = "jdbc.password";
+        public static final String VERSIONING_TYPE = "store.service.versioning.type";
     }
 
     public static final class Optional{

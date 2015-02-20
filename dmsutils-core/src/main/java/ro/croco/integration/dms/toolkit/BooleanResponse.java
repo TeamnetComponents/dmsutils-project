@@ -7,7 +7,10 @@ public class BooleanResponse extends RequestIdentifier {
     private Boolean value;
 
     public BooleanResponse() {
-        this.value = null;
+    }
+
+    public BooleanResponse(Boolean value){
+        this.value = value;
     }
 
     public BooleanResponse(String requestId, Boolean value) {

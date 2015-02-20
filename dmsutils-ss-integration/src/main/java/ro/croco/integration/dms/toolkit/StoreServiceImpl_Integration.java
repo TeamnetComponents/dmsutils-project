@@ -142,8 +142,8 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
             StoreServiceMessage messageStructure = new StoreServiceMessage();
             messageStructure.setMethod("existsDocument");
             messageStructure.setType(StoreServiceMessageType.REQUEST);
-            messageStructure.setParameters(preparedStoreContext, documentIdentifier);
-            Serializable response = integrationService.sendAndReceive(messageStructure, storeContext.getCommunicationType());
+            messageStructure.setParameters(preparedStoreContext,documentIdentifier);
+            Serializable response = integrationService.sendAndReceive(messageStructure,storeContext.getCommunicationType());
 
             if (storeContext.getCommunicationType().equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS)) {
                 StoreServiceMessage messageStructureResponse = (StoreServiceMessage) response;

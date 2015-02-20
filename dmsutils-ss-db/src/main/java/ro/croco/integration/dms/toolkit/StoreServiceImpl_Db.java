@@ -3,6 +3,11 @@ package ro.croco.integration.dms.toolkit;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
 import ro.croco.integration.dms.toolkit.context.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.DownloadDocumentStrategy;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.UnversionedDwlDocument;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.VersionedDwlDocument;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.UnversionedCheckDocument;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.VersionedCheckDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.StoreDocumentStrategy;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.UnversionedStoreDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.VersionedStoreDocument;
@@ -10,7 +15,6 @@ import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.V
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -19,29 +23,6 @@ import java.util.Properties;
 public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceSessionImpl_Db> {
 
     private StoreServicePropValidator validator = new StoreServicePropValidator(new ContextProperties.Required());
-
-    @Override
-    public DocumentStream downloadDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-
-        return null;
-    }
-
-    @Override
-    public FolderIdentifier createFolder(StoreContext storeContext, FolderInfo folderInfo, boolean createParentIfNotExists) {
-        return super.createFolder(storeContext, folderInfo, createParentIfNotExists);
-    }
-
-    private void storeDocumentUnversioned(){
-
-    }
-
-    private void fillStoreDocDocumentInfo(DocumentInfo documentInfo,InputStream inputStream,boolean allowCreatePath){
-        if(documentInfo.getProperties() == null)
-            documentInfo.setProperties(new HashMap<String, Object>());
-
-        documentInfo.getProperties().put("inputStream",inputStream);
-        documentInfo.getProperties().put("allowCreatePath",allowCreatePath);
-    }
 
     @Override
     public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
@@ -61,14 +42,40 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     }
 
     @Override
+    public BooleanResponse existsDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
+        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
+
+        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
+            return new UnversionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
+            return new VersionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+    }
+
+    @Override
+    public DocumentStream downloadDocument(StoreContext storeContext,DocumentIdentifier documentIdentifier) {
+        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
+
+        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
+            return new UnversionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
+            return new VersionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+    }
+
+    @Override
     public RequestIdentifier deleteDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
         return super.deleteDocument(storeContext, documentIdentifier);
     }
 
-    @Override
-    public BooleanResponse existsDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-        return super.existsDocument(storeContext, documentIdentifier);
+    private void fillStoreDocDocumentInfo(DocumentInfo documentInfo,InputStream inputStream,boolean allowCreatePath){
+        if(documentInfo.getProperties() == null)
+            documentInfo.setProperties(new HashMap<String, Object>());
+
+        documentInfo.getProperties().put("inputStream",inputStream);
+        documentInfo.getProperties().put("allowCreatePath",allowCreatePath);
     }
+
 
     @Override
     public void __init(Properties context) throws IOException {
