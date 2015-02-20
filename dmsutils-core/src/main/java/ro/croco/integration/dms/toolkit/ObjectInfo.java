@@ -53,7 +53,7 @@ public class ObjectInfo<T> extends RequestIdentifier implements Serializable {
         return identifier;
     }
 
-    void setIdentifier(T identifier) {
+    public void setIdentifier(T identifier) {
         this.identifier = identifier;
     }
 
@@ -85,7 +85,7 @@ public class ObjectInfo<T> extends RequestIdentifier implements Serializable {
         return properties;
     }
 
-    void setProperties(Map<String, Object> properties) {
+    public void setProperties(Map<String, Object> properties) {
         this.properties = properties;
     }
 

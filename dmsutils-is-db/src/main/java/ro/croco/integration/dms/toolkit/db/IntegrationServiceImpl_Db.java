@@ -8,6 +8,17 @@ import ro.croco.integration.dms.toolkit.StoreServiceMessage;
  */
 public class IntegrationServiceImpl_Db extends IntegrationServiceImpl_Abstract {
 
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public void close() {
 

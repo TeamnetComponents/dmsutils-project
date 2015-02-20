@@ -12,6 +12,10 @@ public enum VersioningType {
 
     private final String value;
 
+    public String getValue(){
+        return value;
+    }
+
     VersioningType(String value) {
         this.value = value;
     }
@@ -54,7 +58,7 @@ public enum VersioningType {
 
 
     public static void main(String[] args) {
-        System.out.println(getNextVersion("1.2359", VersioningType.MAJOR));
+        System.out.println(getNextVersion("1.2359", VersioningType.NONE));
         System.out.println(getNextVersion("1.2359", VersioningType.MINOR));
     }
 

@@ -10,7 +10,7 @@ public class DocumentInfo extends ObjectInfo<DocumentIdentifier> {
     private DocumentIdentifier[] documentIdentifierVersions;
     private String extension;
 
-    DocumentInfo() {
+    public DocumentInfo() {
         super();
     }
 
@@ -27,7 +27,7 @@ public class DocumentInfo extends ObjectInfo<DocumentIdentifier> {
     }
 
     public DocumentInfo(String filePathNameWithExtension, String type, Map<String, Object> properties) {
-        super(fileUtils.getParentFolderPathName(filePathNameWithExtension), fileUtils.getFileBaseName(filePathNameWithExtension), type, properties);
+        super(fileUtils.getParentFolderPathName(filePathNameWithExtension), fileUtils.getFileBaseName(filePathNameWithExtension),type,properties);
         this.extension = fileUtils.getFileExtension(filePathNameWithExtension);
     }
 
@@ -53,7 +53,7 @@ public class DocumentInfo extends ObjectInfo<DocumentIdentifier> {
         return extension;
     }
 
-    void setExtension(String extension) {
+    public void setExtension(String extension) {
         this.extension = extension;
     }
 

@@ -15,8 +15,8 @@
 //import java.util.*;
 //
 ///**
-// * Created by Lucian.Dragomir on 8/29/2014.
-// */
+//* Created by Lucian.Dragomir on 8/29/2014.
+//*/
 //public class StoreServiceImpl_Jdbc extends StoreServiceImpl_Abstract<StoreServiceSessionImpl_Jdbc> {
 //    private static final String JDBC_SCHEMA = "jdbc.schema";
 //    private static final String CONTENT_PERSISTENCE_TYPE = "content.persistence.type";

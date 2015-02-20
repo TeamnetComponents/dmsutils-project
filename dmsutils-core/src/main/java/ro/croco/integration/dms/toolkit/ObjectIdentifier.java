@@ -102,11 +102,11 @@ public abstract class ObjectIdentifier extends RequestIdentifier implements Seri
         this.storeServiceName = storeServiceName;
     }
 
-    void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    void setPath(String path) {
+    public void setPath(String path) {
         this.path = path;
     }
 
