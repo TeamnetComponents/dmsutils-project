@@ -3,6 +3,8 @@ package ro.croco.integration.dms.toolkit;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
 import ro.croco.integration.dms.toolkit.context.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.UnversionedDelDocument;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.VersionedDelDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.DownloadDocumentStrategy;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.UnversionedDwlDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.VersionedDwlDocument;
@@ -47,9 +49,11 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
 
         if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
             return new UnversionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
+        else
+        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
             return new VersionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+        else
+            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
     }
 
     @Override
@@ -58,14 +62,24 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
 
         if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
             return new UnversionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
+        else
+        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
             return new VersionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+        else
+            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'downloadDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
     }
 
     @Override
     public RequestIdentifier deleteDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-        return super.deleteDocument(storeContext, documentIdentifier);
+        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
+
+        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
+            return new UnversionedDelDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else
+        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
+            return new VersionedDelDocument(this.openSession(storeContext)).process(documentIdentifier);
+        else
+            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'deleteDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
     }
 
     private void fillStoreDocDocumentInfo(DocumentInfo documentInfo,InputStream inputStream,boolean allowCreatePath){
