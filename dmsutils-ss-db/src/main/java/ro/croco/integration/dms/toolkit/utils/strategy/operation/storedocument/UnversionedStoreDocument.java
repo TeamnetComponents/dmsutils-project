@@ -87,7 +87,7 @@ public class UnversionedStoreDocument extends StoreDocumentStrategy{
 
         {
             PreparedStatement dmStreamsInsertPS = prepareDMStreamsInsertCmd();
-            dmStreamsInsertPS.setString(1,(String)documentInfo.getProperties().get("inputStreamNameId"));
+            dmStreamsInsertPS.setObject(1,documentInfo.getProperties().get("inputStreamId"));
             InputStream inputStream = (InputStream)documentInfo.getProperties().get("inputStream");
             dmStreamsInsertPS.setBinaryStream(2,inputStream);
             dmStreamsInsertPS.execute();
@@ -97,7 +97,7 @@ public class UnversionedStoreDocument extends StoreDocumentStrategy{
         {
             PreparedStatement dmObjectVersionsInsertPS = prepareDMObjectVersionsInsertCmd();
             dmObjectVersionsInsertPS.setInt(1,objectRowId.intValue());
-            dmObjectVersionsInsertPS.setString(2, (String) documentInfo.getProperties().get("inputStreamNameId"));
+            dmObjectVersionsInsertPS.setObject(2,documentInfo.getProperties().get("inputStreamId"));
             dmObjectVersionsInsertPS.setString(3,documentInfo.getName() + "." + documentInfo.getExtension());
             dmObjectVersionsInsertPS.setString(4,(String)documentInfo.getProperties().get("inputStreamMimeType"));
             dmObjectVersionsInsertPS.execute();
@@ -137,7 +137,7 @@ public class UnversionedStoreDocument extends StoreDocumentStrategy{
 
         {
             PreparedStatement dmStreamsInsertPS = prepareDMStreamsInsertCmd();
-            dmStreamsInsertPS.setString(1,(String)documentInfo.getProperties().get("inputStreamNameId"));
+            dmStreamsInsertPS.setObject(1,documentInfo.getProperties().get("inputStreamId"));
             InputStream inputStream = (InputStream)documentInfo.getProperties().get("inputStream");
             dmStreamsInsertPS.setBinaryStream(2,inputStream);
             dmStreamsInsertPS.execute();
@@ -147,7 +147,7 @@ public class UnversionedStoreDocument extends StoreDocumentStrategy{
         {
             PreparedStatement dmObjectVersionsInsertPS = prepareDMObjectVersionsInsertCmd();
             dmObjectVersionsInsertPS.setInt(1,new BigDecimal(documentInfo.getIdentifier().getId()).intValue());
-            dmObjectVersionsInsertPS.setString(2, (String) documentInfo.getProperties().get("inputStreamNameId"));
+            dmObjectVersionsInsertPS.setObject(2,documentInfo.getProperties().get("inputStreamId"));
             dmObjectVersionsInsertPS.setString(3,documentInfo.getName() + "." + documentInfo.getExtension());
             dmObjectVersionsInsertPS.setString(4,(String)documentInfo.getProperties().get("inputStreamMimeType"));
             dmObjectVersionsInsertPS.execute();

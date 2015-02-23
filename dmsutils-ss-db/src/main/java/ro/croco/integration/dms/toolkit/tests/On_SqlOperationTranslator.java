@@ -14,4 +14,8 @@ public class On_SqlOperationTranslator {
         System.out.println(SqlOperationTranslator.translateCommand("i:DM_OBJECTS(OBJ_PATH,OBJ_NAME)", SqlOperationTranslator.PREPARED_STATEMENT,"schema"));
     }
 
+    @Test
+    public void test_string_split(){
+        System.out.println("abc".split(",").length);
+    }
 }
