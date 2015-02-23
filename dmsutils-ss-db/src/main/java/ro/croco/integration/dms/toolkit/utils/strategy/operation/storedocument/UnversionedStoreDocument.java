@@ -105,10 +105,10 @@ public class UnversionedStoreDocument extends StoreDocumentStrategy{
             generatedKeys.next();
             objectVersionsRowId = new BigDecimal(generatedKeys.getString(1));
             System.out.println(objectVersionsRowId);
+            generatedKeys.close();
             dmObjectVersionsInsertPS.close();
-            connection.commit();
         }
-
+        connection.commit();
         //identifier = constructDocumentIdentifier(generatedKeys.getString(1));
         return identifier;
     }

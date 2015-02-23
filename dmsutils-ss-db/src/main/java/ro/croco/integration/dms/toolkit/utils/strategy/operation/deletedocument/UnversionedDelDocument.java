@@ -64,6 +64,7 @@ public class UnversionedDelDocument extends DeleteDocumentStrategy{
             retrieveVersionsPS.close();
             deleteStreamPS.close();
             deleteObjectPS.close();
+            connection.commit();
 
             return null;
         }
