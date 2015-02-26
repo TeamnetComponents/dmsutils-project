@@ -7,10 +7,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>DmsUtils</groupId>
     <artifactId>dmsutils-metadata-service-db</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0</version>
     <name>dmsutils-metadata-service-db</name>
     <url>http://maven.apache.org</url>
 
@@ -20,20 +19,12 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-core</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
-            <version>${commons-dbcp.version}</version>
         </dependency>
     </dependencies>
 </project>

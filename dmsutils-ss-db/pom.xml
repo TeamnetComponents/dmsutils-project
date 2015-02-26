@@ -7,28 +7,26 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>DmsUtils</groupId>
     <artifactId>dmsutils-store-service-db</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0</version>
     <name>dmsutils-store-service-db</name>
     <url>http://maven.apache.org</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
     <dependencies>
         <dependency>
-            <groupId>DmsUtils</groupId>
-            <artifactId>dmsutils-core</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.sourceforge.jtds</groupId>
             <artifactId>jtds</artifactId>
-            <version>1.3.1</version>
         </dependency>
 
     </dependencies>

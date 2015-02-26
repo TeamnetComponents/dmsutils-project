@@ -7,22 +7,16 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>DmsUtils</groupId>
     <artifactId>dmsutils-store-service-integration</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0</version>
     <name>dmsutils-store-service-integration</name>
     <url>http://maven.apache.org</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-core</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
         </dependency>
     </dependencies>
 </project>
