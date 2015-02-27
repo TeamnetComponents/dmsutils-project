@@ -1,8 +1,6 @@
-package ro.croco.integration.dms.toolkit.utils.strategy.operation;
+package ro.croco.integration.dms.toolkit.utils;
 
 import ro.croco.integration.dms.toolkit.DocumentStream;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;

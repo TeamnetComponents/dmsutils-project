@@ -4,10 +4,10 @@ import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.DocumentStream;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.DBRepository;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.InputValidator;
+import ro.croco.integration.dms.toolkit.utils.InputValidator;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
@@ -46,8 +46,8 @@ public class DownloadDocumentStrategy extends DocumentOperationStrategy{
         if(dmObjectId != null){
             Map<String,Object> data = null;
             if(identifier.getVersion() != null && !identifier.getVersion().isEmpty())
-                data = DBRepository.getDmVersionsByFkDmObjectsAndVersionLabel(connection,schema,dmObjectId,identifier.getVersion());
-            else data = DBRepository.getLastDmVersionsForDmObject(connection,schema,dmObjectId);
+                data = DBRepository.getDmVersionsByFkDmObjectsAndVersionLabel(connection, schema, dmObjectId, identifier.getVersion());
+            else data = DBRepository.getLastDmVersionsForDmObject(connection, schema, dmObjectId);
 
             if(data != null)
                 return DBRepository.getDocumenStreamByIdProvidedOnRest(connection,(String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),data.get("FK_DM_STREAMS"),(String)data.get("STREAM_NAME"),(String)data.get("MIME_TYPE"));

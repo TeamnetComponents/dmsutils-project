@@ -1,15 +1,12 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument;
 
-import org.omg.CORBA.Request;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.RequestIdentifier;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.InputValidator;
+import ro.croco.integration.dms.toolkit.utils.InputValidator;
 
-import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.SQLException;
 
 /**

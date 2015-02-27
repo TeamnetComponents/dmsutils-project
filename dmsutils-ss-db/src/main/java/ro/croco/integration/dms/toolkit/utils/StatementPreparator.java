@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.utils.strategy.operation;
+package ro.croco.integration.dms.toolkit.utils;
 
 import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
 import java.io.InputStream;

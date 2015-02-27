@@ -1,15 +1,13 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument;
 
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
-import ro.croco.integration.dms.toolkit.DocumentInfo;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.DBRepository;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Map;
 
 /**
  * Created by battamir.sugarjav on 2/19/2015.

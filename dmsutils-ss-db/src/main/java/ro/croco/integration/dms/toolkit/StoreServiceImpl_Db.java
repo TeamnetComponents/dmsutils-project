@@ -2,9 +2,7 @@ package ro.croco.integration.dms.toolkit;
 
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.UnversionedDelDocument;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.VersionedDelDocument;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.DownloadDocumentStrategy;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.CheckDocumentStrategy;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.UnversionedStoreDocument;

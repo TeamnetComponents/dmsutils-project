@@ -15,6 +15,7 @@ import java.util.Properties;
 /**
  * Created by battamir.sugarjav on 2/26/2015.
  */
+
 public class SyncFrontIntegrationWorker_DB {
 
     private Properties context;
@@ -31,7 +32,7 @@ public class SyncFrontIntegrationWorker_DB {
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.close();
             statement.close();
-            connection.commit();
+            //connection.commit();
             this.dbMessage = dbMessage;
         }
         catch(SQLException sqlEx){

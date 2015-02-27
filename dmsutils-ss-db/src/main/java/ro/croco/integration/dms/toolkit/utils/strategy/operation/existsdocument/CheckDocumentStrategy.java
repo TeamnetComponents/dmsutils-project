@@ -4,14 +4,12 @@ import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.BooleanResponse;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.DBRepository;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.InputValidator;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.StatementPreparator;
+import ro.croco.integration.dms.toolkit.utils.InputValidator;
+
 import java.math.BigDecimal;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**

@@ -6,17 +6,14 @@ import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.DocumentInfo;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
 import ro.croco.integration.dms.toolkit.VersioningType;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.DBRepository;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.InputValidator;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.StatementPreparator;
-import java.io.InputStream;
+import ro.croco.integration.dms.toolkit.utils.InputValidator;
+
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by battamir.sugarjav on 2/19/2015.
@@ -30,13 +27,13 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
         @Override
         public void validateInputs() throws StoreServiceException {
             if(documentInfo == null)
-                throw new StoreServiceException("[STORE_DOCUMENT_CALL] DocumentInfo or additional info is not provided.");
+                throw new StoreServiceException(FUNCTION_IDENTIFIER + "DocumentInfo or additional info is not provided.");
 
             if(additInfo.get("inputStream") == null)
-                throw new StoreServiceException("[STORE_DOCUMENT_CALL] Document stream is empty.Please provide it.");
+                throw new StoreServiceException(FUNCTION_IDENTIFIER + "Document stream is empty.Please provide it.");
 
             if(documentInfo.getName() == null || documentInfo.getName().equals(""))
-                throw new StoreServiceException("[STORE_DOCUMENT_CALL] Document does not have a name associeted.");
+                throw new StoreServiceException(FUNCTION_IDENTIFIER + "Document does not have a name associeted.");
         }
     }
 
@@ -105,7 +102,7 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
             BigDecimal oldDmObjectsRowId = hasPathSpecified() ? DBRepository.getDmObjectsIdByPathAndName(connection, schema, documentInfo.getParentIdentifier().getPath(), documentInfo.getName()) :
                                                                 DBRepository.getDmObjectsIdByName(connection,schema,documentInfo.getName());
 
-            return VersioningType.getNextVersion(DBRepository.getLastVersionLabelForDmObject(connection,schema,oldDmObjectsRowId),versioningType);
+            return VersioningType.getNextVersion(DBRepository.getLastVersionLabelForDmObject(connection, schema, oldDmObjectsRowId),versioningType);
         }
         return VersioningType.getNextVersion(null,versioningType);
     }

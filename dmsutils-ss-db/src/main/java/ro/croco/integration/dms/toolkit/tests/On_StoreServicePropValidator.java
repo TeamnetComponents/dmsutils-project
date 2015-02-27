@@ -2,7 +2,7 @@ package ro.croco.integration.dms.toolkit.tests;
 
 import org.junit.Test;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
 
 import java.util.Properties;
 

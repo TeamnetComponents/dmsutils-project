@@ -3,7 +3,7 @@ package ro.croco.integration.dms.toolkit;
 import org.apache.commons.dbcp.BasicDataSource;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceNotDefinedException;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

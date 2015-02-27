@@ -1,10 +1,8 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument;
 
-import com.sun.corba.se.spi.orbutil.fsm.Input;
 import ro.croco.integration.dms.toolkit.*;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.DBRepository;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
