@@ -2,6 +2,7 @@ package ro.croco.integration.dms.toolkit.tests;
 
 import org.apache.commons.compress.utils.IOUtils;
 
+import org.junit.Test;
 import ro.croco.integration.dms.toolkit.*;
 
 
@@ -10,6 +11,7 @@ import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertNotNull;
 
 
 /**

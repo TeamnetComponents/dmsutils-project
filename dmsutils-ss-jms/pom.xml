@@ -3,15 +3,13 @@
     <parent>
         <artifactId>DmsUtils</artifactId>
         <groupId>DmsUtils</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-
-    <groupId>DmsUtils</groupId>
     <artifactId>dmsutils-store-service-jms</artifactId>
     <packaging>jar</packaging>
-
+    <version>1.0</version>
     <name>dmsutils-store-service-jms</name>
     <url>http://maven.apache.org</url>
 
@@ -24,39 +22,32 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-core</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
         </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>${commons-pool.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
-            <version>1.1-rev-1</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.ws.ejb.thinclient</groupId>
             <artifactId>ejb-thinclient</artifactId>
-            <version>8.5.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.ibm.ws.orb</groupId>
             <artifactId>orb</artifactId>
-            <version>8.5.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.ibm.ws.sib.client.thin.jms</groupId>
             <artifactId>sib-client-thin-jms</artifactId>
-            <version>8.5.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

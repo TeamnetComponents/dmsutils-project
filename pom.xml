@@ -31,7 +31,7 @@
         <module>dmsutils-tests</module>
         <module>dmsutils-jmeter</module>
 
-        <!--<module>dmsutils-ss-jms</module>-->
+        <module>dmsutils-ss-jms</module>
         <!--<module>dmsutils-ss-db</module>-->
     </modules>
     <properties>
@@ -47,6 +47,7 @@
         <elo-cmis.version>2.0</elo-cmis.version>
         <jackrabbit-core.version>2.7.5</jackrabbit-core.version>
         <commons-pool.version>1.6</commons-pool.version>
+        <jms-api.version>1.1-rev-1</jms-api.version>
     </properties>
 
     <name>dmsutils-project</name>
@@ -59,11 +60,11 @@
             <name>tni-hq-artifact-releases</name>
             <url>http://tni-hq-artifactory/tn-components</url>
         </repository>
-        <repository>
+        <!--<repository>
             <id>central</id>
             <name>central</name>
             <url>http://mvnrepository.com/artifact</url>
-        </repository>
+        </repository>-->
     </repositories>
 
     <dependencyManagement>
@@ -78,7 +79,7 @@
             <dependency>
                 <groupId>DmsUtils</groupId>
                 <artifactId>dmsutils-store-service-cmis</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>DmsUtils</groupId>
