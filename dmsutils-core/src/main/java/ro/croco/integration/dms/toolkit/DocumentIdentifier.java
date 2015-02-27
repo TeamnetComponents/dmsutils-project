@@ -59,7 +59,7 @@ public class DocumentIdentifier extends ObjectIdentifier {
         return version;
     }
 
-    void setVersion(String version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 

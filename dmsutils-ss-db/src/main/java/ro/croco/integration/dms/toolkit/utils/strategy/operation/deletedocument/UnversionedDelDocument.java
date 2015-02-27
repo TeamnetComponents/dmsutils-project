@@ -5,7 +5,7 @@ import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.RequestIdentifier;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
 import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.SqlOperationTranslator;
+import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
 
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;

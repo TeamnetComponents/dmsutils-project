@@ -12,7 +12,7 @@ import java.util.Properties;
  * Created by Lucian.Dragomir on 1/5/2015.
  */
 public abstract class IntegrationServiceImpl_Abstract implements IntegrationService {
-    private Properties context;
+    protected Properties context;
     private List messageListeners = new ArrayList();
 
     @Override

@@ -34,7 +34,6 @@ public class DatabaseUtils {
     private static final String CONNECTION_TYPE_JNDI = "jndi";
     private static final String CONNECTION_CURRENT_SCHEMA = "currentSchema";
 
-
     public DatabaseUtils() {
     }
 
@@ -109,6 +108,8 @@ public class DatabaseUtils {
             if (true) {
                 sequenceSql = "SELECT " + sequenceSql + ".NEXTVAL FROM DUAL";
             }
+
+            //if db2
         }
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sequenceSql);

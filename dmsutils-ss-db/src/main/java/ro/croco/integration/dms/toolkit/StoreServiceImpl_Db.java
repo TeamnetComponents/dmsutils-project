@@ -6,17 +6,14 @@ import ro.croco.integration.dms.toolkit.context.ContextProperties;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.UnversionedDelDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument.VersionedDelDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.DownloadDocumentStrategy;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.UnversionedDwlDocument;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument.VersionedDwlDocument;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.UnversionedCheckDocument;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.VersionedCheckDocument;
-import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.StoreDocumentStrategy;
+import ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument.CheckDocumentStrategy;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.UnversionedStoreDocument;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.VersionedStoreDocument;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -26,70 +23,38 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
 
     private StoreServicePropValidator validator = new StoreServicePropValidator(new ContextProperties.Required());
 
-    @Override
-    public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
-        fillStoreDocDocumentInfo(documentInfo,inputStream,allowCreatePath);
-        StoreDocumentStrategy processor = null;
+    private static final String FUNCTION_IDENTIFIER = "[StoreServiceImpl_Db] ";
 
-        if(versioningType.equals(VersioningType.NONE)){
-            processor = new UnversionedStoreDocument(this.openSession(storeContext));
-        }
-        else
-        if(versioningType.equals(VersioningType.MAJOR) || versioningType.equals(VersioningType.MINOR)){
-            processor = new VersionedStoreDocument(this.openSession(storeContext));
-        }
-        else throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'storeDocument'");
+   @Override
+   public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
+        Map<String,Object> additInfo = new HashMap<String,Object>();
+        additInfo.put("inputStream",inputStream);
+        additInfo.put("allowCreatePath",allowCreatePath);
+        additInfo.put("versioningType",versioningType);
 
-        return processor.process(documentInfo);
+        if(versioningType.equals(VersioningType.NONE))
+            return new UnversionedStoreDocument(this.openSession(storeContext)).process(documentInfo,additInfo);
+
+        if(versioningType.equals(VersioningType.MAJOR) || versioningType.equals(VersioningType.MINOR))
+            return new VersionedStoreDocument(this.openSession(storeContext)).process(documentInfo,additInfo);
+
+        throw new StoreServiceException(FUNCTION_IDENTIFIER + "Should not have reached this point.Nu tratati toate cazurile de versionare pe functia 'storeDocument'.");
     }
 
     @Override
     public BooleanResponse existsDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
-
-        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
-            return new UnversionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
-            return new VersionedCheckDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'existsDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+        return new CheckDocumentStrategy(this.openSession(storeContext)).process(documentIdentifier);
     }
 
     @Override
     public DocumentStream downloadDocument(StoreContext storeContext,DocumentIdentifier documentIdentifier) {
-        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
-
-        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
-            return new UnversionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
-            return new VersionedDwlDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'downloadDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+        return new DownloadDocumentStrategy(this.openSession(storeContext)).process(documentIdentifier);
     }
 
     @Override
     public RequestIdentifier deleteDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-        String versioningTypeValue = (String)this.context.get(ContextProperties.Required.VERSIONING_TYPE);
-
-        if(versioningTypeValue.equals(VersioningType.NONE.getValue()))
-            return new UnversionedDelDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-        if(versioningTypeValue.equals(VersioningType.MAJOR.getValue()) || versioningTypeValue.equals(VersioningType.MINOR.getValue()))
-            return new VersionedDelDocument(this.openSession(storeContext)).process(documentIdentifier);
-        else
-            throw new StoreServiceException("Nu tratati toate cazurile de versionare pe functia 'deleteDocument'.Poate ati furnizat incorect valoare pentru " + ContextProperties.Required.VERSIONING_TYPE);
+        return null;
     }
-
-    private void fillStoreDocDocumentInfo(DocumentInfo documentInfo,InputStream inputStream,boolean allowCreatePath){
-        if(documentInfo.getProperties() == null)
-            documentInfo.setProperties(new HashMap<String, Object>());
-
-        documentInfo.getProperties().put("inputStream",inputStream);
-        documentInfo.getProperties().put("allowCreatePath",allowCreatePath);
-    }
-
 
     @Override
     public void __init(Properties context) throws IOException {

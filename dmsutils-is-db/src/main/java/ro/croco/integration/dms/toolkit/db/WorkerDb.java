@@ -13,8 +13,8 @@
 //import static ro.croco.integration.dms.commons.DatabaseUtils.*;
 //
 ///**
-// * Created by Lucian.Dragomir on 1/17/2015.
-// */
+//* Created by Lucian.Dragomir on 1/17/2015.
+//*/
 //public class WorkerDb {
 //    private static final TemplateEngine templateEngine = TemplateEngine.getInstance();
 //    private static final String QUEUE_NAME = "queueName";

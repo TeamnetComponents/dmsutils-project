@@ -1,8 +1,7 @@
 package ro.croco.integration.dms.toolkit.tests;
 
 import org.junit.Test;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
-import ro.croco.integration.dms.toolkit.utils.SqlOperationTranslator;
+import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
 
 /**
  * Created by battamir.sugarjav on 2/20/2015.

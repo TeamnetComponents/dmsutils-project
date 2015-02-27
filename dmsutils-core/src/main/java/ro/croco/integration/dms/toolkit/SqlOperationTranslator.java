@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.utils;
+package ro.croco.integration.dms.toolkit;
 
 import org.apache.commons.lang.StringUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
