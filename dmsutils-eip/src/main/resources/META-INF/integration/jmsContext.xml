@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:jms="http://www.springframework.org/schema/integration/jms"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
+       http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
+       http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.0.xsd">
+
+    <int:poller id="defaultPoller" default="true" fixed-rate="15000"/>
+
+    <!--Channels for Case 1: storeDocument-->
+    <int:channel id="storeDocumentRouteChannel"/>
+    <int:channel id="storeDocumentGetFromJcrOut"/>
+    <int:channel id="storeDocumentSaveInCmisOut"/>
+    <int:channel id="storeDocumentReplySent"/>
+
+    <!--Channels for Case 2: existsDocument-->
+    <int:channel id="existsDocumentRouteChannel"/>
+    <int:channel id="existsDocumentReplySent"/>
+
+    <!--Channels for Case 3: downloadDocument-->
+    <int:channel id="downloadDocumentRouteChannel"/>
+    <int:channel id="downloadDocumentReplySent"/>
+
+
+    <int:channel id="queueChannel">
+        <int:queue/>
+    </int:channel>
+    <jms:inbound-channel-adapter id="inboundAdapter" destination="queue" channel="queueChannel">
+        <int:poller ref="defaultPoller"/>
+    </jms:inbound-channel-adapter>
+
+    <int:channel id="queueChannelHeaderEnriched"/>
+    <int:header-enricher input-channel="queueChannel" output-channel="queueChannelHeaderEnriched">
+        <int:header name="messagePayload" expression="payload"/>
+        <!--<int:header name="messageHeaders" expression="headers"/>-->
+    </int:header-enricher>
+
+    <bean id="actionRouter" class="ro.croco.integration.router.ActionRouter"/>
+    <int:router ref="actionRouter" method="routeForMethod" input-channel="queueChannelHeaderEnriched"/>
+
+    <!--Case 1: storeDocument-->
+    <!--    step 1: getDocument from jcr
+        step 2: saveDocument in cmis
+        step 2': sterg din jcr?
+        step 3: return cmis DocumentIdentifier to temporary queue-->
+    <!--<int:service-activator id="storeDocumentGetFromJcr" ref="jcrService" method="getJcrDocument"
+                           input-channel="storeDocumentRouteChannel" output-channel="storeDocumentGetFromJcrOut"/>-->
+
+    <!--<int:service-activator id="storeDocumentGetFromJcrOut" ref="cmisService" method="saveCmisDocument"
+                           input-channel="storeDocumentGetFromJcrOut" output-channel="storeDocumentSaveInCmisOut"/>-->
+
+  <!--  <int:service-activator id="storeDocumentSaveInCmisOut" ref="jmsService" method="sendToQueue"
+                           input-channel="storeDocumentSaveInCmisOut" output-channel="storeDocumentReplySent"/>-->
+
+    <int:service-activator id="storeDocumentSA" ref="jmsService" method="processMessageStore"
+                           input-channel="storeDocumentRouteChannel" output-channel="storeDocumentReplySent"/>
+
+    <int:service-activator id="existsDocumentSA" ref="jmsService" method="processMessageExists"
+                           input-channel="existsDocumentRouteChannel" output-channel="existsDocumentReplySent"/>
+
+    <int:service-activator id="downloadDocumentSA" ref="jmsService" method="processMessageDownload"
+                           input-channel="downloadDocumentRouteChannel" output-channel="downloadDocumentReplySent"/>
+
+
+
+</beans>
