@@ -9,42 +9,27 @@
 
     <artifactId>dmsutils-integration-service-jms</artifactId>
     <packaging>jar</packaging>
+    <version>1.0</version>
 
     <name>dmsutils-integration-service-jms</name>
     <url>http://maven.apache.org</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <commons-pool.version>1.6</commons-pool.version>
-        <jms-api.version>1.1-rev-1</jms-api.version>
-    </properties>
-
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
-            <version>${commons-pool.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>jms-api</artifactId>
-            <version>${jms-api.version}</version>
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-integration</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-core</artifactId>
-            <version>[1.0-SNAPSHOT,)</version>
         </dependency>
     </dependencies>
 </project>
