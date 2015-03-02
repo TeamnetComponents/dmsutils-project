@@ -64,7 +64,7 @@ public class DatabaseUtils {
 
     public static DataSource getDataSource(Properties context,String connectionName){
         String connectionType = getConnectionType(context, connectionName);
-        if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)) {
+        if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)){
             BasicDataSource basicDataSource = new BasicDataSource();
             basicDataSource.setDriverClassName(getConnectionDriver(context, connectionName));
             basicDataSource.setUrl(getConnectionUrl(context, connectionName));
@@ -76,7 +76,7 @@ public class DatabaseUtils {
 
             return basicDataSource;
         }
-        else if (CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)){
+        else if(CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)){
             try{
                 Context initContext = new InitialContext();
                 return (DataSource)initContext.lookup(getConnectionUrl(context, connectionName));
@@ -94,36 +94,15 @@ public class DatabaseUtils {
     public static Connection getConnection(Properties context, String connectionName) {
         DataSource dataSource = null;
         Connection connection = null;
-        String connectionType = getConnectionType(context, connectionName);
-        if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)) {
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setDriverClassName(getConnectionDriver(context, connectionName));
-            basicDataSource.setUrl(getConnectionUrl(context, connectionName));
-            basicDataSource.setUsername(getConnectionUser(context, connectionName));
-            basicDataSource.setPassword(getConnectionPassword(context, connectionName));
-            String connectionSchema = getConnectionSchema(context, connectionName);
-            if (connectionSchema != null && !connectionSchema.isEmpty()) {
-                basicDataSource.addConnectionProperty(CONNECTION_CURRENT_SCHEMA, connectionSchema);
-            }
-            dataSource = basicDataSource;
-        } else if (CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)) {
-            try {
-                Context initContext = new InitialContext();
-                dataSource = (DataSource) initContext.lookup(getConnectionUrl(context, connectionName));
-            } catch (NamingException e) {
-                e.printStackTrace();
-                throw new StoreServiceException(e);
-            }
-        } else {
-            throw new StoreServiceNotDefinedException("The connection name <" + connectionName + "> is not defined correctly.");
-        }
-
-        try {
+        try{
+            dataSource = getDataSource(context,connectionName);
             connection = dataSource.getConnection();
-        } catch (SQLException e) {
+        }
+        catch (SQLException e){
             e.printStackTrace();
             throw new StoreServiceException(e);
-        } finally {
+        }
+        finally{
             dataSource = null;
         }
         return connection;
