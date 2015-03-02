@@ -17,7 +17,7 @@
 
     <!--Channels for Case 1: storeDocument-->
     <int:channel id="storeDocumentRouteChannel"/>
-    <int:channel id="storeDocumentGetFromJcrOut"/>
+    <int:channel id="storeDocumentGetFromDbOut"/>
     <int:channel id="storeDocumentSaveInCmisOut"/>
     <int:channel id="storeDocumentReplySent"/>
 
@@ -29,39 +29,19 @@
     <int:channel id="downloadDocumentRouteChannel"/>
     <int:channel id="downloadDocumentReplySent"/>
 
-
-    <int:channel id="queueChannel">
+    <int:channel id="dbChannel">
         <int:queue/>
     </int:channel>
+    
     <jdbc:inbound-channel-adapter id="inboundAdapter"
-                                  query="select * from item where status=2"
-                                  data-source="bean.."
-                                  channel="queueChannel">
+                                  query="select * from DM_INTEGRATION_REQUEST where status=2"
+                                  data-source="aa"
+                                  channel="dbChannel">
         <int:poller ref="defaultPoller"/>
     </jdbc:inbound-channel-adapter>
 
-    <int:channel id="queueChannelHeaderEnriched"/>
-    <int:header-enricher input-channel="queueChannel" output-channel="queueChannelHeaderEnriched">
-        <int:header name="messagePayload" expression="payload"/>
-        <!--<int:header name="messageHeaders" expression="headers"/>-->
-    </int:header-enricher>
-
     <bean id="actionRouter" class="ro.croco.integration.router.ActionRouter"/>
     <int:router ref="actionRouter" method="routeForMethod" input-channel="queueChannelHeaderEnriched"/>
-
-    <!--Case 1: storeDocument-->
-    <!--    step 1: getDocument from jcr
-        step 2: saveDocument in cmis
-        step 2': sterg din jcr?
-        step 3: return cmis DocumentIdentifier to temporary queue-->
-    <!--<int:service-activator id="storeDocumentGetFromJcr" ref="jcrService" method="getJcrDocument"
-                           input-channel="storeDocumentRouteChannel" output-channel="storeDocumentGetFromJcrOut"/>-->
-
-    <!--<int:service-activator id="storeDocumentGetFromJcrOut" ref="cmisService" method="saveCmisDocument"
-                           input-channel="storeDocumentGetFromJcrOut" output-channel="storeDocumentSaveInCmisOut"/>-->
-
-    <!--  <int:service-activator id="storeDocumentSaveInCmisOut" ref="jmsService" method="sendToQueue"
-                             input-channel="storeDocumentSaveInCmisOut" output-channel="storeDocumentReplySent"/>-->
 
     <int:service-activator id="storeDocumentSA" ref="jmsService" method="processMessageStore"
                            input-channel="storeDocumentRouteChannel" output-channel="storeDocumentReplySent"/>
@@ -71,7 +51,5 @@
 
     <int:service-activator id="downloadDocumentSA" ref="jmsService" method="processMessageDownload"
                            input-channel="downloadDocumentRouteChannel" output-channel="downloadDocumentReplySent"/>
-
-
-
+    
 </beans>
