@@ -12,4 +12,54 @@
     <artifactId>dmsutils-tests</artifactId>
     <version>1.0</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-eip</artifactId>
+            <version>1.0</version>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-metadata-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-cmis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-jmeter</artifactId>
+        </dependency>
+
+    </dependencies>
+
 </project>

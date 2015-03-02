@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.test;
+package ro.tn.components.dmsutils.ssDb;
 
 import org.apache.commons.compress.utils.IOUtils;
 

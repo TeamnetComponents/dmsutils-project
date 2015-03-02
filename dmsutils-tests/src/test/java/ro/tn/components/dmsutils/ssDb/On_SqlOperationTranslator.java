@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.test;
+package ro.tn.components.dmsutils.ssDb;
 
 import org.junit.Test;
 import ro.croco.integration.dms.toolkit.SqlOperationTranslator;

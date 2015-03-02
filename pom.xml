@@ -23,11 +23,11 @@
         <module>dmsutils-ss-cmis</module>
         <module>dmsutils-ss-jcr</module>
         <module>dmsutils-ss-integration</module>
+        <module>dmsutils-ss-db</module>
 
         <!--integration services modules-->
         <module>dmsutils-is-jms</module>
         <module>dmsutils-is-db</module>
-        <module>dmsutils-ss-db</module>
         <module>dmsutils-tests</module>
         <module>dmsutils-jmeter</module>
 
@@ -49,6 +49,7 @@
         <jackrabbit-core.version>2.7.5</jackrabbit-core.version>
         <commons-pool.version>1.6</commons-pool.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
+        <ApacheJMeter.version>2.12</ApacheJMeter.version>
     </properties>
 
     <name>dmsutils-project</name>
@@ -99,7 +100,37 @@
             </dependency>
             <dependency>
                 <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-store-service-db</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
                 <artifactId>dmsutils-eip</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-integration-service-db</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-integration-service-jms</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-store-service-integration</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-jmeter</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-core</artifactId>
                 <version>1.0</version>
             </dependency>
 
@@ -149,16 +180,6 @@
                 <groupId>javax.jms</groupId>
                 <artifactId>jms-api</artifactId>
                 <version>${jms-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>DmsUtils</groupId>
-                <artifactId>dmsutils-store-service-integration</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>DmsUtils</groupId>
-                <artifactId>dmsutils-core</artifactId>
-                <version>1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
