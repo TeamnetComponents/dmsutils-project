@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.tests;
+package ro.croco.integration.dms.toolkit.test;
 
 import org.junit.Test;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;

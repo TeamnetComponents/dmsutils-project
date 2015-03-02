@@ -2,10 +2,7 @@ package ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument;
 
 import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
-import ro.croco.integration.dms.toolkit.DocumentIdentifier;
-import ro.croco.integration.dms.toolkit.DocumentInfo;
-import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
-import ro.croco.integration.dms.toolkit.VersioningType;
+import ro.croco.integration.dms.toolkit.*;
 import ro.croco.integration.dms.toolkit.utils.ContextProperties;
 import ro.croco.integration.dms.toolkit.utils.DBRepository;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
@@ -34,6 +31,9 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
 
             if(documentInfo.getName() == null || documentInfo.getName().equals(""))
                 throw new StoreServiceException(FUNCTION_IDENTIFIER + "Document does not have a name associeted.");
+
+            if(documentInfo.getParentIdentifier() != null && (documentInfo.getParentIdentifier().getPath() == null || documentInfo.getParentIdentifier().getPath().isEmpty()))
+                throw new StoreServiceException(FUNCTION_IDENTIFIER + "Document has not path specified in FolderIdentifier != null.");
         }
     }
 
@@ -44,21 +44,32 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
     protected DocumentInfo documentInfo;
     protected Map<String,Object> additInfo;
 
-
-
-    protected boolean hasPathSpecified(){
-        return documentInfo.getParentIdentifier() != null && !documentInfo.getParentIdentifier().getPath().isEmpty();
-    }
+//    protected boolean hasPathSpecified(){
+//        return documentInfo.getParentIdentifier() != null &&  documentInfo.getParentIdentifier().getPath() != null && !documentInfo.getParentIdentifier().getPath().isEmpty();
+//    }
 
     public abstract DocumentIdentifier delegatedProcess() throws SQLException;
 
     private Validator validator = new Validator();
+
+    private void calculatePathIfNecessary(){
+        if(documentInfo.getParentIdentifier() == null){
+            documentInfo.setParentIdentifier(FolderIdentifier.builder().withPath(FileUtils.getFileUtilsDMS().getRootPath()).build());
+        }
+        else if(!documentInfo.getParentIdentifier().getPath().equals(FileUtils.getFileUtilsDMS().getRootPath())){
+            String path = documentInfo.getParentIdentifier().getPath();
+            int lastPathDelimiter = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
+            if(lastPathDelimiter != -1 && lastPathDelimiter == path.length() - 1)
+                documentInfo.getParentIdentifier().setPath(path.substring(0,lastPathDelimiter));
+        }
+    }
 
     public DocumentIdentifier process(DocumentInfo documentInfo,Map<String,Object> additInfo) {
         try {
             this.additInfo = additInfo;
             this.documentInfo = documentInfo;
             validator.validateInputs();
+            calculatePathIfNecessary();
             DocumentIdentifier newDocumentIdentifer = delegatedProcess();
             connection.commit();
             return newDocumentIdentifer;
@@ -77,11 +88,7 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
     protected DocumentIdentifier constructDocumentIdentifier(BigDecimal dmObjectsId,BigDecimal dmVersionsId,String version){
         DocumentIdentifier identifier = new DocumentIdentifier();
         identifier.setId(dmObjectsId + "_" + dmVersionsId);
-
-        if(hasPathSpecified())
-            identifier.setPath(documentInfo.getParentIdentifier().getPath() + "_" + documentInfo.getName());
-        else identifier.setPath(documentInfo.getName());
-
+        identifier.setPath(documentInfo.getParentIdentifier().getPath() + "_" + documentInfo.getName());
         identifier.setVersion(version);
 
         return identifier;
@@ -99,10 +106,10 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy{
 
         if(calculateBasedOnPrev){
             String schema = (String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
-            BigDecimal oldDmObjectsRowId = hasPathSpecified() ? DBRepository.getDmObjectsIdByPathAndName(connection, schema, documentInfo.getParentIdentifier().getPath(), documentInfo.getName()) :
-                                                                DBRepository.getDmObjectsIdByName(connection,schema,documentInfo.getName());
-
-            return VersioningType.getNextVersion(DBRepository.getLastVersionLabelForDmObject(connection, schema, oldDmObjectsRowId),versioningType);
+            BigDecimal oldDmObjectsRowId = DBRepository.getDmObjectsIdByPathAndName(connection, schema, documentInfo.getParentIdentifier().getPath(), documentInfo.getName());
+            String previousVersions = DBRepository.getLastVersionLabelForDmObject(connection, schema, oldDmObjectsRowId);
+            System.out.println(previousVersions);
+            return VersioningType.getNextVersion(previousVersions,versioningType);
         }
         return VersioningType.getNextVersion(null,versioningType);
     }

@@ -1,6 +1,8 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.downloaddocument;
 
+import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
+import ro.croco.integration.dms.toolkit.BooleanResponse;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.DocumentStream;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
@@ -41,16 +43,23 @@ public class DownloadDocumentStrategy extends DocumentOperationStrategy{
     }
 
     private DocumentStream retrieveStreamByPath() throws SQLException{
-        BigDecimal dmObjectId = identifier.getPath().split("_").length == 2 ? DBRepository.getDmObjectsIdByPathAndName(connection,schema,identifier.getPath().split("_")[1],identifier.getPath().split("_")[0]) :
-                                                                              DBRepository.getDmObjectsIdByName(connection,schema,identifier.getPath().split("_")[0]);
+        String path = identifier.getPath().split("_")[0];
+        String name = identifier.getPath().split("_")[1];
+
+        int lastPathDelimiterIndex = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
+        if(lastPathDelimiterIndex > 0 && lastPathDelimiterIndex == path.length() - 1)
+            path = path.substring(0,lastPathDelimiterIndex);
+
+        BigDecimal dmObjectId = DBRepository.getDmObjectsIdByPathAndName(connection,schema,path,name);
+
         if(dmObjectId != null){
             Map<String,Object> data = null;
             if(identifier.getVersion() != null && !identifier.getVersion().isEmpty())
-                data = DBRepository.getDmVersionsByFkDmObjectsAndVersionLabel(connection, schema, dmObjectId, identifier.getVersion());
+                data = DBRepository.getDmVersionsByFkDmObjectsAndVersionLabel(connection, schema,dmObjectId,identifier.getVersion());
             else data = DBRepository.getLastDmVersionsForDmObject(connection, schema, dmObjectId);
 
             if(data != null)
-                return DBRepository.getDocumenStreamByIdProvidedOnRest(connection,(String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),data.get("FK_DM_STREAMS"),(String)data.get("STREAM_NAME"),(String)data.get("MIME_TYPE"));
+                return DBRepository.getDocumenStreamByIdProvidedOnRest(connection,(String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),data.get("FK_DM_STREAMS"),(String)data.get("STREAM_NAME"),(String)data.get("MIME_TYPE"));
         }
         return null;
     }
@@ -59,9 +68,16 @@ public class DownloadDocumentStrategy extends DocumentOperationStrategy{
         return identifier.getId() != null;
     }
 
+    private DocumentStream retrieveStreamById()throws SQLException{
+        boolean isPairCorrect = DBRepository.checkExistsDmVersionsByIdAndFkDmObjects(connection,(String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),new BigDecimal(identifier.getId().split("_")[1]),new BigDecimal(identifier.getId().split("_")[0]));
+        if(isPairCorrect)
+            return DBRepository.getDocumentStreamByDmVersionsId(connection,(String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),new BigDecimal(identifier.getId().split("_")[1]));
+        return null;
+    }
+
     public DocumentStream delegatedProcess()throws SQLException{
         if(isIdentifiedById())
-            return DBRepository.getDocumentStreamByDmVersionsId(connection,(String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA), new BigDecimal(identifier.getId().split("_")[1]));
+            return retrieveStreamById();
         else return retrieveStreamByPath();
     }
 

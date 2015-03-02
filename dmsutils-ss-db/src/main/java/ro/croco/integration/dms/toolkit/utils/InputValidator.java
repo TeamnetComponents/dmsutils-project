@@ -11,8 +11,8 @@ public abstract class InputValidator {
 
     public static void validateIdentifierPath(String path,String functionIdentifier){
         if(path != null){
-            if(path.split("_").length != 2 && path.split("_").length != 1)
-                throw new StoreServiceException(functionIdentifier + "Document path identifier is not correctly provided: X_Y/X.");
+            if(path.split("_").length != 2)
+                throw new StoreServiceException(functionIdentifier + "Document path identifier is not correctly provided: X_Y.");
         }
     }
 

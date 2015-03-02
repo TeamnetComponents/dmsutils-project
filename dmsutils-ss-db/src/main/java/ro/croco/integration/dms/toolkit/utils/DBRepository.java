@@ -33,8 +33,8 @@ public class DBRepository {
     public static DocumentStream getDocumentStreamByDmVersionsId(Connection connection,String schema,BigDecimal dmVersionsId) throws SQLException{
         String command = "SELECT FILE_STREAM,STREAM_NAME,MIME_TYPE FROM TEMP_SCHEMA.DM_STREAMS DS,TEMP_SCHEMA.DM_OBJECT_VERSIONS DOV WHERE DS.NAME=DOV.FK_DM_STREAMS AND DOV.ID=?";
         if(schema != null && !schema.isEmpty())
-            command.replaceAll("TEMP_SCHEMA",schema);
-        else command.replaceAll("TEMP_SCHEMA.","");
+            command = command.replaceAll("TEMP_SCHEMA",schema);
+        else command = command.replaceAll("TEMP_SCHEMA.","");
 
         PreparedStatement statement = connection.prepareStatement(command);
         statement.setInt(1,dmVersionsId.intValue());
@@ -89,11 +89,11 @@ public class DBRepository {
     public static String getLastVersionLabelForDmObject(Connection connection,String schema,BigDecimal dmObjectId)throws SQLException{
         String lastDmVersionsCmd = "SELECT MAX(VERSION_LABEL) FROM TEMP_SCHEMA.DM_OBJECT_VERSIONS WHERE FK_DM_OBJECTS=?";
         if(schema != null && !schema.isEmpty())
-            lastDmVersionsCmd.replaceAll("TEMP_SCHEMA.",schema + ".");
-        else lastDmVersionsCmd.replaceAll("TEMP_SCHEMA","");
+            lastDmVersionsCmd = lastDmVersionsCmd.replaceAll("TEMP_SCHEMA",schema);
+        else lastDmVersionsCmd = lastDmVersionsCmd.replaceAll("TEMP_SCHEMA.","");
 
         PreparedStatement statement = connection.prepareStatement(lastDmVersionsCmd);
-        statement.setInt(1,dmObjectId.intValue());
+        statement.setObject(1,dmObjectId.intValue());
         ResultSet resultSet = statement.executeQuery();
         resultSet.next();
         String lastVersion = resultSet.getString(1);
@@ -102,13 +102,34 @@ public class DBRepository {
         return lastVersion;
     }
 
+    public static void deleteLastVersionAndStreamForDmObject(Connection connection,String schema,BigDecimal dmObjectId)throws SQLException{
+        String lastDmVersionsCmd = "SELECT FK_DM_STREAMS FROM TEMP_SCHEMA.DM_OBJECT_VERSIONS WHERE VERSION_LABEL=(SELECT MAX(VERSION_LABEL) FROM TEMP_SCHEMA.DM_OBJECT_VERSIONS WHERE FK_DM_OBJECTS=?)";
+        if(schema != null && !schema.isEmpty())
+            lastDmVersionsCmd = lastDmVersionsCmd.replaceAll("TEMP_SCHEMA",schema);
+        else lastDmVersionsCmd = lastDmVersionsCmd.replaceAll("TEMP_SCHEMA.","");
+
+        PreparedStatement statement = connection.prepareStatement(lastDmVersionsCmd,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
+        statement.setObject(1,dmObjectId.intValue());
+        statement.setObject(2,dmObjectId.intValue());
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            Object streamIdentifier = resultSet.getObject(1);
+            resultSet.deleteRow();
+            PreparedStatement dStatement = StatementPreparator.prepareDeleteDmStreamsByIdentifier(connection,schema,streamIdentifier);
+            dStatement.execute();
+            dStatement.close();
+        }
+        resultSet.close();
+        statement.close();
+    }
+
     public static Map<String,Object> getLastDmVersionsForDmObject(Connection connection,String schema,BigDecimal dmObjectId)throws SQLException{
         Map<String,Object> retData = null;
 
         String dmVersionsQueryCmd = "SELECT FK_DM_STREAMS,STREAM_NAME,MIME_TYPE FROM TEMP_SCHEMA.DM_OBJECT_VERSIONS WHERE ID=(SELECT MAX(ID) FROM TEMP_SCHEMA.DM_OBJECT_VERSIONS WHERE FK_DM_OBJECTS=?)";
         if(schema != null && !schema.isEmpty())
-            dmVersionsQueryCmd.replaceAll("TEMP_SCHEMA",schema);
-        else dmVersionsQueryCmd.replaceAll("TEMP_SCHEMA.","");
+            dmVersionsQueryCmd = dmVersionsQueryCmd.replaceAll("TEMP_SCHEMA",schema);
+        else dmVersionsQueryCmd = dmVersionsQueryCmd.replaceAll("TEMP_SCHEMA.","");
 
         PreparedStatement statement = connection.prepareStatement(dmVersionsQueryCmd);
         statement.setInt(1,dmObjectId.intValue());
@@ -125,8 +146,8 @@ public class DBRepository {
         return retData;
     }
 
-    public static boolean checkExistsDmVersionsById(Connection connection,String schema,BigDecimal dmVersionsId)throws SQLException{
-        PreparedStatement statement = StatementPreparator.prepareSelectDmVersionsById(connection,schema,dmVersionsId);
+    public static boolean checkExistsDmVersionsByIdAndFkDmObjects(Connection connection,String schema,BigDecimal dmVersionsId,BigDecimal fkDmObjectsId)throws SQLException{
+        PreparedStatement statement = StatementPreparator.prepareSelectDmVersionsByIdAndFkDmObjects(connection,schema,dmVersionsId,fkDmObjectsId);
         ResultSet resultSet = statement.executeQuery();
         boolean exists = false;
         if(resultSet.next())
@@ -150,6 +171,8 @@ public class DBRepository {
         return result;
     }
 
+
+
     public static Map<String,Object> getDmVersionsByFkDmObjectsAndVersionLabel(Connection connection,String schema,BigDecimal dmOBjectsId,String version)throws SQLException{
         Map<String,Object> retData = null;
         PreparedStatement statement = StatementPreparator.prepareSelectDmVersionsByFkDmObjectAndVersion(connection,schema,dmOBjectsId,version);
@@ -172,13 +195,48 @@ public class DBRepository {
 
         ResultSet resultSet = sStatement.executeQuery();
         while(resultSet.next()){
-            dStatement.setObject(1,resultSet.getObject(1));
+            dStatement.setObject(1,resultSet.getObject(3));
             dStatement.addBatch();
             resultSet.deleteRow();
         }
         resultSet.close();
-        sStatement.executeBatch();
+        sStatement.close();
+        dStatement.executeBatch();
         dStatement.close();
+    }
+
+    public static void deleteDmObjectsById(Connection connection,String schema,BigDecimal dmObjectsRowId)throws SQLException{
+        PreparedStatement statement = StatementPreparator.prepareDeleteDmObjectById(connection,schema,dmObjectsRowId);
+        statement.execute();
+        statement.close();
+    }
+
+    public static void deleteDmVersionsAndDmStreamsById(Connection connection, String schema, BigDecimal dmVersionsRowId)throws SQLException{
+        PreparedStatement sStatement = StatementPreparator.prepareSelectDmVersionsById(connection, schema,dmVersionsRowId);
+        ResultSet resultSet = sStatement.executeQuery();
+        if(resultSet.next()){
+            Object streamIdentifier = resultSet.getObject(3);
+            resultSet.deleteRow();
+            PreparedStatement dStatement = StatementPreparator.prepareDeleteDmStreamsByIdentifier(connection,schema,streamIdentifier);
+            dStatement.execute();
+            dStatement.close();
+        }
+        resultSet.close();
+        sStatement.close();
+    }
+
+    public static void deleteDmVersionsAndDmStreamsByFkDmOBjectsAndVersionLabel(Connection connection,String schema,BigDecimal dmObjectsId,String version)throws SQLException{
+        PreparedStatement statement = StatementPreparator.prepareSelectDmVersionsByFkDmObjectAndVersion(connection, schema, dmObjectsId, version);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            Object streamIdentifier = resultSet.getObject(3);
+            resultSet.deleteRow();
+            PreparedStatement dStatement = StatementPreparator.prepareDeleteDmStreamsByIdentifier(connection,schema,streamIdentifier);
+            dStatement.execute();
+            dStatement.close();
+        }
+        resultSet.close();
+        statement.close();
     }
 
     //createDmObjectsRow

@@ -22,6 +22,7 @@ final public class SqlOperationTranslator {
         StringBuilder builder = new StringBuilder("INSERT INTO ");
         if(schema != null && !schema.equals(""))
             builder.append(schema + ".");
+
         builder.append(command.substring(command.indexOf(":") + 1, command.indexOf("(")));
         builder.append(command.substring(command.indexOf("("))).append(" values(");
         int insertValuesCount = StringUtils.countMatches(command.substring(command.indexOf("(")),",");
@@ -62,7 +63,7 @@ final public class SqlOperationTranslator {
 
         if(schema != null && !schema.equals(""))
             builder.append(schema + ".");
-        builder.append(command.substring(command.indexOf(":") + 1,command.indexOf("(")));
+        builder.append(command.substring(command.indexOf(":") + 1,command.indexOf("("))).append(" WHERE ");
 
         String[] conditionValues = command.substring(command.lastIndexOf("(") + 1,command.lastIndexOf(")")).split(",");
         for(int i = 0;i < conditionValues.length;i++){

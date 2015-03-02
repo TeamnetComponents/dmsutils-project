@@ -1,5 +1,6 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.existsdocument;
 
+import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.BooleanResponse;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
@@ -39,21 +40,25 @@ public class CheckDocumentStrategy extends DocumentOperationStrategy{
 
     private boolean isVersionExistsByPath() throws SQLException{
         String schema = (String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
-        BigDecimal dmObjectId = identifier.getPath().split("_").length == 2 ? DBRepository.getDmObjectsIdByPathAndName(connection,schema,identifier.getPath().split("_")[1],identifier.getPath().split("_")[0]) :
-                                                                              DBRepository.getDmObjectsIdByName(connection,schema,identifier.getPath().split("_")[0]);
+        BigDecimal dmObjectId = null;
+        String path = identifier.getPath().split("_")[0];
+        String name = identifier.getPath().split("_")[1];
 
-        if(dmObjectId != null){
-            if(identifier.getVersion() != null && !identifier.getVersion().isEmpty())
-                return DBRepository.checkExistsDmVersionsByFkDmObjectsAndVersion(connection,schema,dmObjectId,identifier.getVersion());
+        int lastPathDelimiterIndex = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
+        if(lastPathDelimiterIndex > 0 && lastPathDelimiterIndex == path.length() - 1)
+            path = path.substring(0,lastPathDelimiterIndex);
 
-            return true;
-        }
+        dmObjectId = DBRepository.getDmObjectsIdByPathAndName(connection,schema,path,name);
+
+        if(dmObjectId != null)
+            return ((identifier.getVersion() != null && !identifier.getVersion().isEmpty()) ? DBRepository.checkExistsDmVersionsByFkDmObjectsAndVersion(connection,schema,dmObjectId,identifier.getVersion()) : true);
+
         return false;
     }
 
     public BooleanResponse delegatedProcess() throws SQLException{
         if(isIdentifiedById())
-            return new BooleanResponse(DBRepository.checkExistsDmVersionsById(connection,(String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),new BigDecimal(identifier.getId().split("_")[1])));
+            return new BooleanResponse(DBRepository.checkExistsDmVersionsByIdAndFkDmObjects(connection,(String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA),new BigDecimal(identifier.getId().split("_")[1]),new BigDecimal(identifier.getId().split("_")[0])));
         else return new BooleanResponse(isVersionExistsByPath());
     }
 

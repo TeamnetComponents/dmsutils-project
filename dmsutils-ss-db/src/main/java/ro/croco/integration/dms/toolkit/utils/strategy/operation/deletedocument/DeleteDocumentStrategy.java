@@ -1,12 +1,16 @@
 package ro.croco.integration.dms.toolkit.utils.strategy.operation.deletedocument;
 
+import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.DocumentIdentifier;
 import ro.croco.integration.dms.toolkit.RequestIdentifier;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
+import ro.croco.integration.dms.toolkit.utils.ContextProperties;
+import ro.croco.integration.dms.toolkit.utils.DBRepository;
 import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperationStrategy;
 import ro.croco.integration.dms.toolkit.utils.InputValidator;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 /**
@@ -39,13 +43,48 @@ public class DeleteDocumentStrategy extends DocumentOperationStrategy{
 
     private Validator validator = new Validator();
 
-    public RequestIdentifier delegatedProcess()throws SQLException{
+    private RequestIdentifier deleteDocumentById()throws SQLException{
+        BigDecimal dmObjectsId = new BigDecimal(identifier.getId().split("_")[0]);
+        BigDecimal dmVersionsId = new BigDecimal(identifier.getId().split("_")[1]);
+        String schema = (String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
+        DBRepository.deleteDmVersionsAndDmStreamsById(connection, schema,dmVersionsId);
+        try{
+            DBRepository.deleteDmObjectsById(connection,schema,dmObjectsId);
+        }
+        catch(SQLException deleteFkFirstEx){}
 
-
-
-
-        return null;
+        return new RequestIdentifier();
     }
+
+    private RequestIdentifier deleteDocumentByPath()throws SQLException{
+        String schema = (String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
+        String path = identifier.getPath().split("_")[0];
+        String name = identifier.getPath().split("_")[1];
+
+        int lastPathDelimiterIndex = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
+        if(lastPathDelimiterIndex > 0 && lastPathDelimiterIndex == path.length() - 1)
+            path = path.substring(0,lastPathDelimiterIndex);
+
+        BigDecimal dmObjectId = DBRepository.getDmObjectsIdByPathAndName(connection,schema,path,name);
+
+        if(dmObjectId != null){
+            if(identifier.getVersion() != null && !identifier.getVersion().isEmpty())
+                DBRepository.deleteDmVersionsAndDmStreamsByFkDmOBjectsAndVersionLabel(connection,schema,dmObjectId,identifier.getVersion());
+            else DBRepository.deleteLastVersionAndStreamForDmObject(connection,schema,dmObjectId);
+            try{
+                DBRepository.deleteDmObjectsById(connection,schema,dmObjectId);
+            }
+            catch(SQLException deleteFkFirstEx){}
+        }
+        return new RequestIdentifier();
+    }
+
+    public RequestIdentifier delegatedProcess()throws SQLException{
+        if(isIdentifiedById())
+            return deleteDocumentById();
+        else return deleteDocumentByPath();
+    }
+
 
     public RequestIdentifier process(DocumentIdentifier identifier){
         try{

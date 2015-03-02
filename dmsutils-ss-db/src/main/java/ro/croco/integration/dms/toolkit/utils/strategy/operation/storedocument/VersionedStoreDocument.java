@@ -21,8 +21,7 @@ public class VersionedStoreDocument extends StoreDocumentStrategy {
     @Override
     public DocumentIdentifier delegatedProcess() throws SQLException{
         String schema = (String)session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
-        BigDecimal oldDmObjectRowId = hasPathSpecified() ? DBRepository.getDmObjectsIdByPathAndName(connection,schema,documentInfo.getParentIdentifier().getPath(),documentInfo.getName()) :
-                                                           DBRepository.getDmObjectsIdByName(connection,schema,documentInfo.getName());
+        BigDecimal oldDmObjectRowId = DBRepository.getDmObjectsIdByPathAndName(connection,schema,documentInfo.getParentIdentifier().getPath(),documentInfo.getName());
         BigDecimal dmObjectsRowIdOnIdentifier = null;
         boolean calculateBasedOnPrev = false;
 
@@ -30,8 +29,7 @@ public class VersionedStoreDocument extends StoreDocumentStrategy {
             dmObjectsRowIdOnIdentifier = oldDmObjectRowId;
             calculateBasedOnPrev = true;
         }
-        else dmObjectsRowIdOnIdentifier = hasPathSpecified() ? DBRepository.createDmObjectsRowWithPathAndName(connection,schema,documentInfo.getParentIdentifier().getPath(),documentInfo.getName()) :
-                                                               DBRepository.createDmObjectsRowWithName(connection,schema,documentInfo.getName());
+        else dmObjectsRowIdOnIdentifier = DBRepository.createDmObjectsRowWithPathAndName(connection,schema,documentInfo.getParentIdentifier().getPath(),documentInfo.getName());
 
         String newDmStreamsRowId = DBRepository.createDmStreamsRow(connection,schema,(InputStream)additInfo.get("inputStream"));
         String version = calculateNewVersion(calculateBasedOnPrev);
