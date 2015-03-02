@@ -17,8 +17,7 @@
             </snapshots>
         </repository>
     </repositories>
-    
-    <groupId>DmsUtils</groupId>
+
     <artifactId>dmsutils-eip</artifactId>
     <packaging>jar</packaging>
 
