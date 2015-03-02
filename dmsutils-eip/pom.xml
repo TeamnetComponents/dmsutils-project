@@ -160,5 +160,9 @@
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-integration</artifactId>
         </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jcr</artifactId>
+        </dependency>
     </dependencies>
 </project>

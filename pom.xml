@@ -94,6 +94,11 @@
             </dependency>
             <dependency>
                 <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-store-service-jcr</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
                 <artifactId>dmsutils-eip</artifactId>
                 <version>1.0</version>
             </dependency>
