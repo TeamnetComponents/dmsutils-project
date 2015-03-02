@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import ro.croco.integration.dms.commons.DeleteOnCloseInputStream;
 import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
+import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,8 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
     public static final String SERVICE_INTEGRATION_INSTANCE_CONFIGURATION = "service.integration.instance.configuration";
     private IntegrationService integrationService;
 
+    private StoreServicePropValidator validator = new StoreServicePropValidator(new ContextProperties.Required());
+
     public StoreServiceImpl_Integration() {
         super();
         setCommunicationTypeSupport(StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS, true);
@@ -31,6 +34,7 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
     @Override
     public void __init(Properties context) throws IOException {
         super.__init(context);
+        validator.validate(context);
 
         //get parent paths to optimize configuration file detection
         String instanceSource = this.context.getProperty(ServiceFactory_Abstract.INSTANCE_SOURCE);
@@ -167,26 +171,24 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
         StoreContext preparedStoreContext = prepareStoreContext(storeContext);
         //System.out.println("--------------- FINISH Prepare context --------------");
         //System.out.println("-------------------- FINISH Prepare context: " + preparedStoreContext.getCommunicationType().name() + " ----------");
-        if (storeContext.getCommunicationType().equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS_LOCAL)) {
+        if (storeContext.getCommunicationType().equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS_LOCAL)){
             return getLocalStoreService().storeDocument(preparedStoreContext, documentInfo, inputStream, allowCreatePath, versioningType);
         } else {
-            if (documentInfo == null) {
+            if(documentInfo == null){
                 throw new StoreServiceException("DocumentInfo object must not be null");
             }
             String documentPath = StoreServiceImpl_Abstract.fileUtils.getRootPath(); //+"upload/";
             if (documentInfo.getParentIdentifier() != null) {
-                if (documentInfo.getParentIdentifier().getPath() == null || documentInfo.getParentIdentifier().getPath().isEmpty()) {
+                if (documentInfo.getParentIdentifier().getPath() == null || documentInfo.getParentIdentifier().getPath().isEmpty()){
                     throw new StoreServiceException("ParentIdentifier must have the path completed.");
                 }
                 documentPath = documentInfo.getParentIdentifier().getPath();
             }
             String documentNameWithExtension = StoreServiceImpl_Abstract.fileUtils.getFileNameWithExtension(StoreServiceImpl_Abstract.fileUtils.getFileBaseName(documentInfo.getName()), documentInfo.getExtension());
-
-
             String temporaryFilePath = getLocalStoreService().getPathByConfiguration(PathConfiguration.TEMP_UPLOAD);
             String temporaryFileName = String.valueOf(UUID.randomUUID()) + "_" + documentNameWithExtension;
             DocumentInfo temporaryDocumentInfo = new DocumentInfo(temporaryFilePath, StoreServiceImpl_Abstract.fileUtils.getFileBaseName(temporaryFileName), StoreServiceImpl_Abstract.fileUtils.getFileExtension(temporaryFileName), null, null);
-            DocumentIdentifier temporaryDocumentIdentifier = getLocalStoreService().storeDocument(preparedStoreContext, temporaryDocumentInfo, inputStream, true, VersioningType.NONE);
+            DocumentIdentifier temporaryDocumentIdentifier = getLocalStoreService().storeDocument(preparedStoreContext,temporaryDocumentInfo,inputStream,true,VersioningType.NONE);
 
             //DocumentIdentifier temporaryDocumentIdentifier = new DocumentIdentifier();
             //temporaryDocumentIdentifier.setPath(temporaryFilePath + "/" + temporaryFileName);
@@ -197,15 +199,15 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
             messageStructure.setParameters(preparedStoreContext, documentInfo, temporaryDocumentIdentifier, allowCreatePath, versioningType);
 
             //System.out.println(" ------------- START send msg to JMS queue --------------");
-            Serializable response = integrationService.sendAndReceive(messageStructure, storeContext.getCommunicationType());
+            Serializable response = integrationService.sendAndReceive(messageStructure,storeContext.getCommunicationType());
             //System.out.println(" ------------- FINISH send msg to JMS queue --------------");
 
             if (storeContext.getCommunicationType().equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS)) {
-                StoreServiceMessage messageStructureResponse = (StoreServiceMessage) response;
+                StoreServiceMessage messageStructureResponse = (StoreServiceMessage)response;
                 if (messageStructureResponse.getException() != null) {
                     throw (messageStructureResponse.getException());
                 }
-                return (DocumentIdentifier) messageStructureResponse.getParameters()[0];
+                return (DocumentIdentifier)messageStructureResponse.getParameters()[0];
             } else {
                 DocumentIdentifier documentIdentifier = new DocumentIdentifier();
                 documentIdentifier.setRequestId(preparedStoreContext.getRequestIdentifier());

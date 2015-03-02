@@ -3,8 +3,10 @@ package ro.croco.integration.dms.toolkit.utils.strategy.operation;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.StoreServiceSessionImpl_Db;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Created by battamir.sugarjav on 2/20/2015.

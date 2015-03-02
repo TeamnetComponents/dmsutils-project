@@ -31,7 +31,7 @@ public class DocumentInfo extends ObjectInfo<DocumentIdentifier> {
         this.extension = fileUtils.getFileExtension(filePathNameWithExtension);
     }
 
-    public DocumentInfo(String path, String name, String extension, String type, Map<String, Object> properties) {
+    public DocumentInfo(String path,String name, String extension, String type, Map<String, Object> properties) {
         super(path, name, type, properties);
         this.extension = extension;
     }

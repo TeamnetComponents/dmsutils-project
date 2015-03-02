@@ -69,7 +69,7 @@ public class ObjectInfo<T> extends RequestIdentifier implements Serializable {
         return parentIdentifier;
     }
 
-    void setParentIdentifier(FolderIdentifier parentIdentifier) {
+    public void setParentIdentifier(FolderIdentifier parentIdentifier) {
         this.parentIdentifier = parentIdentifier;
     }
 

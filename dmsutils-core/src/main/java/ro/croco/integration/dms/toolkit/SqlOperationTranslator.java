@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.utils;
+package ro.croco.integration.dms.toolkit;
 
 import org.apache.commons.lang.StringUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
@@ -22,6 +22,7 @@ final public class SqlOperationTranslator {
         StringBuilder builder = new StringBuilder("INSERT INTO ");
         if(schema != null && !schema.equals(""))
             builder.append(schema + ".");
+
         builder.append(command.substring(command.indexOf(":") + 1, command.indexOf("(")));
         builder.append(command.substring(command.indexOf("("))).append(" values(");
         int insertValuesCount = StringUtils.countMatches(command.substring(command.indexOf("(")),",");
@@ -58,7 +59,21 @@ final public class SqlOperationTranslator {
     }
 
     private static String translatePSDelete(String command,String schema){
-        return null;
+        StringBuilder builder = new StringBuilder("DELETE FROM ");
+
+        if(schema != null && !schema.equals(""))
+            builder.append(schema + ".");
+        builder.append(command.substring(command.indexOf(":") + 1,command.indexOf("("))).append(" WHERE ");
+
+        String[] conditionValues = command.substring(command.lastIndexOf("(") + 1,command.lastIndexOf(")")).split(",");
+        for(int i = 0;i < conditionValues.length;i++){
+            if(conditionValues[i].indexOf("=") != -1)
+                builder.append(conditionValues[i]).append(" AND ");
+            else builder.append(conditionValues[i]).append("=? AND ");
+        }
+        builder.append("1=1");
+
+        return builder.toString();
     }
 
     public static String translateCommand(String commnand,int statementType,String schema){

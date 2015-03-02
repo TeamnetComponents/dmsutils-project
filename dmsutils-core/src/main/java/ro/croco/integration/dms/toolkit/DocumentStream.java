@@ -24,7 +24,6 @@ public class DocumentStream extends RequestIdentifier{
         this.mimeType = mimeType;
     }
 
-
     public String getFileName() {
         return fileName;
     }

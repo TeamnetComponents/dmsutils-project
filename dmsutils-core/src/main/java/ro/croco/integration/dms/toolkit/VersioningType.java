@@ -7,7 +7,7 @@ public enum VersioningType {
 
     NONE("none"), MAJOR("major"), MINOR("minor");
 
-    private final static String VERSION_INITIAL = "0.0";
+    public final static String VERSION_INITIAL = "0.0";
     private final static String VERSION_DELIMITER = ".";
 
     private final String value;
