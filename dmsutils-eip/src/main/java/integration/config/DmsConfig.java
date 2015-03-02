@@ -29,7 +29,7 @@ public class DmsConfig {
     }
 
     @Bean(name = "jcrStoreService")
-    public StoreService jcrStoreService() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    public StoreService jcrStoreService() throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
         JcrProperties jcrProperties = new JcrProperties();
 //        jcrProperties.setConnectionType(JcrProperties.ConnectionTypes.CONN_LOCAL);
 //        jcrProperties.setLocalConfigFile("D:/JcrRepo/repository.xml");

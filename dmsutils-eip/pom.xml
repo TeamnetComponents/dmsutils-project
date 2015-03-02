@@ -19,7 +19,7 @@
     </repositories>
 
     <artifactId>dmsutils-eip</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>dmsutils-eip</name>
     <url>http://maven.apache.org</url>
