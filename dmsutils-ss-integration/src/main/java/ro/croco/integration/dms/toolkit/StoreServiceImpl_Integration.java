@@ -5,7 +5,6 @@ import ro.croco.integration.dms.commons.DeleteOnCloseInputStream;
 import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
-import ro.croco.integration.dms.toolkit.context.ContextProperties;
 
 import java.io.IOException;
 import java.io.InputStream;

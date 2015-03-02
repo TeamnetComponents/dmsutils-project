@@ -1,4 +1,4 @@
-package ro.croco.integration.dms.toolkit.context;
+package ro.croco.integration.dms.toolkit;
 
 /**
  * Created by battamir.sugarjav on 2/19/2015.

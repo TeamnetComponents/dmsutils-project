@@ -1,11 +1,11 @@
 package ro.croco.integration.dms.toolkit.db;
 import ro.croco.integration.dms.commons.DatabaseUtils;
+import ro.croco.integration.dms.commons.exceptions.IntegrationServiceException;
 import ro.croco.integration.dms.commons.validation.StoreServicePropValidator;
 import ro.croco.integration.dms.toolkit.IntegrationServiceImpl_Abstract;
 import ro.croco.integration.dms.toolkit.StoreContext;
 import ro.croco.integration.dms.toolkit.StoreServiceMessage;
 import ro.croco.integration.dms.toolkit.StoreServiceMessageEvent;
-import ro.croco.integration.dms.toolkit.db.context.ContextProperties;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -28,14 +28,15 @@ public class IntegrationServiceImpl_Db extends IntegrationServiceImpl_Abstract {
     @Override
     public StoreServiceMessage[] sendAndReceive(StoreServiceMessage[] messageStructures,StoreContext.COMMUNICATION_TYPE_VALUES communicationType) {
         StoreServiceMessage[] responses = new StoreServiceMessage[messageStructures.length];
-        int currentIndex = 0;
-        for(StoreServiceMessage ssMessage : messageStructures){
-            if(communicationType.equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS)){
-                SyncFrontIntegrationWorker_DB worker = new SyncFrontIntegrationWorker_DB(context);
-                StoreServiceMessageDb dbMessage = constructSyncDbMsg(ssMessage);
-                worker.send(dbMessage,constructSyncConnection(true),syncConnectionDbSchema(true));
-                responses[currentIndex++] = worker.receive(constructSyncConnection(false),syncConnectionDbSchema(false),"",Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_ON_ITERATION))).getStoreServiceMessage();
-            }
+
+        if(communicationType.equals(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS)){
+            if(messageStructures.length > 1)
+                throw new IntegrationServiceException("Cannot process multiple messages for synchronous mode communication.");
+
+            SyncFrontIntegrationWorker_DB worker = new SyncFrontIntegrationWorker_DB(context);
+            StoreServiceMessageDb dbMessage = constructSyncDbMsg(messageStructures[0]);
+            worker.send(dbMessage,constructSyncConnection(true),syncConnectionDbSchema(true));
+            responses[0] = worker.receive(constructSyncConnection(false),syncConnectionDbSchema(false),QueueConfigurationResolver.getHistoryTable(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_ON_ITERATION))).getStoreServiceMessage();
         }
         return responses;
     }
@@ -60,7 +61,7 @@ public class IntegrationServiceImpl_Db extends IntegrationServiceImpl_Abstract {
         dbMessage.setStoreServiceMessage(ssMessage);
         dbMessage.setMessageCorrelationID(UUID.randomUUID().toString());
         dbMessage.setMessageExpiration(System.currentTimeMillis() + (Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)) * 1000));
-        dbMessage.setMessagePriority(Integer.valueOf(ContextProperties.Required.SYNCHRONOUS_MESSAGE_PRIORITY_DEFAULT));
+        dbMessage.setMessagePriority(Integer.valueOf((String)context.get(ContextProperties.Required.SYNCHRONOUS_MESSAGE_PRIORITY_DEFAULT)));
         dbMessage.setMessageDestination(QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE)));
         dbMessage.setMessageReplyTo(QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)));
         return dbMessage;

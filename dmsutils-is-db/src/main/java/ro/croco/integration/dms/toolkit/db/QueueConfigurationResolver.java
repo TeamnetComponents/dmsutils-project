@@ -1,6 +1,7 @@
 package ro.croco.integration.dms.toolkit.db;
 
 import ro.croco.integration.dms.commons.TemplateEngine;
+import ro.croco.integration.dms.commons.exceptions.IntegrationServiceException;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 
 
@@ -21,21 +22,21 @@ public class QueueConfigurationResolver {
 
     private static void verifyExistance(Object evaluated)throws StoreServiceException{
         if(evaluated == null)
-            throw new StoreServiceException("[QueueConfigurationResolver] Context does not contain required property.");
+            throw new IntegrationServiceException("[QueueConfigurationResolver] Context does not contain required property.");
     }
 
-    public static String getConnectionName(Properties context,String queue)throws StoreServiceException{
+    public static String getConnectionName(Properties context,String queue)throws IntegrationServiceException{
         Object connectionName = context.get(templateEngine.getValueFromTemplate(QUEUE_DEFINITION_CONNECTION, QUEUE_DEFINITION_NAME,queue));
         verifyExistance(connectionName);
         return (String)connectionName;
     }
 
-    public static String getHistoryTable(Properties context,String queue)throws StoreServiceException{
+    public static String getHistoryTable(Properties context,String queue)throws IntegrationServiceException{
         Object historyTable =  context.get(templateEngine.getValueFromTemplate(QUEUE_DEFINITION_HISTORY,QUEUE_DEFINITION_NAME,queue));
         verifyExistance(historyTable);
         return (String) historyTable;
     }
-    public static String getTableName(Properties context,String queue)throws StoreServiceException{
+    public static String getTableName(Properties context,String queue)throws IntegrationServiceException{
         Object tableName =  context.get(templateEngine.getValueFromTemplate(QUEUE_DEFINITION_TABLE, QUEUE_DEFINITION_NAME,queue));
         verifyExistance(tableName);
         return (String) tableName;

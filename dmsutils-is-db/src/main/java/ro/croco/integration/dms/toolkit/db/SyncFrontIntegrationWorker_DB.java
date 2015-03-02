@@ -27,12 +27,13 @@ public class SyncFrontIntegrationWorker_DB {
 
     public void send(StoreServiceMessageDb dbMessage,Connection connection,String requestDbSchema){
         try{
+            connection.setAutoCommit(false);
             PreparedStatement statement = StatementPreparator.FrontSide.prepareInsertRequest(connection,requestDbSchema,dbMessage.getMessageDestination(),translateMsgToInsertionMap(dbMessage));
             statement.execute();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.close();
             statement.close();
-            //connection.commit();
+            connection.commit();
             this.dbMessage = dbMessage;
         }
         catch(SQLException sqlEx){
@@ -48,6 +49,7 @@ public class SyncFrontIntegrationWorker_DB {
 
     public StoreServiceMessageDb receive(Connection connection,String responseDbSchema,String historyTableName,Long waitResponseTime,Long waitOnIterationTime){
         try{
+            connection.setAutoCommit(false);
             Long cummulatedTime = 0L;
             StoreServiceMessageDb response = null;
             PreparedStatement statement = StatementPreparator.FrontSide.prepareSelectResponse(connection,responseDbSchema,dbMessage.getMessageReplyTo(),translateMsgToSelectionResponseMap(this.dbMessage));
@@ -57,6 +59,7 @@ public class SyncFrontIntegrationWorker_DB {
                 Long iterationStartTime = System.currentTimeMillis();
                 resultSet = statement.executeQuery();
                 if(resultSet.next()){
+                    System.out.println("Response found at time : " + cummulatedTime);
                     response = translateJdbcResponseToSSMsg(resultSet);
                     resultSet.deleteRow();
                     this.saveResponseIntoHistory(response,connection,responseDbSchema,historyTableName);
@@ -66,6 +69,7 @@ public class SyncFrontIntegrationWorker_DB {
                 }
                 Thread.sleep(waitOnIterationTime);
                 cummulatedTime += (System.currentTimeMillis() - iterationStartTime);
+                System.out.println("Time slept until current iteration : " + cummulatedTime);
             }
             if(response != null)
                 connection.commit();
@@ -73,6 +77,7 @@ public class SyncFrontIntegrationWorker_DB {
         }
         catch(SQLException sqlEx){
             try{
+                sqlEx.printStackTrace();
                 connection.rollback();
             }
             catch(SQLException rollBackEx){
