@@ -36,7 +36,6 @@ public class JdbcConfig{
     }
 
     private Properties loadConfigFileContext(String contextName){
-
         FileUtils fileUtils = (contextName.contains(FileUtils.getFileUtilsOS().getPathDelimiter())) ? FileUtils.getFileUtilsOS() : FileUtils.getFileUtilsDMS();
         String pathName = fileUtils.getParentFolderPathName(contextName);
         String contextShortName = fileUtils.getFileName(contextName);
@@ -83,7 +82,7 @@ public class JdbcConfig{
     }
 
     public JdbcConfig() throws IOException{
-        this.dbContext = loadConfigFileContext("is-db.properties");
+        this.dbContext = loadConfigFileContext("C:\\TeamnetProjects\\DMS-UTILS\\is-db.properties");
     }
 
     @Bean
