@@ -62,6 +62,35 @@ public class DatabaseUtils {
         return (String) context.get(templateEngine.getValueFromTemplate(CONNECTION_SCHEMA, CONNECTION_NAME, connectionName));
     }
 
+    public static DataSource getDataSource(Properties context,String connectionName){
+        String connectionType = getConnectionType(context, connectionName);
+        if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)) {
+            BasicDataSource basicDataSource = new BasicDataSource();
+            basicDataSource.setDriverClassName(getConnectionDriver(context, connectionName));
+            basicDataSource.setUrl(getConnectionUrl(context, connectionName));
+            basicDataSource.setUsername(getConnectionUser(context, connectionName));
+            basicDataSource.setPassword(getConnectionPassword(context, connectionName));
+            String connectionSchema = getConnectionSchema(context, connectionName);
+            if (connectionSchema != null && !connectionSchema.isEmpty())
+                basicDataSource.addConnectionProperty(CONNECTION_CURRENT_SCHEMA, connectionSchema);
+
+            return basicDataSource;
+        }
+        else if (CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)){
+            try{
+                Context initContext = new InitialContext();
+                return (DataSource)initContext.lookup(getConnectionUrl(context, connectionName));
+            }
+            catch(NamingException e){
+                e.printStackTrace();
+                throw new StoreServiceException(e);
+            }
+        }
+        else {
+            throw new StoreServiceNotDefinedException("The connection name <" + connectionName + "> is not defined correctly.");
+        }
+    }
+
     public static Connection getConnection(Properties context, String connectionName) {
         DataSource dataSource = null;
         Connection connection = null;
