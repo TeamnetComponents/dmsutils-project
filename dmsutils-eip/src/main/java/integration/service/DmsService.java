@@ -1,5 +1,7 @@
 package integration.service;
 
+import ro.croco.integration.dms.toolkit.*;
+
 import java.io.InputStream;
 
 /**

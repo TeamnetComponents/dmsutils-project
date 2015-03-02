@@ -6,6 +6,7 @@ import org.springframework.integration.annotation.Payload;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
+import ro.croco.integration.dms.toolkit.*;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageStructure;
 
 import java.io.InputStream;

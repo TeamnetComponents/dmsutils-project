@@ -92,7 +92,11 @@
                 <artifactId>dmsutils-metadata-service-db</artifactId>
                 <version>1.0</version>
             </dependency>
-
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-eip</artifactId>
+                <version>1.0</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.jmeter</groupId>

@@ -1,5 +1,6 @@
 package integration.service;
 
+import domain.UpdateDocumentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +11,9 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import ro.croco.integration.dms.toolkit.*;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageStructure;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageType;
-import ro.croco.integration.domain.UpdateDocumentInfo;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;

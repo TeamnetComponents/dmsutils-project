@@ -9,7 +9,7 @@
     <repositories>
         <repository>
             <id>central</id>
-            <name>Teamnet Repository</name>
+            <name>Repository</name>
             <layout>default</layout>
             <url>http://mvnrepository.com/artifact</url>
             <snapshots>
@@ -138,6 +138,31 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-cmis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-metadata-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jcr</artifactId>
         </dependency>
     </dependencies>
 </project>
