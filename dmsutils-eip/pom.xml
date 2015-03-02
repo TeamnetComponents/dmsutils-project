@@ -16,6 +16,10 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>Maven Central</id>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
     </repositories>
 
     <artifactId>dmsutils-eip</artifactId>
