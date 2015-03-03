@@ -3,7 +3,6 @@ package integration.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ro.croco.integration.dms.commons.DatabaseUtils;
 import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.toolkit.db.ContextProperties;
@@ -17,7 +16,7 @@ import java.util.*;
  * Created by Razvan.Ionescu on 3/2/2015.
  */
 @Configuration
-@ComponentScan(basePackages = {"ro.croco.integration.service", "ro.croco.integration.config"})
+@ComponentScan(basePackages = {"integration.service", "integration.config"})
 public class JdbcConfig{
 
     private static final String PROPERTIES_FILE_SUFFIX = ".properties";
@@ -86,12 +85,6 @@ public class JdbcConfig{
     public JdbcConfig() throws IOException{
         this.dbContext = loadConfigFileContext("C:\\TeamnetProjects\\DMS-UTILS\\is-db.properties");
     }
-
-//    @Bean
-//    public JdbcTemplate jdbcTemplate(){
-//        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-//        return jdbcTemplate;
-//    }
 
     @Bean(name="syncRequestDataSource")
     public DataSource registerSyncRequestDataSource(){

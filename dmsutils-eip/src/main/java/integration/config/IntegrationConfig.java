@@ -8,6 +8,6 @@ import org.springframework.context.annotation.ImportResource;
  */
 @Configuration
 //@ImportResource(value = {"classpath*:META-INF/integration/applicationContext.xml"})
-@ImportResource(value = {"classpath*:META-INF/integration/jmsContext.xml"})
+@ImportResource(value = {"classpath*:META-INF/integration/jdbcContext.xml"})
 public class IntegrationConfig {
 }

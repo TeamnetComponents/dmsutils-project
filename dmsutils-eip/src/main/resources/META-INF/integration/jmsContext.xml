@@ -12,60 +12,60 @@
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
        http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.0.xsd">
 
-    <!--<int:poller id="defaultPoller" default="true" fixed-rate="15000"/>-->
+    <int:poller id="defaultPoller" default="true" fixed-rate="15000"/>
 
-    <!--&lt;!&ndash;Channels for Case 1: storeDocument&ndash;&gt;-->
-    <!--<int:channel id="storeDocumentRouteChannel"/>-->
-    <!--<int:channel id="storeDocumentGetFromJcrOut"/>-->
-    <!--<int:channel id="storeDocumentSaveInCmisOut"/>-->
-    <!--<int:channel id="storeDocumentReplySent"/>-->
+    <!--Channels for Case 1: storeDocument-->
+    <int:channel id="storeDocumentRouteChannel"/>
+    <int:channel id="storeDocumentGetFromJcrOut"/>
+    <int:channel id="storeDocumentSaveInCmisOut"/>
+    <int:channel id="storeDocumentReplySent"/>
 
-    <!--&lt;!&ndash;Channels for Case 2: existsDocument&ndash;&gt;-->
-    <!--<int:channel id="existsDocumentRouteChannel"/>-->
-    <!--<int:channel id="existsDocumentReplySent"/>-->
+    <!--Channels for Case 2: existsDocument-->
+    <int:channel id="existsDocumentRouteChannel"/>
+    <int:channel id="existsDocumentReplySent"/>
 
-    <!--&lt;!&ndash;Channels for Case 3: downloadDocument&ndash;&gt;-->
-    <!--<int:channel id="downloadDocumentRouteChannel"/>-->
-    <!--<int:channel id="downloadDocumentReplySent"/>-->
+    <!--Channels for Case 3: downloadDocument-->
+    <int:channel id="downloadDocumentRouteChannel"/>
+    <int:channel id="downloadDocumentReplySent"/>
 
-    <!--<int:channel id="queueChannel">-->
-        <!--<int:queue/>-->
-    <!--</int:channel>-->
-    <!--<jms:inbound-channel-adapter id="inboundAdapter" destination="queue" channel="queueChannel">-->
-        <!--<int:poller ref="defaultPoller"/>-->
-    <!--</jms:inbound-channel-adapter>-->
+    <int:channel id="queueChannel">
+        <int:queue/>
+    </int:channel>
+    <jms:inbound-channel-adapter id="inboundAdapter" destination="queue" channel="queueChannel">
+        <int:poller ref="defaultPoller"/>
+    </jms:inbound-channel-adapter>
 
-    <!--<int:channel id="queueChannelHeaderEnriched"/>-->
-    <!--<int:header-enricher input-channel="queueChannel" output-channel="queueChannelHeaderEnriched">-->
-        <!--<int:header name="messagePayload" expression="payload"/>-->
-        <!--&lt;!&ndash;<int:header name="messageHeaders" expression="headers"/>&ndash;&gt;-->
-    <!--</int:header-enricher>-->
+    <int:channel id="queueChannelHeaderEnriched"/>
+    <int:header-enricher input-channel="queueChannel" output-channel="queueChannelHeaderEnriched">
+        <int:header name="messagePayload" expression="payload"/>
+        <!--<int:header name="messageHeaders" expression="headers"/>-->
+    </int:header-enricher>
 
-    <!--<bean id="actionRouter" class="ro.croco.integration.router.ActionRouter"/>-->
-    <!--<int:router ref="actionRouter" method="routeForMethod" input-channel="queueChannelHeaderEnriched"/>-->
+    <bean id="actionRouter" class="ro.croco.integration.router.ActionRouter"/>
+    <int:router ref="actionRouter" method="routeForMethod" input-channel="queueChannelHeaderEnriched"/>
 
-    <!--&lt;!&ndash;Case 1: storeDocument&ndash;&gt;-->
-    <!--&lt;!&ndash;    step 1: getDocument from jcr-->
-        <!--step 2: saveDocument in cmis-->
-        <!--step 2': sterg din jcr?-->
-        <!--step 3: return cmis DocumentIdentifier to temporary queue&ndash;&gt;-->
-    <!--&lt;!&ndash;<int:service-activator id="storeDocumentGetFromJcr" ref="jcrService" method="getJcrDocument"-->
-                           <!--input-channel="storeDocumentRouteChannel" output-channel="storeDocumentGetFromJcrOut"/>&ndash;&gt;-->
+    <!--Case 1: storeDocument-->
+    <!--    step 1: getDocument from jcr
+        step 2: saveDocument in cmis
+        step 2': sterg din jcr?
+        step 3: return cmis DocumentIdentifier to temporary queue-->
+    <!--<int:service-activator id="storeDocumentGetFromJcr" ref="jcrService" method="getJcrDocument"
+                           input-channel="storeDocumentRouteChannel" output-channel="storeDocumentGetFromJcrOut"/>-->
 
-    <!--&lt;!&ndash;<int:service-activator id="storeDocumentGetFromJcrOut" ref="cmisService" method="saveCmisDocument"-->
-                           <!--input-channel="storeDocumentGetFromJcrOut" output-channel="storeDocumentSaveInCmisOut"/>&ndash;&gt;-->
+    <!--<int:service-activator id="storeDocumentGetFromJcrOut" ref="cmisService" method="saveCmisDocument"
+                           input-channel="storeDocumentGetFromJcrOut" output-channel="storeDocumentSaveInCmisOut"/>-->
 
-  <!--&lt;!&ndash;  <int:service-activator id="storeDocumentSaveInCmisOut" ref="jmsService" method="sendToQueue"-->
-                           <!--input-channel="storeDocumentSaveInCmisOut" output-channel="storeDocumentReplySent"/>&ndash;&gt;-->
+  <!--  <int:service-activator id="storeDocumentSaveInCmisOut" ref="jmsService" method="sendToQueue"
+                           input-channel="storeDocumentSaveInCmisOut" output-channel="storeDocumentReplySent"/>-->
 
-    <!--<int:service-activator id="storeDocumentSA" ref="jmsService" method="processMessageStore"-->
-                           <!--input-channel="storeDocumentRouteChannel" output-channel="storeDocumentReplySent"/>-->
+    <int:service-activator id="storeDocumentSA" ref="jmsService" method="processMessageStore"
+                           input-channel="storeDocumentRouteChannel" output-channel="storeDocumentReplySent"/>
 
-    <!--<int:service-activator id="existsDocumentSA" ref="jmsService" method="processMessageExists"-->
-                           <!--input-channel="existsDocumentRouteChannel" output-channel="existsDocumentReplySent"/>-->
+    <int:service-activator id="existsDocumentSA" ref="jmsService" method="processMessageExists"
+                           input-channel="existsDocumentRouteChannel" output-channel="existsDocumentReplySent"/>
 
-    <!--<int:service-activator id="downloadDocumentSA" ref="jmsService" method="processMessageDownload"-->
-                           <!--input-channel="downloadDocumentRouteChannel" output-channel="downloadDocumentReplySent"/>-->
+    <int:service-activator id="downloadDocumentSA" ref="jmsService" method="processMessageDownload"
+                           input-channel="downloadDocumentRouteChannel" output-channel="downloadDocumentReplySent"/>
 
 
 

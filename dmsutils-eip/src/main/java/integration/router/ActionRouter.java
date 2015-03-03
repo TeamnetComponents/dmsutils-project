@@ -1,5 +1,6 @@
 package integration.router;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageStructure;
 
@@ -8,6 +9,7 @@ import ro.croco.integration.dms.toolkit.jms.JmsMessageStructure;
 /**
  * Created by hanna.botar on 7/10/2014.
  */
+@Configuration
 public class ActionRouter {
 
     private static final String SUFFIX = "RouteChannel";

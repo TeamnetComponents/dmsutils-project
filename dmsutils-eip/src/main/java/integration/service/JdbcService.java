@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 public class JdbcService {
 
     public void processMessage(Message message){
-
+        System.out.println(message.toString());
     }
 }
