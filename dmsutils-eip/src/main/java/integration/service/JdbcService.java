@@ -1,7 +1,11 @@
 package integration.service;
 
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Service;
+import ro.croco.integration.dms.toolkit.StoreServiceMessage;
+import ro.croco.integration.dms.toolkit.db.StoreServiceMessageDb;
+import java.util.List;
 
 /**
  * Created by Razvan.Ionescu on 3/2/2015.
@@ -9,7 +13,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class JdbcService {
 
-    public void processMessage(Message message){
-        System.out.println(message.toString());
+    public  Message<List<StoreServiceMessage>> inspectResponse(final Message<List<StoreServiceMessage>> message){
+        System.out.println("Response = " + message.getPayload());
+        return message;
+    }
+
+    public  Message<List<StoreServiceMessage>> processRequest(final Message<List<StoreServiceMessage>> message){
+        System.out.println("Request = " + message.getPayload());
+
+        Message<List<StoreServiceMessage>> responseMessage = new Message<List<StoreServiceMessage>>() {
+            @Override
+            public MessageHeaders getHeaders(){
+                return null;
+            }
+
+            @Override
+            public List<StoreServiceMessage> getPayload() {
+                return message.getPayload();
+            }
+        };
+        return responseMessage;
     }
 }

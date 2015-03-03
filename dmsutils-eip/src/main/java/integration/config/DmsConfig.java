@@ -22,8 +22,7 @@ public class DmsConfig {
 //    private static final String jcrConfigFile = "jcr";
 
     @Bean(name = "cmisStoreService")
-    public StoreService cmisStoreService()  {
-        System.out.println("suntem aici");
+    public StoreService cmisStoreService(){
 //        CmisProperties cmisProperties = new CmisProperties();
 //        cmisProperties.setUrl("http://sol-w2k8-04:8080/elo-cmis-server/browser");
 //        cmisProperties.setRepositoryId("sol-w2k8-04_elo2");

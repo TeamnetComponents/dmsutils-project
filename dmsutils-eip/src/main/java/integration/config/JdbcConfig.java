@@ -93,6 +93,7 @@ public class JdbcConfig{
         System.out.println("ConnectionName from file = " + connectionName);
         DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
         System.out.println("after1");
+        System.out.println("DataSource is null ? " + dataSource == null);
         return dataSource;
     }
 
@@ -102,6 +103,7 @@ public class JdbcConfig{
         String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
         DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
         System.out.println("after2");
+        System.out.println("DataSource is null ? " + dataSource == null);
         return dataSource;
     }
 }
