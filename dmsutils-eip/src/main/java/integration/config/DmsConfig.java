@@ -15,26 +15,53 @@ import java.io.IOException;
 @Configuration
 public class DmsConfig {
 
+    public DmsConfig(){
+    }
+
 //    private static final String cmisConfigFile = "cmis";
 //    private static final String jcrConfigFile = "jcr";
 
     @Bean(name = "cmisStoreService")
-    public StoreService cmisStoreService() throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
-        CmisProperties cmisProperties = new CmisProperties();
+    public StoreService cmisStoreService()  {
+        System.out.println("suntem aici");
+//        CmisProperties cmisProperties = new CmisProperties();
 //        cmisProperties.setUrl("http://sol-w2k8-04:8080/elo-cmis-server/browser");
 //        cmisProperties.setRepositoryId("sol-w2k8-04_elo2");
-
-        StoreServiceFactory ssf = new StoreServiceFactory(cmisProperties.getProperties());
-        return ssf.getService();
+//
+//        StoreServiceFactory ssf = new StoreServiceFactory(cmisProperties.getProperties());
+//        try {
+//            return ssf.getService();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return null;
     }
 
     @Bean(name = "jcrStoreService")
-    public StoreService jcrStoreService() throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
-        JcrProperties jcrProperties = new JcrProperties();
-//        jcrProperties.setConnectionType(JcrProperties.ConnectionTypes.CONN_LOCAL);
-//        jcrProperties.setLocalConfigFile("D:/JcrRepo/repository.xml");
-        StoreServiceFactory ssf = new StoreServiceFactory(jcrProperties.getProperties());
-        return ssf.getService();
+    public StoreService jcrStoreService() {
+//        System.out.println("suntem aici2");
+//        JcrProperties jcrProperties = new JcrProperties();
+////        jcrProperties.setConnectionType(JcrProperties.ConnectionTypes.CONN_LOCAL);
+////        jcrProperties.setLocalConfigFile("D:/JcrRepo/repository.xml");
+//        StoreServiceFactory ssf = new StoreServiceFactory(jcrProperties.getProperties());
+//        try {
+//            return ssf.getService();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return null;
     }
 
 }

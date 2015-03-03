@@ -11,7 +11,6 @@ import ro.croco.integration.dms.toolkit.db.QueueConfigurationResolver;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -39,7 +38,7 @@ public class JdbcConfig{
         FileUtils fileUtils = (contextName.contains(FileUtils.getFileUtilsOS().getPathDelimiter())) ? FileUtils.getFileUtilsOS() : FileUtils.getFileUtilsDMS();
         String pathName = fileUtils.getParentFolderPathName(contextName);
         String contextShortName = fileUtils.getFileName(contextName);
-        contextShortName = contextShortName.substring(0, contextShortName.length() - PROPERTIES_FILE_SUFFIX.length());
+        contextShortName = contextShortName.substring(0,contextShortName.length() - PROPERTIES_FILE_SUFFIX.length());
 
         List<String> pathList = new ArrayList<String>();
         if(!pathName.equals(fileUtils.getRootPath()))
@@ -51,6 +50,7 @@ public class JdbcConfig{
 
         Properties context = null;
         for(String path : pathList){
+            System.out.println(path);
             try{
                 String configurationFilePathName = contextShortName;
                 if (path != null)
@@ -64,6 +64,7 @@ public class JdbcConfig{
         }
 
         for(String path : pathList){
+            System.out.println(path);
             try{
                 String configurationFilePathName = contextShortName;
                 if (path != null)
@@ -75,6 +76,7 @@ public class JdbcConfig{
             if(context != null)
                 return context;
         }
+
         if(context == null)
             throw new RuntimeException("Unable to find configuration for context <" + contextShortName + "> .");
 
@@ -85,19 +87,28 @@ public class JdbcConfig{
         this.dbContext = loadConfigFileContext("C:\\TeamnetProjects\\DMS-UTILS\\is-db.properties");
     }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate(){
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        return jdbcTemplate;
-    }
+//    @Bean
+//    public JdbcTemplate jdbcTemplate(){
+//        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+//        return jdbcTemplate;
+//    }
 
     @Bean(name="syncRequestDataSource")
-    public DataSource registerSnycRequestDataSource(){
-        return DatabaseUtils.getDataSource(this.dbContext,QueueConfigurationResolver.getConnectionName(this.dbContext,ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE));
+    public DataSource registerSyncRequestDataSource(){
+        System.out.println("before1");
+        String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE));
+        System.out.println("ConnectionName from file = " + connectionName);
+        DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
+        System.out.println("after1");
+        return dataSource;
     }
 
     @Bean(name="syncResponseDataSource")
     public DataSource registerSyncResponseDataSource(){
-        return DatabaseUtils.getDataSource(this.dbContext,QueueConfigurationResolver.getConnectionName(this.dbContext,ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
+        System.out.println("before2");
+        String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
+        DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
+        System.out.println("after2");
+        return dataSource;
     }
 }

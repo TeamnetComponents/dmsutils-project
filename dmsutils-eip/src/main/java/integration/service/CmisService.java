@@ -22,7 +22,6 @@ public class CmisService implements DmsService {
     @Qualifier("cmisStoreService")
     StoreService cmisStoreService;
 
-
     @Override
     public DocumentStream downloadDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
         return cmisStoreService.downloadDocument(storeContext,documentIdentifier);

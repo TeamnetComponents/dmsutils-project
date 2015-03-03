@@ -75,7 +75,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
+                <scope>compile</scope>
             </dependency>
 
             <dependency>
@@ -96,6 +96,11 @@
             <dependency>
                 <groupId>DmsUtils</groupId>
                 <artifactId>dmsutils-store-service-jcr</artifactId>
+                <version>1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>DmsUtils</groupId>
+                <artifactId>dmsutils-integration-service-db</artifactId>
                 <version>1.0</version>
             </dependency>
             <dependency>

@@ -49,51 +49,54 @@ public class JmsConfig {
 
     @Bean(name = "connectionFactory")
     public JndiObjectFactoryBean connectionFactory() {
-        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
-        jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF1");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoQCF");
-
-        // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF");
-
-        // PROD
-//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
-
-        // TST
-//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
-
-        return jndiObjectFactoryBean;
+//        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+//        jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF");
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF1");
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoQCF");
+//
+//        // PREPROD
+//        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF");
+//
+//        // PROD
+////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+//
+//        // TST
+////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+//
+//        return jndiObjectFactoryBean;
+        return null;
     }
 
     @Bean(name = "queue")
     public JndiObjectFactoryBean queue() {
-        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
-        jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQueueIn");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoQueue");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoHQueue");
-
-        // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue");
-
-        // PROD
-//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
-
-        // TST
-//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
-
-        return jndiObjectFactoryBean;
+//        JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
+//        jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQueueIn");
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoQueue");
+////        jndiObjectFactoryBean.setJndiName("jms/CrocoHQueue");
+//
+//        // PREPROD
+//        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue");
+//
+//        // PROD
+////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
+//
+//        // TST
+////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
+//
+//        return jndiObjectFactoryBean;
+        return null;
     }
 
     @Bean
     @Inject
     public JmsTemplate jmsTemplate() {
-        JmsTemplate jmsTemplate = new JmsTemplate();
-        jmsTemplate.setDefaultDestination((Destination) queue().getObject());
-        jmsTemplate.setConnectionFactory((ConnectionFactory) connectionFactory().getObject());
-        return jmsTemplate;
+//        JmsTemplate jmsTemplate = new JmsTemplate();
+//        jmsTemplate.setDefaultDestination((Destination) queue().getObject());
+//        jmsTemplate.setConnectionFactory((ConnectionFactory) connectionFactory().getObject());
+//        return jmsTemplate;
+        return null;
     }
 
     /*@Bean
