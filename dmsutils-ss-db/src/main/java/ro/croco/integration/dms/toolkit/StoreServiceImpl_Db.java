@@ -11,6 +11,7 @@ import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.V
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -24,12 +25,15 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
 
     private static final String FUNCTION_IDENTIFIER = "[StoreServiceImpl_Db] ";
 
+    private StoreServiceSessionImpl_Db uniqueSession;
+
    @Override
    public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
         Map<String,Object> additInfo = new HashMap<String,Object>();
         additInfo.put("inputStream",inputStream);
         additInfo.put("allowCreatePath",allowCreatePath);
         additInfo.put("versioningType",versioningType);
+        additInfo.put("context",this.context);
 
         if(versioningType.equals(VersioningType.NONE))
             return new UnversionedStoreDocument(this.openSession(storeContext)).process(documentInfo,additInfo);
@@ -59,11 +63,12 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     public void __init(Properties context) throws IOException {
         super.__init(context);
         validator.validate(context);
+        uniqueSession = new StoreServiceSessionImpl_Db(context);
     }
 
     @Override
     public StoreServiceSessionImpl_Db openSession(StoreContext storeContext) {
-        return new StoreServiceSessionImpl_Db(this.getContext(),storeContext);
+        return uniqueSession;
     }
 
     @Override
@@ -73,12 +78,21 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     }
 
     @Override
-    protected ObjectInfo[] listFolderContent(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier, boolean includeInfo, ObjectBaseType... objectBaseTypes) {
+    protected ObjectInfo[] listFolderContent(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier, boolean includeInfo, ObjectBaseType... objectBaseTypes){
         return new ObjectInfo[0];
     }
 
     @Override
-    protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier) {
+    protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier){
         return null;
+    }
+
+    public static  DocumentIdentifier constructDocumentIdentifier(String id,String path,String version,String storeServiceName){
+        DocumentIdentifier identifier = new DocumentIdentifier();
+        identifier.setId(id);
+        identifier.setPath(path);
+        identifier.setVersion(version);
+        identifier.setStoreServiceName(storeServiceName);
+        return identifier;
     }
 }

@@ -41,6 +41,16 @@
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-integration</artifactId>
         </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-db</artifactId>
+        </dependency>
+
+
 
         <dependency>
             <groupId>org.apache.jmeter</groupId>

@@ -2,6 +2,7 @@ package ro.croco.integration.dms.toolkit.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
+import ro.croco.integration.dms.commons.exceptions.TimeoutException;
 import ro.croco.integration.dms.toolkit.StoreServiceMessage;
 import java.io.IOException;
 import java.sql.Connection;
@@ -37,13 +38,24 @@ public class SyncFrontIntegrationWorker_DB {
             this.dbMessage = dbMessage;
         }
         catch(SQLException sqlEx){
-            try {
+            try{
                 connection.rollback();
             }
-            catch (SQLException rollBackEx) {
+            catch(SQLException rollBackEx) {
                 throw new StoreServiceException(rollBackEx);
             }
             throw new StoreServiceException(sqlEx);
+        }
+        finally{
+            if(connection != null){
+                try{
+                    connection.close();
+                }
+                catch(SQLException connCloseEx){
+
+                }
+                connection = null;
+            }
         }
     }
 
@@ -71,9 +83,11 @@ public class SyncFrontIntegrationWorker_DB {
                 cummulatedTime += (System.currentTimeMillis() - iterationStartTime);
                 System.out.println("Time slept until current iteration : " + cummulatedTime);
             }
-            if(response != null)
+            if(response != null){
                 connection.commit();
-            return response;
+                return response;
+            }
+            throw new TimeoutException("Could not get a proper response within time interval specified.");
         }
         catch(SQLException sqlEx){
             try{
@@ -87,6 +101,17 @@ public class SyncFrontIntegrationWorker_DB {
         }
         catch (InterruptedException interruptedEx) {
             throw new StoreServiceException(interruptedEx);
+        }
+        finally{
+            if(connection != null){
+                try{
+                    connection.close();
+                }
+                catch(SQLException connCloseEx){
+
+                }
+                connection = null;
+            }
         }
     }
 

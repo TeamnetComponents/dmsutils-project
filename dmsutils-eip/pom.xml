@@ -20,6 +20,11 @@
             <id>Maven Central</id>
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
+        <repository>
+            <id>tni-hq-artifact</id>
+            <name>tni-hq-artifact-releases</name>
+            <url>http://tni-hq-artifactory/tn-components</url>
+        </repository>
     </repositories>
 
     <artifactId>dmsutils-eip</artifactId>
@@ -197,6 +202,7 @@
             <artifactId>sqljdbc4</artifactId>
             <version>4.0</version>
         </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>

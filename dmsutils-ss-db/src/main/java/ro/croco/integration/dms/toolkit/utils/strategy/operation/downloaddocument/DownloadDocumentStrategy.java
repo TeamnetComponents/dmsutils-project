@@ -43,10 +43,19 @@ public class DownloadDocumentStrategy extends DocumentOperationStrategy{
     }
 
     private DocumentStream retrieveStreamByPath() throws SQLException{
-        String path = identifier.getPath().split("_")[0];
-        String name = identifier.getPath().split("_")[1];
+        String path = null;
+        String name = null;
+        int lastPathDelimiterIndex = identifier.getPath().lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
 
-        int lastPathDelimiterIndex = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
+        if(lastPathDelimiterIndex == 0){
+            path = FileUtils.getFileUtilsDMS().getRootPath();
+            name = identifier.getPath().substring(1);
+        }
+        else{
+            path = identifier.getPath().substring(0,lastPathDelimiterIndex);
+            name = identifier.getPath().substring(lastPathDelimiterIndex + 1);
+        }
+
         if(lastPathDelimiterIndex > 0 && lastPathDelimiterIndex == path.length() - 1)
             path = path.substring(0,lastPathDelimiterIndex);
 
@@ -89,6 +98,17 @@ public class DownloadDocumentStrategy extends DocumentOperationStrategy{
         }
         catch(SQLException sqlEx){
             throw new StoreServiceException(sqlEx);
+        }
+        finally{
+            if(connection != null){
+                try{
+                    connection.close();
+                }
+                catch (SQLException connCloseEx){
+
+                }
+                connection = null;
+            }
         }
     }
 }
