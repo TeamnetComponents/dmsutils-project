@@ -25,6 +25,8 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
 
     private static final String FUNCTION_IDENTIFIER = "[StoreServiceImpl_Db] ";
 
+    private StoreServiceSessionImpl_Db uniqueSession;
+
    @Override
    public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
         Map<String,Object> additInfo = new HashMap<String,Object>();
@@ -61,11 +63,12 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     public void __init(Properties context) throws IOException {
         super.__init(context);
         validator.validate(context);
+        uniqueSession = new StoreServiceSessionImpl_Db(context);
     }
 
     @Override
     public StoreServiceSessionImpl_Db openSession(StoreContext storeContext) {
-        return new StoreServiceSessionImpl_Db(this.getContext(),storeContext);
+        return uniqueSession;
     }
 
     @Override

@@ -11,96 +11,89 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * Created by Lucian.Dragomir on 2/17/2015.
  */
-public class StoreServiceSessionImpl_Db implements StoreServiceSession {
 
+public class StoreServiceSessionImpl_Db implements StoreServiceSession{
     public static final String CONNECTION_TYPE_LOCAL = "local";
     public static final String CONNECTION_TYPE_JNDI = "jndi";
 
     private Properties context;
-    private Connection connection;
     private DataSource dataSource;
-    private StoreContext storeContext;
+    private List<Connection> connectionList = new LinkedList<Connection>();
 
     public Properties getContext() {
         return context;
     }
 
-    public StoreServiceSessionImpl_Db(Properties context,StoreContext storeContext){
+    public StoreServiceSessionImpl_Db(Properties context){
         this.context = context;
-        this.storeContext = storeContext;
-    }
-
-    public StoreServiceSessionImpl_Db(Properties context,StoreContext storeContext,DataSource dataSource){
-        this(context,storeContext);
-        this.dataSource = dataSource;
+        configureDataSource();
     }
 
     private void configureDataSource(){
-        if(dataSource == null){
-            String connectionType = (String)this.context.get(ContextProperties.Required.CONNECTION_TYPE);
-            System.out.println("\nConfiguring dataSource using : ");
+        String connectionType = (String)this.context.get(ContextProperties.Required.CONNECTION_TYPE);
+        System.out.println("\nConfiguring dataSource using : ");
+        if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)){
+            System.out.println("\tLocal dataSource.");
+            System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_DRIVER));
+            System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_URL));
+            System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_USER));
+            System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_PASSWORD));
 
-            if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)){
-                System.out.println("\tLocal dataSource.");
-                System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_DRIVER));
-                System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_URL));
-                System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_USER));
-                System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_PASSWORD));
-
-                BasicDataSource basicDataSource = new BasicDataSource();
-                basicDataSource.setDriverClassName((String) this.context.get(ContextProperties.Required.CONNECTION_DRIVER));
-                basicDataSource.setUrl((String) this.context.get(ContextProperties.Required.CONNECTION_URL));
-                basicDataSource.setUsername((String) this.context.get(ContextProperties.Required.CONNECTION_USER));
-                basicDataSource.setPassword((String) this.context.get(ContextProperties.Required.CONNECTION_PASSWORD));
-                dataSource = basicDataSource;
-            }
-            else if(CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)){
-                try {
-                    System.out.println("\tJndi dataSource.");
-                    System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_URL));
-                    Context initContext = new InitialContext();
-                    dataSource = (DataSource) initContext.lookup((String)this.context.get(ContextProperties.Required.CONNECTION_URL));
-                }
-                catch (NamingException e) {
-                    e.printStackTrace();
-                    throw new StoreServiceException(e);
-                }
-            }
-            else throw new StoreServiceNotDefinedException("The connection is not defined.");
+            BasicDataSource basicDataSource = new BasicDataSource();
+            basicDataSource.setDriverClassName((String) this.context.get(ContextProperties.Required.CONNECTION_DRIVER));
+            basicDataSource.setUrl((String) this.context.get(ContextProperties.Required.CONNECTION_URL));
+            basicDataSource.setUsername((String) this.context.get(ContextProperties.Required.CONNECTION_USER));
+            basicDataSource.setPassword((String) this.context.get(ContextProperties.Required.CONNECTION_PASSWORD));
+            dataSource = basicDataSource;
         }
+        else if(CONNECTION_TYPE_JNDI.equalsIgnoreCase(connectionType)){
+            try {
+                System.out.println("\tJndi dataSource.");
+                System.out.println("\t" + this.context.get(ContextProperties.Required.CONNECTION_URL));
+                Context initContext = new InitialContext();
+                dataSource = (DataSource) initContext.lookup((String)this.context.get(ContextProperties.Required.CONNECTION_URL));
+            }
+            catch (NamingException e) {
+                e.printStackTrace();
+                throw new StoreServiceException(e);
+            }
+        }
+        else throw new StoreServiceNotDefinedException("The connection is not defined.");
     }
 
     public Connection getConnection(){
-        try {
-            configureDataSource();
-            this.connection = dataSource.getConnection();
-            return this.connection;
+        try{
+            connectionList.add(dataSource.getConnection());
+            return connectionList.get(connectionList.size() - 1);
         }
-        catch(SQLException e) {
+        catch(SQLException e){
             this.dataSource = null;
-            e.printStackTrace();
             throw new StoreServiceException(e);
         }
-
     }
 
     @Override
-    public void close() {
-        if(this.connection != null){
-            try {
-                if (!this.connection.isClosed()) {
-                    connection.close();
+    public void close(){
+        while(connectionList.size() > 0){
+            Connection conn = connectionList.get(0);
+            if(conn != null){
+                try{
+                    conn.close();
+                }
+                catch(SQLException e){
+
                 }
             }
-            catch (SQLException e) {
-
-            }
-            this.connection = null;
+            connectionList.remove(0);
         }
+        connectionList = null;
+        dataSource = null;
     }
 }
