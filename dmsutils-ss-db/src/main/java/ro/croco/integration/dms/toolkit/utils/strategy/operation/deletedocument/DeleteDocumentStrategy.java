@@ -58,12 +58,18 @@ public class DeleteDocumentStrategy extends DocumentOperationStrategy{
 
     private RequestIdentifier deleteDocumentByPath()throws SQLException{
         String schema = (String) session.getContext().get(ContextProperties.Optional.CONNECTION_SCHEMA);
-        String path = identifier.getPath().split("_")[0];
-        String name = identifier.getPath().split("_")[1];
+        String path = null;
+        String name = null;
+        int lastPathDelimiterIndex = identifier.getPath().lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
 
-        int lastPathDelimiterIndex = path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter());
-        if(lastPathDelimiterIndex > 0 && lastPathDelimiterIndex == path.length() - 1)
-            path = path.substring(0,lastPathDelimiterIndex);
+        if(lastPathDelimiterIndex == 0){
+            path = FileUtils.getFileUtilsDMS().getRootPath();
+            name = identifier.getPath().substring(1);
+        }
+        else{
+            path = identifier.getPath().substring(0,lastPathDelimiterIndex);
+            name = identifier.getPath().substring(lastPathDelimiterIndex + 1);
+        }
 
         BigDecimal dmObjectId = DBRepository.getDmObjectsIdByPathAndName(connection,schema,path,name);
 
@@ -101,6 +107,17 @@ public class DeleteDocumentStrategy extends DocumentOperationStrategy{
             }
             catch(SQLException rollbackEx){
                 throw new StoreServiceException(rollbackEx);
+            }
+        }
+        finally{
+            if(connection != null){
+                try{
+                    connection.close();
+                }
+                catch(SQLException connCloseEx){
+
+                }
+                connection = null;
             }
         }
     }

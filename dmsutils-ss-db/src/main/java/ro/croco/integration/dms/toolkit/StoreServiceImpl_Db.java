@@ -31,6 +31,7 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
         additInfo.put("inputStream",inputStream);
         additInfo.put("allowCreatePath",allowCreatePath);
         additInfo.put("versioningType",versioningType);
+        additInfo.put("context",this.context);
 
         if(versioningType.equals(VersioningType.NONE))
             return new UnversionedStoreDocument(this.openSession(storeContext)).process(documentInfo,additInfo);
@@ -74,21 +75,21 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     }
 
     @Override
-    protected ObjectInfo[] listFolderContent(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier, boolean includeInfo, ObjectBaseType... objectBaseTypes) {
+    protected ObjectInfo[] listFolderContent(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier, boolean includeInfo, ObjectBaseType... objectBaseTypes){
         return new ObjectInfo[0];
     }
 
     @Override
-    protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier) {
+    protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier){
         return null;
     }
 
-
-    public static  DocumentIdentifier constructDocumentIdentifier(String id,String path,String version){
+    public static  DocumentIdentifier constructDocumentIdentifier(String id,String path,String version,String storeServiceName){
         DocumentIdentifier identifier = new DocumentIdentifier();
         identifier.setId(id);
         identifier.setPath(path);
         identifier.setVersion(version);
+        identifier.setStoreServiceName(storeServiceName);
         return identifier;
     }
 }

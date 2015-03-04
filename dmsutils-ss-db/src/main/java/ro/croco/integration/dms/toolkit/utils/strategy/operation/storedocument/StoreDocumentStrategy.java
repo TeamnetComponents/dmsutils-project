@@ -11,6 +11,7 @@ import ro.croco.integration.dms.toolkit.utils.strategy.operation.DocumentOperati
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by battamir.sugarjav on 2/19/2015.
@@ -72,12 +73,24 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy {
             DocumentIdentifier newDocumentIdentifer = delegatedProcess();
             connection.commit();
             return newDocumentIdentifer;
-        } catch (SQLException sqlEx) {
+        }
+        catch (SQLException sqlEx){
             try {
                 connection.rollback();
                 throw new StoreServiceException(sqlEx);
             } catch (SQLException rollBackEx) {
                 throw new StoreServiceException(rollBackEx);
+            }
+        }
+        finally{
+            if(connection != null){
+                try{
+                    connection.close();
+                }
+                catch (SQLException connCloseEx){
+
+                }
+                connection = null;
             }
         }
     }
@@ -87,14 +100,13 @@ public abstract class StoreDocumentStrategy extends DocumentOperationStrategy {
 //        DocumentIdentifier identifier = new DocumentIdentifier();
 //        identifier.setId(dmObjectsId + "_" + dmVersionsId);
 //        identifier.setPath(documentInfo.getParentIdentifier().getPath() + "_" + documentInfo.getName());
-//        identifier.setVersion(version);
-//
+//        identifier.setVersion(version);/
 //        return identifier;
 
         return StoreServiceImpl_Db.constructDocumentIdentifier(
                 dmObjectsId + "_" + dmVersionsId,
-                documentInfo.getParentIdentifier().getPath() + "_" + documentInfo.getName(),
-                version);
+                (documentInfo.getParentIdentifier().getPath().length() == FileUtils.getFileUtilsDMS().getRootPath().length() ? "" : FileUtils.getFileUtilsDMS().getPathDelimiter()) + documentInfo.getName(),
+                version,((Properties)additInfo.get("context")).getProperty(ContextProperties.Required.INSTANCE_NAME));
     }
 
     protected String getMIMEType(String fileNameWithExtension) {

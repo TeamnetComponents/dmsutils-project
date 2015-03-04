@@ -1,5 +1,6 @@
 package ro.croco.integration.dms.toolkit.utils;
 
+import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 
 import java.math.BigDecimal;
@@ -11,8 +12,8 @@ public abstract class InputValidator {
 
     public static void validateIdentifierPath(String path,String functionIdentifier){
         if(path != null){
-            if(path.split("_").length != 2)
-                throw new StoreServiceException(functionIdentifier + "Document path identifier is not correctly provided: X_Y.");
+            if(path.lastIndexOf(FileUtils.getFileUtilsDMS().getPathDelimiter()) == -1)
+                throw new StoreServiceException(functionIdentifier + "Document path identifier is not correctly provided: X/Y.");
         }
     }
 
