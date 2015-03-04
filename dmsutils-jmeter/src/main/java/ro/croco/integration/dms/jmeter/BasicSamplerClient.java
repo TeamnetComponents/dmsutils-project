@@ -85,7 +85,7 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
 
             DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath(destinationDocumentPathName).build();
             DocumentInfo documentInfo = new DocumentInfo(destinationPathName, destinationDocumentPathName, documentType, documentProperties);
-            DocumentIdentifier documentIdentifierStored = storeService.storeDocument(storeContext, documentInfo, inputStream, true, VersioningType.MINOR);
+            DocumentIdentifier documentIdentifierStored = storeService.storeDocument(storeContext, documentInfo, inputStream, true, VersioningType.MAJOR);
             return documentIdentifierStored;
         } catch (Exception e) {
             throw e;
@@ -217,8 +217,11 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms.properties");
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-local.properties");
         //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-sibiac.properties");
-        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms-prod.properties");
-        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-pos-fo-staging.properties");
+        //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-jms-prod.properties");
+        //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-pos-fo-staging.properties");
+        //storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\siamc-ss-integration.properties");
+        storeService = getStoreService("C:\\__JAVA\\jmeter\\test\\dmsutils\\siamc-ss-fo-db.properties");
+
 
 
 //        StoreServiceImpl_Integration storeServiceImpl_integration = (StoreServiceImpl_Integration) storeService;
@@ -233,7 +236,7 @@ public abstract class BasicSamplerClient extends AbstractJavaSamplerClient {
 
 
         StoreContext storeContext = StoreContext.builder()
-                .communicationType(StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS)
+                .communicationType(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS)
                         //.loginAs("Mihai.Viscea")
                 .build();
         String destinationPathNameRoot = "/JMeter/upload3";

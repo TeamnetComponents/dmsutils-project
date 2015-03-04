@@ -11,6 +11,7 @@ import ro.croco.integration.dms.toolkit.utils.strategy.operation.storedocument.V
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -80,5 +81,14 @@ public class StoreServiceImpl_Db extends StoreServiceImpl_Abstract<StoreServiceS
     @Override
     protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Db storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier) {
         return null;
+    }
+
+
+    public static  DocumentIdentifier constructDocumentIdentifier(String id,String path,String version){
+        DocumentIdentifier identifier = new DocumentIdentifier();
+        identifier.setId(id);
+        identifier.setPath(path);
+        identifier.setVersion(version);
+        return identifier;
     }
 }
