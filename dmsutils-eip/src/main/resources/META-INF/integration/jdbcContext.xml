@@ -20,7 +20,8 @@
     <int:poller id="poller" fixed-rate="5000"/>
 
     <int:channel id="syncRequestChannel"/>
-    <int:channel id="intermediateChannel"/>
+    <int:channel id="transformerInChannel"/>
+    <int:channel id="transformerOutChannel"/>
     <int:channel id="syncResponseChannel"/>
 
     <jdbc:inbound-channel-adapter id="inboundAdapter"
@@ -30,32 +31,24 @@
         <int:poller ref="poller"/>
     </jdbc:inbound-channel-adapter>
 
-  <!--  <int:service-activator id="channelLinkingSA" ref="jdbcService" method="processRequest"
-                           input-channel="syncRequestChannel" output-channel="intermediateChannel"/>
-
-    <int:service-activator id="responseChannelSA" ref="jdbcService" method="inspectResponse"
-                           input-channel="intermediateChannel" output-channel="syncResponseChannel"/>-->
-
     <int:service-activator id="channelLinkingSA" ref="jdbcService" method="processSingleRequest"
-                           input-channel="syncRequestChannel" output-channel="intermediateChannel"/>
+                           input-channel="syncRequestChannel" output-channel="transformerInChannel"/>
+
+    <!--<int:splitter input-channel="splitterInChannel" ref="jdbcMessageSplitter"-->
+                      <!--output-channel="splitterOutChannel"/>-->
+    <int:transformer id="dbTransformer" ref="jdbcMessageTransformer" input-channel="transformerInChannel"
+                     method="toStoreServiceMessage" output-channel="transformerOutChannel"/>
+    
 
     <int:service-activator id="responseChannelSA" ref="jdbcService" method="inspectSingleResponse"
-                           input-channel="intermediateChannel" output-channel="syncResponseChannel"/>
-
-
-    <!--<jdbc:outbound-gateway id="outboundAdapter" data-source="syncResponseDataSource" request-channel="syncResponseChannel" reply-channel="outChannel"
-
-                                   update="insert into DM_INTEGRATION_RESPONSE(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
-                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
-                                   query="select * from DM_INTEGRATION_REQUEST"
-                                   request-sql-parameter-source-factory="spelSource"
-                                    />-->
+                           input-channel="splitterOutChannel" output-channel="syncResponseChannel"/>
+    
     <jdbc:outbound-channel-adapter id="outboundAdapter" data-source="syncResponseDataSource" channel="syncResponseChannel"
                                    query="insert into DM_INTEGRATION_RESPONSE(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
                                                                              (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
                                    sql-parameter-source-factory="spelSource"/>
 
-
+    
     <bean id="spelSource" class="org.springframework.integration.jdbc.ExpressionEvaluatingSqlParameterSourceFactory">
         <property name="parameterExpressions">
             <map>

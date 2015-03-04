@@ -6,6 +6,7 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.stereotype.Service;
 import ro.croco.integration.dms.toolkit.StoreServiceMessage;
 import ro.croco.integration.dms.toolkit.db.StoreServiceMessageDb;
+
 import java.util.List;
 
 /**
@@ -15,34 +16,37 @@ import java.util.List;
 public class JdbcService {
 
     public  Message<List<StoreServiceMessage>> inspectResponse(final Message<List<StoreServiceMessage>> message){
-        System.out.println("Response = " + message.getPayload());
+        //System.out.println("Response = " + message.getPayload());
         return message;
     }
 
     public  Message<StoreServiceMessage> inspectSingleResponse(final Message<StoreServiceMessage> message){
-        System.out.println("Response = " + message.getPayload());
+        //System.out.println("Response = " + message.getPayload());
         return message;
     }
 
-    public  Message<List<StoreServiceMessage>> processRequest(final Message<List<StoreServiceMessage>> message){
-        System.out.println("Request = " + message.getPayload());
+    
+    public  Message<List<StoreServiceMessageDb>> processRequest(final Message<List<StoreServiceMessageDb>> message){
+        System.out.println("\n Request 123 = \n" + message.getPayload());
 
-        Message<List<StoreServiceMessage>> responseMessage = new Message<List<StoreServiceMessage>>() {
+        Message<List<StoreServiceMessageDb>> responseMessage = new Message<List<StoreServiceMessageDb>>() {
             @Override
             public MessageHeaders getHeaders(){
                 return null;
             }
 
             @Override
-            public List<StoreServiceMessage> getPayload() {
+            public List<StoreServiceMessageDb> getPayload() {
+                System.out.println("\n \n Chestia ciudata -?>>>>>>" +  message.getPayload().get(0).getMessageID());
                 return message.getPayload();
             }
         };
+        System.out.println("\n \n Chestia ciudata -?>>>>>>" +  responseMessage.getPayload().get(0).getMessageID());
         return responseMessage;
     }
 
     public  Message<StoreServiceMessage> processSingleRequest(final Message<List<StoreServiceMessage>> message){
-        System.out.println("Request = " + message.getPayload());
+        //System.out.println("Request = " + message.getPayload());
 
         Message<List<StoreServiceMessage>> responseMessage = new Message<List<StoreServiceMessage>>() {
             @Override
