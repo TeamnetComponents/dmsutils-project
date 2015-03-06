@@ -16,8 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class JdbcIntegrationTest{
 
     @Test
-    public void testIntegration() throws Exception {
-        while (true) {
+    public void testIntegration() throws Exception{
+        while(true){
 //            Message message = queueChannel.receive(1000);
 //            if (message != null) {
 //                System.out.println(message);

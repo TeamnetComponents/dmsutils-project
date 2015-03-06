@@ -1,54 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:int="http://www.springframework.org/schema/integration"
-       xmlns:jms="http://www.springframework.org/schema/integration/jms"
        xmlns:jdbc="http://www.springframework.org/schema/integration/jdbc"
-       xmlns:context="http://www.springframework.org/schema/context"
 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
-       http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.0.xsd
-       http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-4.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
-       >
+       http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-4.0.xsd">
 
-    <int:poller id="poller" fixed-rate="5000"/>
-
-    <int:channel id="syncRequestChannel"/>
-    <int:channel id="transformerInChannel"/>
-    <int:channel id="transformerOutChannel"/>
+    <int:poller id="jdbcPoller" fixed-rate="5000"/>
+    <int:channel id="syncRequestBatchChannel"/>
+    <int:channel id="requestBatchSplitterChannel"/>
+    <int:channel id="asyncSingleRequestProcessChannel">
+        <int:dispatcher task-executor="singleRequestProcessExecutor"/>
+    </int:channel>
     <int:channel id="syncResponseChannel"/>
 
     <jdbc:inbound-channel-adapter id="inboundAdapter"
                                   query="select * from DM_INTEGRATION_REQUEST"
                                   data-source="syncRequestDataSource"
-                                  channel="syncRequestChannel">
-        <int:poller ref="poller"/>
+                                  channel="syncRequestBatchChannel">
+        <int:poller ref="jdbcPoller"/>
     </jdbc:inbound-channel-adapter>
 
-    <int:service-activator id="channelLinkingSA" ref="jdbcService" method="processSingleRequest"
-                           input-channel="syncRequestChannel" output-channel="transformerInChannel"/>
+    <int:service-activator id="channelLinkingSA" ref="jdbcService" method="processRequestBatch"
+                           input-channel="syncRequestBatchChannel" output-channel="requestBatchSplitterChannel"/>
 
-    <!--<int:splitter input-channel="splitterInChannel" ref="jdbcMessageSplitter"-->
-                      <!--output-channel="splitterOutChannel"/>-->
-    <int:transformer id="dbTransformer" ref="jdbcMessageTransformer" input-channel="transformerInChannel"
-                     method="toStoreServiceMessage" output-channel="transformerOutChannel"/>
-    
+    <int:splitter ref="requestBatchSplitterSplitter" input-channel="requestBatchSplitterChannel" output-channel="asyncSingleRequestProcessChannel"/>
 
-    <int:service-activator id="responseChannelSA" ref="jdbcService" method="inspectSingleResponse"
-                           input-channel="splitterOutChannel" output-channel="syncResponseChannel"/>
-    
+    <bean id="requestBatchSplitterSplitter" class="integration.service.JdbcMessageListSplitter"/>
+
+    <bean id="singleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
+
+    <int:service-activator id="responseChannelSA" ref="jdbcService" method="singleRequestProcess"
+                           input-channel="asyncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>
+
     <jdbc:outbound-channel-adapter id="outboundAdapter" data-source="syncResponseDataSource" channel="syncResponseChannel"
                                    query="insert into DM_INTEGRATION_RESPONSE(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
                                                                              (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
                                    sql-parameter-source-factory="spelSource"/>
 
-    
     <bean id="spelSource" class="org.springframework.integration.jdbc.ExpressionEvaluatingSqlParameterSourceFactory">
         <property name="parameterExpressions">
             <map>

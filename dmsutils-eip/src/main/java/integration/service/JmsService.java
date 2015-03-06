@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import ro.croco.integration.dms.toolkit.*;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageStructure;
 import ro.croco.integration.dms.toolkit.jms.JmsMessageType;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
@@ -195,7 +194,7 @@ public class JmsService {
         return new GenericMessage(messageStructure);
     }
 
-    public Message processMessageDownload(Message message) {
+    public Message processMessageDownload(Message message){
         Map<String, Object> headers = message.getHeaders();
         Object payload = message.getPayload();
         JmsMessageStructure jmsMessageStructure = (JmsMessageStructure) payload;

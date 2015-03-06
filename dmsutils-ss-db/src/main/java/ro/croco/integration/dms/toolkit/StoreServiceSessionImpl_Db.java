@@ -60,8 +60,7 @@ public class StoreServiceSessionImpl_Db implements StoreServiceSession{
                 Context initContext = new InitialContext();
                 dataSource = (DataSource) initContext.lookup((String)this.context.get(ContextProperties.Required.CONNECTION_URL));
             }
-            catch (NamingException e) {
-                e.printStackTrace();
+            catch(NamingException e){
                 throw new StoreServiceException(e);
             }
         }
