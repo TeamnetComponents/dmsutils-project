@@ -8,38 +8,83 @@
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
        http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-4.0.xsd">
 
-    <int:poller id="jdbcPoller" fixed-rate="5000"/>
+    <int:poller id="jdbcPollerSync" fixed-rate="5000"/>
+    <int:poller id="jdbcPollerAsync" fixed-rate="5000"/>
+
     <int:channel id="syncRequestBatchChannel"/>
-    <int:channel id="requestBatchSplitterChannel"/>
-    <int:channel id="asyncSingleRequestProcessChannel">
-        <int:dispatcher task-executor="singleRequestProcessExecutor"/>
+    <int:channel id="asyncRequestBatchChannel"/>
+
+    <int:channel id="syncRequestBatchSplitterChannel"/>
+    <int:channel id="asyncRequestBatchSplitterChannel"/>
+
+    <int:channel id="syncSingleRequestProcessChannel">
+        <int:dispatcher task-executor="syncSingleRequestProcessExecutor"/>
     </int:channel>
-    <int:channel id="syncResponseChannel"/>
+    <int:channel id="asyncSingleRequestProcessChannel">
+        <int:dispatcher task-executor="asyncSingleRequestProcessExecutor"/>
+    </int:channel>
 
-    <jdbc:inbound-channel-adapter id="inboundAdapter"
-                                  query="select * from DM_INTEGRATION_REQUEST"
-                                  data-source="syncRequestDataSource"
-                                  channel="syncRequestBatchChannel">
-        <int:poller ref="jdbcPoller"/>
-    </jdbc:inbound-channel-adapter>
-
-    <int:service-activator id="channelLinkingSA" ref="jdbcService" method="processRequestBatch"
-                           input-channel="syncRequestBatchChannel" output-channel="requestBatchSplitterChannel"/>
-
-    <int:splitter ref="requestBatchSplitterSplitter" input-channel="requestBatchSplitterChannel" output-channel="asyncSingleRequestProcessChannel"/>
-
-    <bean id="requestBatchSplitterSplitter" class="integration.service.JdbcMessageListSplitter"/>
-
-    <bean id="singleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <bean id="syncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="corePoolSize" value="10"/>
         <property name="queueCapacity" value="100"/>
     </bean>
 
-    <int:service-activator id="responseChannelSA" ref="jdbcService" method="singleRequestProcess"
-                           input-channel="asyncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>
+    <bean id="asyncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="1"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
 
-    <jdbc:outbound-channel-adapter id="outboundAdapter" data-source="syncResponseDataSource" channel="syncResponseChannel"
-                                   query="insert into DM_INTEGRATION_RESPONSE(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
+    <int:channel id="syncResponseChannel"/>
+    <int:channel id="asyncResponseChannel"/>
+
+    <bean class="integration.config.ContextPlaceHolderConfigurer">
+        <property name="location" value="classpath:/config/is-db.properties"></property>
+    </bean>
+
+    <jdbc:inbound-channel-adapter id="inboundAdapterSync"
+                                  query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
+                                  update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
+                                  data-source="syncRequestDataSource"
+                                  channel="syncRequestBatchChannel">
+        <int:poller ref="jdbcPollerSync"/>
+    </jdbc:inbound-channel-adapter>
+
+    <!--update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"-->
+    <!--"and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP <= 100))"-->
+
+    <jdbc:inbound-channel-adapter id="inboundAdapterAsync"
+                                  query="select * from ${asyncRequestQueueTable} where MSG_DESTINATION='${asyncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
+                                  update="update ${asyncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
+                                  data-source="asyncRequestDataSource"
+                                  channel="asyncRequestBatchChannel">
+        <int:poller ref="jdbcPollerAsync"/>
+    </jdbc:inbound-channel-adapter>
+
+    <int:service-activator input-channel="syncRequestBatchChannel" output-channel="syncRequestBatchSplitterChannel"
+                           ref="jdbcService" method="processRequestBatch"/>
+
+    <int:service-activator input-channel="asyncRequestBatchChannel" output-channel="asyncRequestBatchSplitterChannel"
+                           ref="jdbcService" method="processRequestBatch"/>
+
+    <int:splitter ref="syncRequestBatchSplitterProcessor" input-channel="syncRequestBatchSplitterChannel" output-channel="syncSingleRequestProcessChannel"/>
+    <int:splitter ref="asyncRequestBatchSplitterProcessor" input-channel="asyncRequestBatchSplitterChannel" output-channel="asyncSingleRequestProcessChannel"/>
+
+    <bean id="syncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
+    <bean id="asyncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
+
+    <int:service-activator ref="jdbcService" method="singleRequestProcess"
+                           input-channel="syncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>
+
+    <int:service-activator ref="jdbcService" method="singleRequestProcess"
+                           input-channel="asyncSingleRequestProcessChannel" output-channel="asyncResponseChannel"/>
+
+    <jdbc:outbound-channel-adapter id="outboundAdapterSync" data-source="syncResponseDataSource" channel="syncResponseChannel"
+                                   query="insert into ${syncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
+                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
+                                   sql-parameter-source-factory="spelSource"/>
+
+    <jdbc:outbound-channel-adapter id="outboundAdapterAsync" data-source="asyncResponseDataSource" channel="asyncResponseChannel"
+                                   query="insert into ${asyncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
                                                                              (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
                                    sql-parameter-source-factory="spelSource"/>
 

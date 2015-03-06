@@ -79,7 +79,7 @@ public abstract class ServiceFactory_Abstract<T extends InitableService> {
         //add META-INF folder as the last searched folder
         pathList.add("META-INF");
         pathList.add("WEB-INF/classes");
-
+        pathList.add("/resources/config");
 
         if (contextName.endsWith(PROPERTIES_FILE_SUFFIX)) {
             //in case the configurationName ends with .properties it is assumed

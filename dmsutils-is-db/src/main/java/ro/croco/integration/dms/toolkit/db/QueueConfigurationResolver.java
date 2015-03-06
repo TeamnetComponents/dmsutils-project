@@ -22,7 +22,7 @@ public class QueueConfigurationResolver {
 
     private static void verifyExistance(Object evaluated)throws StoreServiceException{
         if(evaluated == null)
-            throw new IntegrationServiceException("[QueueConfigurationResolver] Context does not contain required property.");
+            throw new IntegrationServiceException("[QueueConfigurationResolver] Context does not contain required property : " + evaluated);
     }
 
     public static String getConnectionName(Properties context,String queue)throws IntegrationServiceException{

@@ -3,6 +3,9 @@ package integration.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.elo.ix.client.ActivityProject;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.GenericMessage;
@@ -20,7 +23,7 @@ import java.util.*;
  * Created by Razvan.Ionescu on 3/2/2015.
  */
 @Service
-public class JdbcService{
+public class JdbcService implements ApplicationContextAware{
 
     @Async
     public Message singleRequestProcess(Message message){
@@ -86,5 +89,12 @@ public class JdbcService{
                    }
                };
         return responseMsg;
+    }
+
+    private ApplicationContext jdbcApplicationContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        jdbcApplicationContext = applicationContext;
     }
 }

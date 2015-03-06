@@ -63,7 +63,6 @@ public class DatabaseUtils {
     }
 
     public static DataSource getDataSource(Properties context,String connectionName){
-        System.out.println("ConnectionName = " + connectionName);
         String connectionType = getConnectionType(context, connectionName);
         if (CONNECTION_TYPE_LOCAL.equalsIgnoreCase(connectionType)){
             BasicDataSource basicDataSource = new BasicDataSource();

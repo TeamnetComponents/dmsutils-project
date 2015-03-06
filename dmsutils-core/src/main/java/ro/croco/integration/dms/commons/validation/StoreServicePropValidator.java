@@ -30,7 +30,6 @@ public class StoreServicePropValidator {
             for (Field property : requiredProperties) {
                 if (propertyNotSetOrExist((String) property.get(toInspectClassObj)))
                     throw new StoreServiceValidationException("Property '" + property.get(toInspectClassObj) + "' is missing from file.Please make sure you provide it");
-                System.out.println("\tMandatory Property '" + property.get(toInspectClassObj) + "' has been found - OK");
             }
         }
         catch(IllegalAccessException ex){

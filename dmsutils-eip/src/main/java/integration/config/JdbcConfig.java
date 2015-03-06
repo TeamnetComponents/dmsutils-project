@@ -3,8 +3,13 @@ package integration.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.jdbc.JdbcPollingChannelAdapter;
+import org.springframework.messaging.MessageChannel;
 import ro.croco.integration.dms.commons.DatabaseUtils;
 import ro.croco.integration.dms.commons.FileUtils;
+import ro.croco.integration.dms.toolkit.StoreServiceFactory;
+import ro.croco.integration.dms.toolkit.StoreServiceImpl_Cmis;
+import ro.croco.integration.dms.toolkit.StoreServiceImpl_Db;
 import ro.croco.integration.dms.toolkit.db.ContextProperties;
 import ro.croco.integration.dms.toolkit.db.QueueConfigurationResolver;
 
@@ -86,24 +91,49 @@ public class JdbcConfig{
         this.dbContext = loadConfigFileContext("C:\\TeamnetProjects\\DMS-UTILS\\is-db.properties");
     }
 
+    @Bean(name="ss-local")
+    public StoreServiceImpl_Db registerSSLocal(){
+        try{
+            StoreServiceFactory storeServiceFactory = new StoreServiceFactory("C:\\TeamnetProjects\\DMS-UTILS\\ss-fo-db.properties");
+            return (StoreServiceImpl_Db)storeServiceFactory.getService();
+        }
+        catch(Exception e){
+            throw new RuntimeException("Could not initialize ss-local bean.",e);
+        }
+    }
+
+    @Bean(name="ss-final")
+    public StoreServiceImpl_Cmis registerSSCmis(){
+        try{
+            StoreServiceFactory storeServiceFactory = new StoreServiceFactory("C:\\TeamnetProjects\\DMS-UTILS\\ss-cmis.properties");
+            return (StoreServiceImpl_Cmis)storeServiceFactory.getService();
+        }
+        catch(Exception e){
+            throw new RuntimeException("Could not initialize ss-local bean.",e);
+        }
+    }
+
     @Bean(name="syncRequestDataSource")
     public DataSource registerSyncRequestDataSource(){
-        System.out.println("before1");
         String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE));
-        System.out.println("ConnectionName from file = " + connectionName);
-        DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
-        System.out.println("after1");
-        System.out.println("DataSource is null ? " + dataSource == null);
-        return dataSource;
+        return DatabaseUtils.getDataSource(this.dbContext,connectionName);
+    }
+
+    @Bean(name="asyncRequestDataSource")
+    public DataSource registerAsyncRequestDataSource(){
+        String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_ASYNC_REQUEST_QUEUE));
+        return DatabaseUtils.getDataSource(this.dbContext,connectionName);
     }
 
     @Bean(name="syncResponseDataSource")
     public DataSource registerSyncResponseDataSource(){
-        System.out.println("before2");
         String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
-        DataSource dataSource = DatabaseUtils.getDataSource(this.dbContext,connectionName);
-        System.out.println("after2");
-        System.out.println("DataSource is null ? " + dataSource == null);
-        return dataSource;
+        return DatabaseUtils.getDataSource(this.dbContext,connectionName);
+    }
+
+    @Bean(name="asyncResponseDataSource")
+    public DataSource registerAsyncResponseDataSource(){
+        String connectionName = QueueConfigurationResolver.getConnectionName(this.dbContext,this.dbContext.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
+        return DatabaseUtils.getDataSource(this.dbContext,connectionName);
     }
 }
