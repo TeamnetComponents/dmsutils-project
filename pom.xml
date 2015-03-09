@@ -8,10 +8,7 @@
     <artifactId>DmsUtils</artifactId>
     <version>1.0</version>
 
-
-    
     <modules>
-
         <!--core module-->
         <module>dmsutils-core</module>
 

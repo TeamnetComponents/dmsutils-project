@@ -26,10 +26,10 @@ public class SyncFrontIntegrationWorker_DB {
         this.context = context;
     }
 
-    public void send(StoreServiceMessageDb dbMessage,Connection connection,String requestDbSchema){
+    public void send(StoreServiceMessageDb dbMessage,Connection connection,String requestDbSchema,String requestTableName){
         try{
             connection.setAutoCommit(false);
-            PreparedStatement statement = StatementPreparator.FrontSide.prepareInsertRequest(connection,requestDbSchema,dbMessage.getMessageDestination(),translateMsgToInsertionMap(dbMessage));
+            PreparedStatement statement = StatementPreparator.FrontSide.prepareInsertRequest(connection,requestDbSchema,requestTableName,translateMsgToInsertionMap(dbMessage));
             statement.execute();
             ResultSet generatedKeys = statement.getGeneratedKeys();
             generatedKeys.close();

@@ -43,7 +43,7 @@
 
     <jdbc:inbound-channel-adapter id="inboundAdapterSync"
                                   query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
-                                  update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
+                                  update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING',MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
                                   data-source="syncRequestDataSource"
                                   channel="syncRequestBatchChannel">
         <int:poller ref="jdbcPollerSync"/>
@@ -54,7 +54,7 @@
 
     <jdbc:inbound-channel-adapter id="inboundAdapterAsync"
                                   query="select * from ${asyncRequestQueueTable} where MSG_DESTINATION='${asyncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
-                                  update="update ${asyncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
+                                  update="update ${asyncRequestQueueTable} set MSG_STATUS='PROCESSING',MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
                                   data-source="asyncRequestDataSource"
                                   channel="asyncRequestBatchChannel">
         <int:poller ref="jdbcPollerAsync"/>
