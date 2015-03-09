@@ -109,6 +109,8 @@ public class JmsConnectionPool extends GenericObjectPool<JmsConnection> {
                 Message requestMessage = null;
                 requestMessage = jmsConnection.getSession().createObjectMessage(serializable);
                 requestMessage.setJMSReplyTo(jmsConnection.getConsumerDestination());
+
+                corelationId = requestMessage.getJMSMessageID();
                 requestMessage.setJMSCorrelationID(corelationId);
                 //System.out.println(" ------------ SEND MSG ------------------");
                 jmsConnection.getMessageProducer().send(requestMessage);
