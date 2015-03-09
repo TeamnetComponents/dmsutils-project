@@ -1,6 +1,6 @@
 package ro.croco.integration.dms.toolkit.utils;
 
-import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
+import ro.croco.integration.dms.commons.SqlOperationTranslator;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.*;

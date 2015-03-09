@@ -36,7 +36,7 @@ public class IntegrationServiceImpl_Db extends IntegrationServiceImpl_Abstract {
             SyncFrontIntegrationWorker_DB worker = new SyncFrontIntegrationWorker_DB(context);
             StoreServiceMessageDb dbMessage = constructSyncDbMsg(messageStructures[0]);
             worker.send(dbMessage,constructSyncConnection(true),syncConnectionDbSchema(true),QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE)));
-            responses[0] = worker.receive(constructSyncConnection(false),syncConnectionDbSchema(false),QueueConfigurationResolver.getHistoryTable(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_ON_ITERATION))).getStoreServiceMessage();
+            responses[0] = worker.receive(constructSyncConnection(false),syncConnectionDbSchema(false),QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)),QueueConfigurationResolver.getHistoryTable(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)),Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_ON_ITERATION))).getStoreServiceMessage();
         }
         return responses;
     }
@@ -62,8 +62,8 @@ public class IntegrationServiceImpl_Db extends IntegrationServiceImpl_Abstract {
         dbMessage.setMessageCorrelationID(UUID.randomUUID().toString());
         dbMessage.setMessageExpiration(System.currentTimeMillis() + (Long.valueOf(context.getProperty(ContextProperties.Required.SYNCHRONOUS_MESSAGE_WAIT_RESPONSE_TIMEOUT)) * 1000));
         dbMessage.setMessagePriority(Integer.valueOf((String)context.get(ContextProperties.Required.SYNCHRONOUS_MESSAGE_PRIORITY_DEFAULT)));
-        dbMessage.setMessageDestination(QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE)) + "_" + StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS);
-        dbMessage.setMessageReplyTo(QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE)));
+        dbMessage.setMessageDestination(context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE));
+        dbMessage.setMessageReplyTo(context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));
         return dbMessage;
     }
 

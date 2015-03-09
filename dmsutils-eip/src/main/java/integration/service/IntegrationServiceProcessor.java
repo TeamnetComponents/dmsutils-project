@@ -1,14 +1,17 @@
 package integration.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ro.croco.integration.dms.commons.FileUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceValidationException;
 import ro.croco.integration.dms.toolkit.*;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +19,11 @@ import java.util.Map;
 /**
  * Created by Lucian.Dragomir on 3/9/2015.
  */
-@Component
+@Service
 public class IntegrationServiceProcessor {
 
     @Autowired
-    @Qualifier("ss_local")
+    @Qualifier("ss-local")
     StoreService ss_local;
 
     @Autowired
@@ -58,6 +61,7 @@ public class IntegrationServiceProcessor {
     }
 
     public Message storeDocument(Message<StoreServiceMessage> message) {
+        System.out.println("Storing Document");
         String methodName = "storeDocument";
         StoreServiceMessage processMessage = new StoreServiceMessage();
         Map<String, Object> processHeaders = new HashMap<String, Object>();
@@ -70,8 +74,10 @@ public class IntegrationServiceProcessor {
             //process message
             StoreServiceMessage inputMessage = message.getPayload();
             if (inputMessage.getMethod().equals(methodName)) {
-                StoreContext storeContext = (StoreContext) inputMessage.getParameters()[0];
-                DocumentInfo documentInfo = (DocumentInfo) inputMessage.getParameters()[1];
+                System.out.println(inputMessage.getParameters().getClass().getName());
+                System.out.println(inputMessage.getParameters()[0]);
+                StoreContext storeContext = (StoreContext)inputMessage.getParameters()[0];
+                DocumentInfo documentInfo = (DocumentInfo)inputMessage.getParameters()[1];
                 DocumentIdentifier temporaryDocumentIdentifier = (DocumentIdentifier) inputMessage.getParameters()[2];
                 boolean allowCreatePath = (Boolean) inputMessage.getParameters()[3];
                 VersioningType versioningType = (VersioningType) inputMessage.getParameters()[4];
@@ -81,7 +87,6 @@ public class IntegrationServiceProcessor {
 
                 //put the stream into the final location using final service
                 documentIdentifier = ss_final.storeDocument(storeContext, documentInfo, documentStream.getInputStream(), allowCreatePath, versioningType);
-
             } else {
                 throw new StoreServiceValidationException("Incorrect method sent to " + methodName + " method.");
             }
@@ -100,6 +105,7 @@ public class IntegrationServiceProcessor {
 
 
     public Message downloadDocument(Message<StoreServiceMessage> message) {
+        System.out.println("Downloading document");
         String methodName = "downloadDocument";
         StoreServiceMessage processMessage = new StoreServiceMessage();
         Map<String, Object> processHeaders = new HashMap<String, Object>();
@@ -143,5 +149,4 @@ public class IntegrationServiceProcessor {
 
         return packStoreServiceMessage(processMessage, processHeaders);
     }
-
 }

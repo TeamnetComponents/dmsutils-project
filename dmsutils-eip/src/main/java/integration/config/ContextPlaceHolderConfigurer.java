@@ -1,7 +1,6 @@
 package integration.config;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import ro.croco.integration.dms.toolkit.StoreContext;
 import ro.croco.integration.dms.toolkit.db.ContextProperties;
 import ro.croco.integration.dms.toolkit.db.QueueConfigurationResolver;
 
@@ -20,11 +19,12 @@ public class ContextPlaceHolderConfigurer extends PropertyPlaceholderConfigurer 
         if(placeholder.equals(JdbcContextPlaceHolders.ASYNC_REQUEST_QUEUE_TABLE))
             return QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_ASYNC_REQUEST_QUEUE));
 
-        if(placeholder.equals(JdbcContextPlaceHolders.SYNC_MSG_DESTINATION))
-            return QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE)) + "_" + StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS;
+        if(placeholder.equals(JdbcContextPlaceHolders.SYNC_QUEUE)){
+            return context.getProperty(ContextProperties.Required.SERVICE_SYNC_REQUEST_QUEUE);
+        }
 
-        if(placeholder.equals(JdbcContextPlaceHolders.ASYNC_MSG_DESTINATION))
-            return QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_ASYNC_REQUEST_QUEUE)) + "_" + StoreContext.COMMUNICATION_TYPE_VALUES.ASYNCHRONOUS;
+        if(placeholder.equals(JdbcContextPlaceHolders.ASYNC_QUEUE))
+            return context.getProperty(ContextProperties.Required.SERVICE_ASYNC_REQUEST_QUEUE);
 
         if(placeholder.equals(JdbcContextPlaceHolders.SYNC_RESPONSE_QUEUE_TABLE))
             return QueueConfigurationResolver.getTableName(context,context.getProperty(ContextProperties.Required.SERVICE_SYNC_RESPONSE_QUEUE));

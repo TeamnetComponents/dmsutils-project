@@ -3,6 +3,7 @@ package integration.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.elo.ix.client.ActivityProject;
+import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -25,7 +26,14 @@ import java.util.*;
 @Service
 public class JdbcService implements ApplicationContextAware{
 
-    @Async
+    public void storeDocument(Message message){
+        System.out.println("Method StoreDocument");
+    }
+
+    public void downloadDocument(Message message){
+        System.out.println("Method DownloadDocument");
+    }
+
     public Message singleRequestProcess(Message message){
         System.out.println("\n\nInside singleRequestProcess function");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -77,13 +85,16 @@ public class JdbcService implements ApplicationContextAware{
                        ArrayList<LinkedCaseInsensitiveMap> inputPayload = message.getPayload();
                        for(int i = 0;i < inputPayload.size();++i){
                            LinkedCaseInsensitiveMap row = inputPayload.get(i);
-                           try{
-                               StoreServiceMessage msgContent = objectMapper.readValue((String)row.get("MSG_CONTENT"),StoreServiceMessage.class);
-                               newPayload.add(msgContent);
-                           }
-                           catch (IOException onJacksonEx){
-                               onJacksonEx.printStackTrace();
-                           }
+//                           try{
+//                               StoreServiceMessage msgContent = objectMapper.readValue((String)row.get("MSG_CONTENT"),StoreServiceMessage.class);
+//                               newPayload.add(msgContent);
+                               StoreServiceMessage msgContent = (StoreServiceMessage) SerializationUtils.deserialize(((byte[])row.get("MSG_CONTENT")));
+                           System.out.println("MsgContent = " + msgContent);
+                              newPayload.add(msgContent);
+//                           }
+//                           catch (IOException onJacksonEx){
+//                               onJacksonEx.printStackTrace();
+//                           }
                        }
                        return newPayload;
                    }

@@ -34,6 +34,20 @@
         <property name="queueCapacity" value="100"/>
     </bean>
 
+    <int:channel id="syncStoreDocumentChannel">
+        <int:dispatcher task-executor="syncSingleRequestProcessExecutor"/>
+    </int:channel>
+    <int:channel id="syncDownloadDocumentChannel">
+        <int:dispatcher task-executor="syncSingleRequestProcessExecutor"/>
+    </int:channel>
+
+    <int:channel id="asyncStoreDocumentChannel">
+        <int:dispatcher task-executor="asyncSingleRequestProcessExecutor"/>
+    </int:channel>
+    <int:channel id="asyncDownloadDocumentChannel">
+        <int:dispatcher task-executor="asyncSingleRequestProcessExecutor"/>
+    </int:channel>
+
     <int:channel id="syncResponseChannel"/>
     <int:channel id="asyncResponseChannel"/>
 
@@ -42,7 +56,7 @@
     </bean>
 
     <jdbc:inbound-channel-adapter id="inboundAdapterSync"
-                                  query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
+                                  query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncQueue}' and (MSG_STATUS='INITIAL' or MSG_STATUS='PROCESSING' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
                                   update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING',MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
                                   data-source="syncRequestDataSource"
                                   channel="syncRequestBatchChannel">
@@ -53,7 +67,7 @@
     <!--"and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP <= 100))"-->
 
     <jdbc:inbound-channel-adapter id="inboundAdapterAsync"
-                                  query="select * from ${asyncRequestQueueTable} where MSG_DESTINATION='${asyncMsgDestination}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
+                                  query="select * from ${asyncRequestQueueTable} where MSG_DESTINATION='${asyncQueue}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
                                   update="update ${asyncRequestQueueTable} set MSG_STATUS='PROCESSING',MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
                                   data-source="asyncRequestDataSource"
                                   channel="asyncRequestBatchChannel">
@@ -72,11 +86,22 @@
     <bean id="syncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
     <bean id="asyncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
 
-    <int:service-activator ref="jdbcService" method="singleRequestProcess"
-                           input-channel="syncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>
+    <int:router input-channel="syncSingleRequestProcessChannel" expression="payload.method">
+        <int:mapping value="storeDocument" channel="syncStoreDocumentChannel"/>
+        <int:mapping value="downloadDocument" channel="syncDownloadDocumentChannel"/>
+    </int:router>
 
-    <int:service-activator ref="jdbcService" method="singleRequestProcess"
-                           input-channel="asyncSingleRequestProcessChannel" output-channel="asyncResponseChannel"/>
+    <int:service-activator ref="integrationServiceProcessor" method="storeDocument"
+                            input-channel="syncStoreDocumentChannel"/>
+
+    <int:service-activator ref="integrationServiceProcessor" method="downloadDocument"
+                           input-channel="syncDownloadDocumentChannel"/>
+
+    <!--<int:service-activator ref="jdbcService" method="singleRequestProcess"-->
+                           <!--input-channel="syncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>-->
+
+    <!--<int:service-activator ref="jdbcService" method="singleRequestProcess"-->
+                           <!--input-channel="asyncSingleRequestProcessChannel" output-channel="asyncResponseChannel"/>-->
 
     <jdbc:outbound-channel-adapter id="outboundAdapterSync" data-source="syncResponseDataSource" channel="syncResponseChannel"
                                    query="insert into ${syncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values

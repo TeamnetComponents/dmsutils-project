@@ -1,7 +1,7 @@
 package ro.tn.components.dmsutils.ssDb;
 
 import org.junit.Test;
-import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
+import ro.croco.integration.dms.commons.SqlOperationTranslator;
 
 /**
  * Created by battamir.sugarjav on 2/20/2015.

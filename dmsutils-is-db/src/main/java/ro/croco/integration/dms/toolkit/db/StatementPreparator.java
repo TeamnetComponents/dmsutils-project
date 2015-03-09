@@ -1,9 +1,12 @@
 package ro.croco.integration.dms.toolkit.db;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
-import ro.croco.integration.dms.toolkit.SqlOperationTranslator;
+import org.apache.commons.lang.SerializationUtils;
+import ro.croco.integration.dms.commons.SqlOperationTranslator;
+import ro.croco.integration.dms.toolkit.StoreService;
+import ro.croco.integration.dms.toolkit.StoreServiceMessage;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.Map;
 
@@ -24,13 +27,18 @@ public class StatementPreparator{
             statement.setObject(5,values.get("MSG_EXPIRATION"));
             statement.setObject(6,values.get("MSG_PRIORITY"));
 
-            try{
-                ObjectMapper objectMapper = new ObjectMapper();
-                statement.setString(7,objectMapper.writeValueAsString(values.get("MSG_CONTENT")));
-            }
-            catch (JsonProcessingException jacksonEx) {
-                throw new StoreServiceException(jacksonEx);
-            }
+//            try{
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                statement.setString(7,objectMapper.writeValueAsString(values.get("MSG_CONTENT")));
+//            }
+//            catch (JsonProcessingException jacksonEx) {
+//                throw new StoreServiceException(jacksonEx);
+//            }
+            //statement.setBytes(7, SerializationUtils.serialize((StoreServiceMessage) values.get("MSG_CONTENT")));
+
+            byte[] serialized = SerializationUtils.serialize((StoreServiceMessage) values.get("MSG_CONTENT"));
+            InputStream stream = new ByteArrayInputStream(serialized);
+            statement.setBinaryStream(7,stream);
 
             if(values.get("PRC_STATUS") == null)
                 statement.setNull(8,Types.VARCHAR);
@@ -43,11 +51,10 @@ public class StatementPreparator{
         }
 
         public static PreparedStatement prepareSelectResponse(Connection connection,String schema,String table,Map<String,Object> values) throws SQLException{
-            String command = SqlOperationTranslator.translateCommand("s:" + table + "(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID),(MSG_ID,MSG_CORRELATION_ID)",SqlOperationTranslator.PREPARED_STATEMENT,schema);
+            String command = SqlOperationTranslator.translateCommand("s:" + table + "(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID),(MSG_CORRELATION_ID)",SqlOperationTranslator.PREPARED_STATEMENT,schema);
             System.out.println(command);
             PreparedStatement statement = connection.prepareStatement(command,ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
-            statement.setObject(1,values.get("MSG_ID"));
-            statement.setObject(2,values.get("MSG_CORRELATION_ID"));
+            statement.setObject(1,values.get("MSG_CORRELATION_ID"));
             return statement;
         }
     }

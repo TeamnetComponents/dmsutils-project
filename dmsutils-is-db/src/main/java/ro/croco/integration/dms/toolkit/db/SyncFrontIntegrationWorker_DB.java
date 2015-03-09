@@ -59,12 +59,12 @@ public class SyncFrontIntegrationWorker_DB {
         }
     }
 
-    public StoreServiceMessageDb receive(Connection connection,String responseDbSchema,String historyTableName,Long waitResponseTime,Long waitOnIterationTime){
+    public StoreServiceMessageDb receive(Connection connection,String responseDbSchema,String responseTableName,String historyTableName,Long waitResponseTime,Long waitOnIterationTime){
         try{
             connection.setAutoCommit(false);
             Long cummulatedTime = 0L;
             StoreServiceMessageDb response = null;
-            PreparedStatement statement = StatementPreparator.FrontSide.prepareSelectResponse(connection,responseDbSchema,dbMessage.getMessageReplyTo(),translateMsgToSelectionResponseMap(this.dbMessage));
+            PreparedStatement statement = StatementPreparator.FrontSide.prepareSelectResponse(connection,responseDbSchema,responseTableName,translateMsgToSelectionResponseMap(this.dbMessage));
             ResultSet resultSet = null;
 
             while(cummulatedTime <= waitResponseTime){
@@ -131,8 +131,7 @@ public class SyncFrontIntegrationWorker_DB {
 
     private Map<String,Object> translateMsgToSelectionResponseMap(StoreServiceMessageDb dbMessage){
         Map<String,Object> selectByValues = new HashMap<String, Object>();
-        selectByValues.put("MSG_ID",dbMessage.getMessageID());
-        selectByValues.put("MSG_CORRELATION_ID",dbMessage.getMessageCorrelationID());
+        selectByValues.put("MSG_CORRELATION_ID",dbMessage.getMessageID());
         return selectByValues;
     }
 
