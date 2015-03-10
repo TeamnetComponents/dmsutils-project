@@ -24,16 +24,6 @@
         <int:dispatcher task-executor="asyncSingleRequestProcessExecutor"/>
     </int:channel>
 
-    <bean id="syncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="10"/>
-        <property name="queueCapacity" value="100"/>
-    </bean>
-
-    <bean id="asyncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="1"/>
-        <property name="queueCapacity" value="100"/>
-    </bean>
-
     <int:channel id="syncStoreDocumentChannel">
         <int:dispatcher task-executor="syncSingleRequestProcessExecutor"/>
     </int:channel>
@@ -51,20 +41,30 @@
     <int:channel id="syncResponseChannel"/>
     <int:channel id="asyncResponseChannel"/>
 
+    <bean id="syncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
+
+    <bean id="asyncSingleRequestProcessExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="1"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
+
     <bean class="integration.config.ContextPlaceHolderConfigurer">
         <property name="location" value="classpath:/config/is-db.properties"></property>
     </bean>
 
+    <bean id="syncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
+    <bean id="asyncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
+
     <jdbc:inbound-channel-adapter id="inboundAdapterSync"
-                                  query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncQueue}' and (MSG_STATUS='INITIAL' or MSG_STATUS='PROCESSING' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
+                                  query="select * from ${syncRequestQueueTable} where MSG_DESTINATION='${syncQueue}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
                                   update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING',MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"
                                   data-source="syncRequestDataSource"
                                   channel="syncRequestBatchChannel">
         <int:poller ref="jdbcPollerSync"/>
     </jdbc:inbound-channel-adapter>
-
-    <!--update="update ${syncRequestQueueTable} set MSG_STATUS='PROCESSING' and MSG_PROCESS_STEP=MSG_PROCESS_STEP + 1"-->
-    <!--"and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP <= 100))"-->
 
     <jdbc:inbound-channel-adapter id="inboundAdapterAsync"
                                   query="select * from ${asyncRequestQueueTable} where MSG_DESTINATION='${asyncQueue}' and (MSG_STATUS='INITIAL' or (MSG_STATUS='ERROR' and MSG_PROCESS_STEP != 100))"
@@ -83,48 +83,47 @@
     <int:splitter ref="syncRequestBatchSplitterProcessor" input-channel="syncRequestBatchSplitterChannel" output-channel="syncSingleRequestProcessChannel"/>
     <int:splitter ref="asyncRequestBatchSplitterProcessor" input-channel="asyncRequestBatchSplitterChannel" output-channel="asyncSingleRequestProcessChannel"/>
 
-    <bean id="syncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
-    <bean id="asyncRequestBatchSplitterProcessor" class="integration.service.JdbcMessageListSplitter"/>
-
     <int:router input-channel="syncSingleRequestProcessChannel" expression="payload.method">
         <int:mapping value="storeDocument" channel="syncStoreDocumentChannel"/>
         <int:mapping value="downloadDocument" channel="syncDownloadDocumentChannel"/>
     </int:router>
 
+    <int:router input-channel="asyncSingleRequestProcessChannel" expression="payload.method">
+        <int:mapping value="storeDocument" channel="asyncStoreDocumentChannel"/>
+        <int:mapping value="downloadDocument" channel="asyncDownloadDocumentChannel"/>
+    </int:router>
+
     <int:service-activator ref="integrationServiceProcessor" method="storeDocument"
-                            input-channel="syncStoreDocumentChannel"/>
+                            input-channel="syncStoreDocumentChannel" output-channel="syncResponseChannel"/>
 
     <int:service-activator ref="integrationServiceProcessor" method="downloadDocument"
-                           input-channel="syncDownloadDocumentChannel"/>
+                           input-channel="syncDownloadDocumentChannel" output-channel="syncResponseChannel"/>
 
-    <!--<int:service-activator ref="jdbcService" method="singleRequestProcess"-->
-                           <!--input-channel="syncSingleRequestProcessChannel" output-channel="syncResponseChannel"/>-->
+    <int:service-activator ref="integrationServiceProcessor" method="storeDocument"
+                           input-channel="asyncStoreDocumentChannel" output-channel="asyncResponseChannel"/>
 
-    <!--<int:service-activator ref="jdbcService" method="singleRequestProcess"-->
-                           <!--input-channel="asyncSingleRequestProcessChannel" output-channel="asyncResponseChannel"/>-->
+    <int:service-activator ref="integrationServiceProcessor" method="downloadDocument"
+                           input-channel="asyncDownloadDocumentChannel" output-channel="asyncResponseChannel"/>
 
     <jdbc:outbound-channel-adapter id="outboundAdapterSync" data-source="syncResponseDataSource" channel="syncResponseChannel"
-                                   query="insert into ${syncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
-                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
+                                   query="insert into ${syncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT) values
+                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_expiration,:msg_priority,:payload)"
                                    sql-parameter-source-factory="spelSource"/>
 
     <jdbc:outbound-channel-adapter id="outboundAdapterAsync" data-source="asyncResponseDataSource" channel="asyncResponseChannel"
-                                   query="insert into ${asyncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_REPLY_TO,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT,PRC_STATUS,PRC_ID) values
-                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_reply_to,:msg_expiration,:msg_priority,:msg_content,:prc_status,:prc_id)"
+                                   query="insert into ${asyncResponseQueueTable}(MSG_ID,MSG_CORRELATION_ID,MSG_DESTINATION,MSG_EXPIRATION,MSG_PRIORITY,MSG_CONTENT) values
+                                                                             (:msg_id,:msg_correlation_id,:msg_destination,:msg_expiration,:msg_priority,:msg_content)"
                                    sql-parameter-source-factory="spelSource"/>
 
     <bean id="spelSource" class="org.springframework.integration.jdbc.ExpressionEvaluatingSqlParameterSourceFactory">
         <property name="parameterExpressions">
             <map>
-                <entry key="msg_id"               value="123"/>
-                <entry key="msg_correlation_id"   value="123"/>
-                <entry key="msg_destination"      value="123"/>
-                <entry key="msg_reply_to"         value="123"/>
-                <entry key="msg_expiration"       value="123"/>
-                <entry key="msg_priority"         value="4"/>
-                <entry key="msg_content"          value="123"/>
-                <entry key="prc_status"           value="123"/>
-                <entry key="prc_id"               value="123"/>
+                <entry key="msg_id"               value="headers['MSG_ID']"/>
+                <entry key="msg_correlation_id"   value="headers['MSG_CORRELATION_ID']"/>
+                <entry key="msg_destination"      value="headers['MSG_DESTINATION']"/>
+                <entry key="msg_expiration"       value="headers['MSG_EXPIRATION']"/>
+                <entry key="msg_priority"         value="headers['MSG_PRIORITY']"/>
+                <!--<entry key="msg_content"          value="payload" value-type="java.lang.Integer"/>-->
             </map>
         </property>
     </bean>

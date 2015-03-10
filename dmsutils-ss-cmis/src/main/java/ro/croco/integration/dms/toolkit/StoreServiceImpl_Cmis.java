@@ -199,7 +199,8 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
             documentIdentifier.setRequestId(storeContext.getRequestIdentifier());
         } catch (RuntimeException e) {
             throw e;
-        } finally {
+        }
+        finally {
             closeSession(storeSession);
         }
         return documentIdentifier;
@@ -211,7 +212,8 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
         StoreServiceSessionImpl_Cmis storeSession = null;
         try {
             storeSession = openSession(storeContext);
-            Document document = (Document) getObject(documentIdentifier, storeSession);
+            Document document = (Document)getObject(documentIdentifier, storeSession);
+            System.out.println("ContentStreamId = " + document.getContentStreamId());
             if (!"null".equals(document.getContentStreamId())) {
                 documentStream = new DocumentStream(document.getContentStream().getFileName(), document.getContentStream().getStream(), document.getContentStream().getMimeType());
             } else {

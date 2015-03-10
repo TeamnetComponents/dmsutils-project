@@ -89,7 +89,7 @@ public class JdbcService implements ApplicationContextAware{
 //                               StoreServiceMessage msgContent = objectMapper.readValue((String)row.get("MSG_CONTENT"),StoreServiceMessage.class);
 //                               newPayload.add(msgContent);
                                StoreServiceMessage msgContent = (StoreServiceMessage) SerializationUtils.deserialize(((byte[])row.get("MSG_CONTENT")));
-                           System.out.println("MsgContent = " + msgContent);
+                           System.out.println("MsgContent = " + msgContent.getMethod());
                               newPayload.add(msgContent);
 //                           }
 //                           catch (IOException onJacksonEx){

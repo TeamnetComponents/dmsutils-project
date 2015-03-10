@@ -3,10 +3,14 @@ package ro.tn.components.dmsutils.eip;
 import integration.config.DmsConfig;
 import integration.config.IntegrationConfig;
 import integration.config.JdbcConfig;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.sql.*;
 
 /**
  * Created by Razvan.Ionescu on 3/3/2015.
@@ -24,4 +28,6 @@ public class JdbcIntegrationTest{
 //            }
         }
     }
+
+
 }

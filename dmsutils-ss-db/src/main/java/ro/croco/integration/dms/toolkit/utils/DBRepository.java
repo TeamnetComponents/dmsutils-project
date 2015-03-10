@@ -1,6 +1,11 @@
 package ro.croco.integration.dms.toolkit.utils;
 
+import org.apache.commons.compress.utils.IOUtils;
+import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.toolkit.DocumentStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -44,7 +49,18 @@ public class DBRepository {
 
         if(resultSet.next()){
             documentStream = new DocumentStream();
-            documentStream.setInputStream(resultSet.getBinaryStream(1));
+
+            byte[] array = new byte[0];
+            try {
+                array = IOUtils.toByteArray(resultSet.getBinaryStream(1));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println(array.length);
+            documentStream.setInputStream(new ByteArrayInputStream(array));
+
+            System.out.println(documentStream.getInputStream());
+
             documentStream.setFileName(resultSet.getString(2));
             documentStream.setMimeType(resultSet.getString(3));
         }
@@ -61,7 +77,15 @@ public class DBRepository {
 
         if(resultSet.next()){
             documentStream = new DocumentStream();
-            documentStream.setInputStream(resultSet.getBinaryStream(1));
+            try {
+                byte[] array = IOUtils.toByteArray(resultSet.getBinaryStream(1));
+                System.out.println(array.length);
+                documentStream.setInputStream(new ByteArrayInputStream(array));
+
+                System.out.println(documentStream.getInputStream());
+            } catch (IOException ioEx) {
+                throw new StoreServiceException(ioEx);
+            }
             documentStream.setFileName(streamName);
             documentStream.setMimeType(mimeType);
         }
@@ -70,7 +94,6 @@ public class DBRepository {
         statement.close();
         return documentStream;
     }
-
 
     //getDmObjectsIdByPath
     public static BigDecimal getDmObjectsIdByPathAndName(Connection connection,String schema,String path,String name) throws SQLException {

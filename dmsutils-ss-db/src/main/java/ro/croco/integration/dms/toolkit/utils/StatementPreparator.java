@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by battamir.sugarjav on 2/26/2015.
  */
 
-public class StatementPreparator {
+public final class StatementPreparator {
 
     public static PreparedStatement prepareSelectLastVersionLabelForDmObject(Connection connection,String schema,BigDecimal dmObjectId)throws SQLException{
         String command = SqlOperationTranslator.translateCommand("s:DM_OBJECT_VERSIONS(MAX[VERSION_LABEL],(FK_DM_OBJECTS))",SqlOperationTranslator.PREPARED_STATEMENT,schema);
@@ -18,8 +18,6 @@ public class StatementPreparator {
         statement.setObject(1,dmObjectId.intValue());
         return statement;
     }
-
-
 
     public static PreparedStatement prepareSelectDmObjectByPathAndName(Connection connection,String schema,String path,String name)throws SQLException{
         String command = SqlOperationTranslator.translateCommand("s:DM_OBJECTS(ID,OBJ_PATH,OBJ_NAME),(OBJ_PATH,OBJ_NAME)",SqlOperationTranslator.PREPARED_STATEMENT,schema);

@@ -1,6 +1,8 @@
 package ro.croco.integration.dms.toolkit.db;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.exceptions.TimeoutException;
 import ro.croco.integration.dms.toolkit.StoreServiceMessage;
@@ -132,6 +134,7 @@ public class SyncFrontIntegrationWorker_DB {
     private Map<String,Object> translateMsgToSelectionResponseMap(StoreServiceMessageDb dbMessage){
         Map<String,Object> selectByValues = new HashMap<String, Object>();
         selectByValues.put("MSG_CORRELATION_ID",dbMessage.getMessageID());
+        selectByValues.put("MSG_DESTINATION",dbMessage.getMessageReplyTo());
         return selectByValues;
     }
 
@@ -145,7 +148,8 @@ public class SyncFrontIntegrationWorker_DB {
             message.setMessageReplyTo(resultSet.getString(4));
             message.setMessageExpiration(resultSet.getLong(5));
             message.setMessagePriority(resultSet.getInt(6));
-            message.setStoreServiceMessage(objectMapper.readValue(resultSet.getString(7),StoreServiceMessage.class));
+            message.setStoreServiceMessage(
+                    (StoreServiceMessage) SerializationUtils.deserialize((IOUtils.toByteArray(resultSet.getBinaryStream(7)))));
             return message;
         }
         catch (IOException ioEx) {

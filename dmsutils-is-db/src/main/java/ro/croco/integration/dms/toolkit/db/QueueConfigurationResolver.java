@@ -33,11 +33,13 @@ public class QueueConfigurationResolver {
 
     public static String getHistoryTable(Properties context,String queue)throws IntegrationServiceException{
         Object historyTable =  context.get(templateEngine.getValueFromTemplate(QUEUE_DEFINITION_HISTORY,QUEUE_DEFINITION_NAME,queue));
+        System.out.println("getHistoryTable");
         verifyExistance(historyTable);
         return (String) historyTable;
     }
     public static String getTableName(Properties context,String queue)throws IntegrationServiceException{
         Object tableName =  context.get(templateEngine.getValueFromTemplate(QUEUE_DEFINITION_TABLE, QUEUE_DEFINITION_NAME,queue));
+        System.out.println("getTableName");
         verifyExistance(tableName);
         return (String) tableName;
     }

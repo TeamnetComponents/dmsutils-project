@@ -45,6 +45,13 @@ public class On_StoreServiceImpl_Integration {
         DocumentInfo documentInfo = new DocumentInfo("/dir1/dir2/test.txt",null,null);
         InputStream fileInputStream = new FileInputStream(new File("C:\\TeamnetProjects\\DMS-UTILS\\ss-fo-db.properties"));
         InputStream byteArrayInputStream = new ByteArrayInputStream(IOUtils.toByteArray(fileInputStream));
-        Assert.assertNotNull(dbIntegrationService.storeDocument(StoreContext.builder().build(), documentInfo, byteArrayInputStream, false, VersioningType.NONE));
+        Assert.assertNotNull(dbIntegrationService.storeDocument(StoreContext.builder().build(), documentInfo, byteArrayInputStream,true, VersioningType.MAJOR));
+    }
+
+    @Test
+    public void download_document(){
+        DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath("/dir1/dir2/test").build();
+        DocumentStream documentStream = dbIntegrationService.downloadDocument(StoreContext.builder().build(),documentIdentifier);
+        Assert.assertNotNull(documentStream);
     }
 }

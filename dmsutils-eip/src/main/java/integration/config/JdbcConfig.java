@@ -91,6 +91,11 @@ public class JdbcConfig{
         this.dbContext = loadConfigFileContext("C:\\TeamnetProjects\\DMS-UTILS\\is-db.properties");
     }
 
+    @Bean(name="ss-local-context")
+    public Properties registerSSLocalContext(){
+        return dbContext;
+    }
+
     @Bean(name="ss-local")
     public StoreServiceImpl_Db registerSSLocal(){
         try{
