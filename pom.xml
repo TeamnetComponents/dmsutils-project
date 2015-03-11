@@ -47,6 +47,7 @@
         <commons-pool.version>1.6</commons-pool.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
         <ApacheJMeter.version>2.12</ApacheJMeter.version>
+        <chemistry-opencmis.version>0.12.0</chemistry-opencmis.version>
     </properties>
 
     <name>dmsutils-project</name>
@@ -191,7 +192,7 @@
             <!--<dependency>-->
             <!--<groupId>org.apache.chemistry.opencmis</groupId>-->
             <!--<artifactId>chemistry-opencmis-client-impl</artifactId>-->
-            <!--<version>0.11.0</version>-->
+            <!--<version>${chemistry-opencmis.version}</version>-->
             <!--</dependency>-->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -217,7 +218,7 @@
             <dependency>
                 <groupId>org.apache.chemistry.opencmis</groupId>
                 <artifactId>chemistry-opencmis-client-impl</artifactId>
-                <version>0.12.0</version>
+                <version>${chemistry-opencmis.version}</version>
             </dependency>
 
             <dependency>
