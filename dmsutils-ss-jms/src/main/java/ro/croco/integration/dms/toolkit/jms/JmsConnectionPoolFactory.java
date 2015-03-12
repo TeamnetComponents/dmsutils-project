@@ -16,13 +16,13 @@ public class JmsConnectionPoolFactory implements PoolableObjectFactory<JmsConnec
 
     static String CONNECTION_FACTORY = "jms.queue.connection.factory";
 
-    static String PRODUCER_QUEUE = "jms.$communicationType.queue.producer";
+    static String PRODUCER_QUEUE = "jms.$communicationType.queue.producer.jndiname";
     static String PRODUCER_TIMEOUT = "jms.$communicationType.queue.producer.timeout";
     static String PRODUCER_DELIVERY_MODE = "jms.$communicationType.queue.producer.deliveryMode";
     static String PRODUCER_PRIORITY = "jms.$communicationType.queue.producer.priority";
     static String PRODUCER_TIME_TO_LIVE = "jms.$communicationType.queue.producer.timeToLive";
 
-    static String CONSUMER_QUEUE = "jms.$communicationType.queue.consumer";
+    static String CONSUMER_QUEUE = "jms.$communicationType.queue.consumer.jndiname";
     static String CONSUMER_TIMEOUT = "jms.$communicationType.queue.consumer.timeout";
 
     static String SESSION_ACKNOLEDGE = "jms.$communicationType.session.acknoledge";
