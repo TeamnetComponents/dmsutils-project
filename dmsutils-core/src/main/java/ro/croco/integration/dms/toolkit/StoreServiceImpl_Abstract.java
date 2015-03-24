@@ -318,7 +318,8 @@ public abstract class StoreServiceImpl_Abstract<T extends StoreServiceSession> i
         return this.localStoreService;
     }
 
-    protected void setLocalStoreService(StoreService localStoreService) {
+    @Override
+    public void setLocalStoreService(StoreService localStoreService) {
         this.localStoreService = localStoreService;
         setCommunicationTypeSupport(StoreContext.COMMUNICATION_TYPE_VALUES.SYNCHRONOUS_LOCAL, (localStoreService != null));
     }

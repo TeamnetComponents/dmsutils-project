@@ -115,9 +115,12 @@ package ro.croco.integration.dms.commons;
 
             @Override
             public String getValueFromTemplate(String template, Map<String, Object> properties) {
+                if (template == null) {
+                    return null;
+                }
                 String replaced = template;
                 for (String key : properties.keySet()) {
-                    replaced = replaced.replace(escapeVariable(key), (String) properties.get(key));
+                    replaced = replaced.replace(escapeVariable(key), properties.get(key).toString());
                 }
                 return replaced;
             }

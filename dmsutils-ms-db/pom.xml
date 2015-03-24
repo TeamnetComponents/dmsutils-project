@@ -23,8 +23,49 @@
             <artifactId>dmsutils-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-metadata-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-cmis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jcr</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-jms</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>db2jcc4</groupId>
+            <artifactId>db2jcc4</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

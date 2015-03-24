@@ -49,6 +49,8 @@ public interface StoreService extends InitableService {
 
     public StoreService getLocalStoreService();
 
+    public void setLocalStoreService(StoreService localStoreService);
+
     public ObjectIdentifier moveFrom(StoreContext storeContext, ObjectIdentifier objectIdentifierFrom, StoreService storeServiceFrom, StoreContext storeContextFrom);
 
     public ObjectIdentifier moveTo(StoreContext storeContext, ObjectIdentifier objectIdentifier, StoreService storeServiceTo, StoreContext storeContextTo);

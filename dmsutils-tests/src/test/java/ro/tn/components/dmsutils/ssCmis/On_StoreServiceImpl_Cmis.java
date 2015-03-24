@@ -7,6 +7,7 @@ import org.junit.Test;
 import ro.croco.integration.dms.toolkit.*;
 
 import java.io.*;
+import java.util.Properties;
 
 import static junit.framework.TestCase.assertNotNull;
 
@@ -30,7 +31,7 @@ public class On_StoreServiceImpl_Cmis {
 
     @BeforeClass
     public static void getStoreServiceDb() {
-        configFileLocation = "C:\\TeamnetProjects\\DMS-UTILS\\ss-cmis_SIAMC.properties";
+        configFileLocation = "C:\\TeamnetProjects\\DMS-UTILS\\cmis.properties";
         storeService = getStoreServiceImpl(configFileLocation);
     }
 
@@ -46,6 +47,32 @@ public class On_StoreServiceImpl_Cmis {
         InputStream byteArrayInputStream = new ByteArrayInputStream(IOUtils.toByteArray(fileInputStream));
         DocumentIdentifier documentIdentifier = null;
         Assert.assertNotNull(documentIdentifier = storeService.storeDocument(StoreContext.builder().build(), documentInfo, byteArrayInputStream, true, VersioningType.MAJOR));
+        System.out.println(documentIdentifier);
+    }
+
+
+    @Test
+    public void store_document2() throws IOException {
+//        DocumentInfo documentInfo = new DocumentInfo("/dir1/dir2/test.txt", null, null);
+        DocumentInfo documentInfo = new DocumentInfo();
+        InputStream fileInputStream = new FileInputStream(new File("C:\\TeamnetProjects\\DMS-UTILS\\testfile.txt"));
+        InputStream byteArrayInputStream = new ByteArrayInputStream(IOUtils.toByteArray(fileInputStream));
+        DocumentIdentifier documentIdentifier = null;
+
+        Properties properties = new Properties();
+        properties.put("frontUserName", "gigi");
+        properties.put("documentType", "CR-FCR");
+        properties.put("documentContext", "DEFAULT");
+        properties.put("documentKey", "330");
+        properties.put("documentName", "gigi.pdf");
+        properties.put("METADATA.OBJECT_CODE", "CR-FCR");
+
+        StoreContext sc = StoreContext.builder().build();
+
+        MetadataService.Metadata<DocumentInfo> metadata = storeService.getMetadataService().computeDocumentMetadata(properties.getProperty("documentType"), properties.getProperty("documentContext"), storeService, sc, properties);
+        System.out.println(metadata);
+
+        Assert.assertNotNull(documentIdentifier = storeService.storeDocument(sc, documentInfo, byteArrayInputStream, true, VersioningType.MAJOR));
         System.out.println(documentIdentifier);
     }
 

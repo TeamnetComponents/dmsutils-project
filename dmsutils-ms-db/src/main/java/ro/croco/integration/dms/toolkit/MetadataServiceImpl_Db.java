@@ -667,7 +667,7 @@ public class MetadataServiceImpl_Db implements MetadataService {
     }
 
     public static void main(String[] args) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
-        StoreServiceFactory ssf = new StoreServiceFactory("C:\\__JAVA\\jmeter\\test\\dmsutils\\ss-fo.properties");
+        StoreServiceFactory ssf = new StoreServiceFactory("C:\\TeamnetProjects\\DMS-UTILS\\cmis.properties");
         StoreService ss = ssf.getService();
         StoreContext sc = StoreContext.builder().build();
 
@@ -675,8 +675,9 @@ public class MetadataServiceImpl_Db implements MetadataService {
         properties.put("frontUserName", "gigi");
         properties.put("documentType", "CR-FCR");
         properties.put("documentContext", "DEFAULT");
-        properties.put("documentKey", "2");
+        properties.put("documentKey", "330");
         properties.put("documentName", "gigi.pdf");
+        properties.put("METADATA.OBJECT_CODE", "CR-FCR");
 
         Metadata<DocumentInfo> metadata = ss.getMetadataService().computeDocumentMetadata(properties.getProperty("documentType"), properties.getProperty("documentContext"), ss, sc, properties);
         System.out.println(metadata);
