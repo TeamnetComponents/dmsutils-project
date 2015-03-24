@@ -53,7 +53,7 @@ public class JmsConnectionPool extends GenericObjectPool<JmsConnection> {
     }
 
     public String getProperty(JmsConnectionPoolFactory factory, String propertyName) {
-        return factory.getProperties().getProperty(propertyName.replace("$communicationType", factory.getCommunicationType().name().toLowerCase()), null);
+        return factory.getProperties().get(propertyName.replace("$communicationType", factory.getCommunicationType().name().toLowerCase())).toString();
     }
 
     public StoreContext.COMMUNICATION_TYPE_VALUES getCommunicationType() {

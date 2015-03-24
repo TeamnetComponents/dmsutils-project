@@ -50,7 +50,7 @@ public class JmsConnectionPoolFactory implements PoolableObjectFactory<JmsConnec
     }
 
     public String getProperty(String key) {
-        return this.properties.getProperty(key.replace("$communicationType", this.communicationType.name().toLowerCase()), null);
+        return this.properties.get(key.replace("$communicationType", this.communicationType.name().toLowerCase())).toString();
     }
 
     public StoreContext.COMMUNICATION_TYPE_VALUES getCommunicationType() {
