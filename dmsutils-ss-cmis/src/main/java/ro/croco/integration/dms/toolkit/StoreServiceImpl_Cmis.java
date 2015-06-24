@@ -825,10 +825,10 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
 
             //set creation and modification date
             if (cmisObject.getLastModificationDate() != null) {
-                objectInfo.setModificationDate(cmisObject.getLastModificationDate().getGregorianChange());
+                objectInfo.setModificationDate(cmisObject.getLastModificationDate().getTime());
             }
             if (cmisObject.getCreationDate() != null) {
-                objectInfo.setCreationDate(cmisObject.getCreationDate().getGregorianChange());
+                objectInfo.setCreationDate(cmisObject.getCreationDate().getTime());
             }
 
             //set versions
