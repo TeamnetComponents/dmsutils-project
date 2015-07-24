@@ -12,7 +12,7 @@
        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.0.xsd
        http://www.springframework.org/schema/integration/jms http://www.springframework.org/schema/integration/jms/spring-integration-jms-4.0.xsd">
 
-    <int:poller id="defaultPoller" default="true" fixed-rate="15000"/>
+    <int:poller id="defaultPoller" default="true" fixed-rate="1000"/>
 
     <!--Channels for Case 1: storeDocument-->
     <int:channel id="storeDocumentRouteChannel"/>
@@ -41,7 +41,7 @@
         <!--<int:header name="messageHeaders" expression="headers"/>-->
     </int:header-enricher>
 
-    <bean id="actionRouter" class="ro.croco.integration.router.ActionRouter"/>
+    <bean id="actionRouter" class="integration.router.ActionRouter"/>
     <int:router ref="actionRouter" method="routeForMethod" input-channel="queueChannelHeaderEnriched"/>
 
     <!--Case 1: storeDocument-->

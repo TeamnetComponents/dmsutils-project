@@ -22,9 +22,11 @@ public class ActionRouter {
 
         Object payload = message.getPayload();
 
-        System.out.println(payload.toString());
-
         JmsMessageStructure jmsMessageStructure = (JmsMessageStructure) payload;
+
+        System.out.println("Payload in ActionRoute.routeForMethod ::: " + payload.toString());
+
+
         String caz = jmsMessageStructure.getMethod();
 
         System.out.println(" ------------- CAZ -----------" + caz);

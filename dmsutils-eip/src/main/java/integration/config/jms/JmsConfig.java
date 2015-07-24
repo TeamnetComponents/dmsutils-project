@@ -1,4 +1,4 @@
-package integration.config;
+package integration.config.jms;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +17,7 @@ import java.util.Properties;
  * Created by hanna.botar on 7/1/2014.
  */
 @Configuration
-@ComponentScan(basePackages = {"integration.service", "integration.config"})
+@ComponentScan(basePackages = {"integration.service.common", "integration.service.jms", "integration.config.common", "integration.config.jms"})
 public class JmsConfig {
 
    @Bean
@@ -56,7 +56,7 @@ public class JmsConfig {
 //        jndiObjectFactoryBean.setJndiName("jms/CrocoQCF");
 
         // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF");
+        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF2");
 //
 //        // PROD
 ////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
@@ -76,7 +76,7 @@ public class JmsConfig {
 //        jndiObjectFactoryBean.setJndiName("jms/CrocoHQueue");
 
         // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue");
+        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue2");
 
         // PROD
 //        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");

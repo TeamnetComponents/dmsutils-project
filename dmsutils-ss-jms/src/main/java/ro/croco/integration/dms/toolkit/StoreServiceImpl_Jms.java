@@ -321,7 +321,8 @@ public class StoreServiceImpl_Jms extends StoreServiceImpl_Abstract {
                     throw (messageStructureResponse.getException());
                 }
                 DocumentIdentifier temporaryDocumentIdentifier = (DocumentIdentifier) messageStructureResponse.getParameters()[0];
-                DocumentStream documentStream = getLocalStoreService().downloadDocument(null, temporaryDocumentIdentifier);
+                //TODO AK preparedStoreContext e ok de transmis aici?
+                DocumentStream documentStream = getLocalStoreService().downloadDocument(preparedStoreContext, temporaryDocumentIdentifier);
                 return DeleteOnCloseInputStream.wrap(documentStream, this.getLocalStoreService(), storeContext, temporaryDocumentIdentifier);
             } else {
                 DocumentStream documentStream = new DocumentStream();

@@ -1,4 +1,4 @@
-package integration.service;
+package integration.service.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,17 +19,17 @@ import java.util.Map;
 public class CmisService implements DmsService {
 
     @Autowired
-    @Qualifier("cmisStoreService")
-    StoreService cmisStoreService;
+    @Qualifier("boStoreService")
+    StoreService boStoreService;
 
     @Override
     public DocumentStream downloadDocument(StoreContext storeContext, DocumentIdentifier documentIdentifier) {
-        return cmisStoreService.downloadDocument(storeContext,documentIdentifier);
+        return boStoreService.downloadDocument(storeContext,documentIdentifier);
     }
 
     @Override
     public DocumentIdentifier storeDocument(StoreContext storeContext, DocumentInfo documentInfo, InputStream inputStream, boolean allowCreatePath, VersioningType versioningType) {
-        return cmisStoreService.storeDocument(storeContext, documentInfo, inputStream, allowCreatePath, versioningType);
+        return boStoreService.storeDocument(storeContext, documentInfo, inputStream, allowCreatePath, versioningType);
     }
 
     public DocumentIdentifier saveDocument(@Payload Object payload) {
@@ -40,7 +40,7 @@ public class CmisService implements DmsService {
             Map<String, Object> docProperties = new HashMap<String, Object>();
             StoreContext storeContext = StoreContext.builder().allowedFolder("/TestFolder/TestProject").build();
             String fileName = ds.getFileName();
-            return cmisStoreService.storeDocument( storeContext, new DocumentInfo(docProperties), ds.getInputStream(), true, VersioningType.MAJOR);
+            return boStoreService.storeDocument( storeContext, new DocumentInfo(docProperties), ds.getInputStream(), true, VersioningType.MAJOR);
         }
         return null;
     }

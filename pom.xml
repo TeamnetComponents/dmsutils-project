@@ -25,7 +25,7 @@
         <!--integration services modules-->
         <module>dmsutils-is-jms</module>
         <module>dmsutils-is-db</module>
-        <!--<module>dmsutils-tests</module>-->
+        <module>dmsutils-tests</module>
         <module>dmsutils-jmeter</module>
 
         <module>dmsutils-ss-jms</module>

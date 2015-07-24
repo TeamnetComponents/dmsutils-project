@@ -1,4 +1,4 @@
-package integration.config;
+package integration.config.common;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;

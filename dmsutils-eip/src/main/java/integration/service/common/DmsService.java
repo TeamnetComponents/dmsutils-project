@@ -1,4 +1,4 @@
-package integration.service;
+package integration.service.common;
 
 import ro.croco.integration.dms.toolkit.*;
 

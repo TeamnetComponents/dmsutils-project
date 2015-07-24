@@ -21,7 +21,7 @@ import java.util.*;
  * Created by Razvan.Ionescu on 3/2/2015.
  */
 @Configuration
-@ComponentScan(basePackages = {"integration.service", "integration.config"})
+@ComponentScan(basePackages = {"integration.service"/*, "integration.config"*/})
 public class JdbcConfig{
 
     private static final String PROPERTIES_FILE_SUFFIX = ".properties";
