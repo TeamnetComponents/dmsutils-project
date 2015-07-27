@@ -90,7 +90,6 @@ public class JmsService {
 
             Properties properties = new Properties();
             properties.putAll(documentInfo.getProperties());
-            boStoreService.storeDocument()
             MetadataService.Metadata<DocumentInfo> metadata = boStoreService.getMetadataService().computeDocumentMetadata(
                     properties.getProperty("documentType"),
                     properties.getProperty("documentContext"),
