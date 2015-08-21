@@ -4,7 +4,6 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.croco.integration.dms.toolkit.*;
-import ro.croco.integration.dms.toolkit.jcr.JcrProperties;
 
 import java.io.IOException;
 

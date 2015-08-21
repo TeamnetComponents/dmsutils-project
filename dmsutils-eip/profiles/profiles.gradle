@@ -1,0 +1,16 @@
+//if (profile == 'prod') {
+//    apply from: "$rootDir/profiles/profile_prod.gradle"
+//} else if (profile == 'was') {
+//    apply from: "$rootDir/profiles/profile_was.gradle"
+//} else {
+//    apply from: "$rootDir/profiles/profile_dev.gradle"
+//}
+//
+//def modName = new File("$rootDir/core-app/gradle.properties").getText()
+//
+//if(modName.contains("mediu-bo-web")){
+//    apply from: "$rootDir/mediu-build/profiles/modules_bo.gradle"
+//}
+//if(modName.contains("mediu-fo-web")){
+//    apply from: "$rootDir/mediu-build/profiles/modules_fo.gradle"
+//}
