@@ -1,0 +1,217 @@
+apply from: file("$rootDir/profiles/versions.gradle")
+
+apply plugin:'jetty'
+//apply plugin:'spring-boot'
+
+
+configurations {
+    all*.exclude module: "tomcat-jdbc"
+    all*.exclude module: "tomcat-juli"
+    all*.exclude module: "xml-apis"
+//    all*.exclude module: "slf4j-api"
+//    all*.exclude module: "logback-core"
+    all*.exclude module: "logback-classic"
+}
+
+dependencies {
+    providedCompile  group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: spring_boot_version
+    providedCompile  group: 'org.springframework.boot', name: 'spring-boot-starter-jetty', version: spring_boot_version
+    providedCompile  group: 'javax.inject', name: 'javax.inject', version: javax_inject_version
+//    providedCompile  group: 'xml-apis', name: 'xml-apis', version: '1.4.01'
+    providedCompile  group: 'ch.qos.logback', name: 'logback-core', version: '1.1.2'
+    providedCompile  group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
+
+}
+
+
+///////////////////////////////////////////////////
+
+configurations {
+    all*.exclude group: "org.hibernate.java-persistence", module: "jpa-api", version: '2.0-cr-1'
+    all*.exclude module: "hibernate-jpa-2.0-api"
+}
+
+dependencies {
+    // For local JMS testing - local was required
+    providedCompile group: 'com.ibm.ws.ejb.thinclient', name: 'ejb-thinclient', version: '8.5.0'
+    providedCompile group: 'com.ibm.ws.orb', name: 'orb', version: '8.5.0'
+    providedCompile group: 'com.ibm.ws.sib.client.thin.jms', name: 'sib-client-thin-jms', version: '8.5.0'
+
+
+    //DMSUTILS
+    compile(group: 'DmsUtils', name: 'dmsutils-core', version: '1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-store-service-cmis', version:'1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-store-service-jms', version:'1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-integration-service-db', version:'1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-store-service-db', version:'1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-metadata-service-db', version:'1.0'){
+        transitive=false
+    }
+    compile(group: 'DmsUtils', name: 'dmsutils-store-service-integration', version:'1.0'){
+        transitive=false
+    }
+//    compile(group: 'DmsUtils', name: 'dmsutils-store-service-jcr', version:'1.0'){
+//        transitive=false
+//    }
+
+
+         //JHIPSTER
+//    compile(group: 'ro.croco', name: 'croco-jbase', version: '1.1.37-SNAPSHOT') {
+//        transitive = false
+//    }
+
+    compile 'org.hibernate:hibernate-envers:4.3.5.Final'
+
+//    compile(group: 'log4jdbc4', name: 'log4jdbc4', version: '1.2')
+
+    compile group: 'commons-dbcp', name: 'commons-dbcp', version: '1.4'
+
+//    compile group: 'ro.mediu', name: 'croco-theme', version: '1.0.57-SNAPSHOT'
+//    compile group: 'ro.mediu', name: 'tn-ng-grid', version: '1.0.17-SNAPSHOT'
+//    compile group: 'ro.mediu', name: 'uigen-ui-reloaded', version: '3.4.49-SNAPSHOT'
+//    compile(group: 'ro.mediu.utils', name: 'uigen-core', version: '3.1.1-SNAPSHOT') {
+//        transitive = false;
+//    }
+//    compile group: 'ro.mediu', name: 'mediu-jweb', version: '3.1.9-RELEASE'
+
+    compile group: 'com.google.guava', name: 'guava', version: '17.0'
+//    compile(group: 'events.api', name: 'events.api', version: '1.0.1-RELEASE') {
+//        transitive = false
+//    }
+
+    compile group: 'org.apache.chemistry.opencmis', name: 'chemistry-opencmis-client-impl', version: '0.11.0'
+    compile group: 'net.sf.flexjson', name: 'flexjson', version: '3.1'
+//    compile 'org.flywaydb:flyway-core:3.0'
+//    compile group: "org.springframework.data", name: "spring-data-commons",version:'1.8.0.RELEASE'
+//    compile group: 'ro.croco', name: 'croco-domain', version: '1.0.0-SNAPSHOT'
+//    compile group: 'com.ibm', name: 'db2jcc', version:'9'
+//    compile project(':croco-domain')
+    compile group: 'db2jcc4', name: 'db2jcc4', version: '4.17.29'
+    /**
+     * End extra deps
+     */
+
+//    compile(group: 'ro.mediu.bpm', name: 'bpm-rest-client', version: '1.1.56-SNAPSHOT') {
+//        transitive = false;
+//    }
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.3.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.3.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.3.1'
+    compile group: 'net.sf.extcos', name: 'extcos', version: '0.4b'
+    compile group: 'cglib', name: 'cglib', version: '3.1'
+    compile group: 'org.ow2.asm', name: 'asm-all', version: '4.0'
+    compile group: 'org.apache.velocity', name: 'velocity', version: '1.7'
+//    compile 'org.springframework.data:spring-data-rest-webmvc:2.1.2.RELEASE'
+    compile('org.springframework.plugin:spring-plugin-core:1.1.0.RELEASE') {
+        transitive = false;
+    }
+    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.13.0.RELEASE'
+    compile group: 'com.codahale.metrics', name: 'metrics-core', version: codahale_metrics_version
+    compile group: 'com.codahale.metrics', name: 'metrics-ehcache', version: codahale_metrics_version
+    compile group: 'com.codahale.metrics', name: 'metrics-graphite', version: codahale_metrics_version
+    compile group: 'com.codahale.metrics', name: 'metrics-jvm', version: codahale_metrics_version
+    compile group: 'com.codahale.metrics', name: 'metrics-servlet', version: codahale_metrics_version
+    compile group: 'com.codahale.metrics', name: 'metrics-json', version: codahale_metrics_version
+    compile(group: 'com.codahale.metrics', name: 'metrics-servlets', version: codahale_metrics_version) {
+        exclude(module: 'metrics-healthchecks')
+    }
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: jackson_version
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: jackson_version
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: jackson_version
+    compile group: 'com.ryantenney.metrics', name: 'metrics-spring', version: '3.0.0-RC4'
+    /*compile(group: 'com.zaxxer', name: 'HikariCP', version: HikariCP_version) {
+        exclude(module: 'tools')::3.3.2
+    }*/
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: commons_lang_version
+    compile group: 'commons-io', name: 'commons-io', version: commons_io_version
+    compile group: 'commons-codec', name: 'commons-codec', version: commons_codec_version
+
+    compile group: 'joda-time', name: 'joda-time', version: joda_time_version
+    compile group: 'joda-time', name: 'joda-time-hibernate', version: joda_time_hibernate_version
+    compile group: 'org.apache.geronimo.javamail', name: 'geronimo-javamail_1.4_mail', version: geronimo_javamail_1_4_mail_version
+    compile group: 'org.hibernate', name: 'hibernate-core', version: hibernate_entitymanager_version
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: hibernate_entitymanager_version
+    compile group: 'org.hibernate', name: 'hibernate-ehcache', version: hibernate_entitymanager_version
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: hibernate_validator_version
+    compile group: 'org.jadira.usertype', name: 'usertype.core', version: usertype_core_version
+    /* compile group: 'org.liquibase', name: 'liquibase-core', version: liquibase_core_version
+     compile(group: 'org.liquibase.ext', name: 'liquibase-hibernate4', version: liquibase_hibernate_version) {
+         exclude(module: 'hibernate-jpa-2.0-api')
+
+     }*/
+
+      //comentate
+//    compile group: 'org.springframework.boot', name: 'spring-boot-actuator', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-loader-tools', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: spring_boot_version
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: spring_boot_version
+//    compile(group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: spring_boot_version) {
+//        exclude module: 'spring_boot-starter-tomcat'
+//    }
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: spring_boot_version
+//    compile(group: 'org.springframework', name: 'spring-context-support', version: spring_context_support_version) {
+//        exclude(module: 'quartz')
+//    }
+
+
+    compile(group: 'com.mangofactory', name: 'swagger-springmvc', version: swagger_springmvc_version) {
+        exclude(module: 'cglib')
+        exclude(module: 'asm')
+    }
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.5'
+    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.2.0'
+//    compile group: 'io.github.jhipster.loaded', name: 'core', version: jhipster_loaded_version
+//    compile group: 'mysql', name: 'mysql-connector-java', version: mysql_connector_java_version
+//    compile group: 'com.h2database', name: 'h2', version: h2_version
+//    compile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: liquibase_slf4j_version
+    compile group: 'javax.mail', name: 'mail', version: mail_version
+    testCompile group: 'com.jayway.awaitility', name: 'awaitility', version: awaility_version
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: json_path_version
+//    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: spring_boot_version
+    testCompile group: 'org.assertj', name: 'assertj-core', version: assertj_core_version
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile (group: 'org.mockito', name: 'mockito-core', version: '1.9.5') {
+        exclude module: 'mockito-core'
+    }
+//    testCompile group: 'com.mattbertolini', name: 'liquibase-slf4j', version: liquibase_slf4j_version
+    testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3'
+
+
+
+    ////////////////////////////////////////////////
+    //aduse din integration
+    compile group: 'org.springframework.integration', name: 'spring-integration-core', version:'4.0.2.RELEASE'
+    compile group: 'org.springframework.integration', name: 'spring-integration-jms', version:'4.0.2.RELEASE'
+    compile group: 'org.springframework.integration', name: 'spring-integration-jdbc', version:'4.0.2.RELEASE'
+    compile group: 'org.springframework.integration', name: 'spring-integration-test', version:'4.0.2.RELEASE'
+
+    compile group: 'org.springframework', name: 'spring-core', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-aop', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-tx', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-jms', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version:'4.0.3.RELEASE'
+    compile group: 'org.springframework', name: 'spring-webmvc', version:'4.0.3.RELEASE'
+    compile group: 'javax.resource', name: 'connector-api', version:'1.5'
+//    compile group: 'javax.inject', name: 'javax.inject', version:'1'
+
+    compile group: 'org.springframework', name: 'spring-jdbc', version:'4.0.3.RELEASE'
+    compile group: 'com.microsoft.sqlserver', name: 'sqljdbc4', version:'4.0'
+//    compile group: 'org.apache.maven.plugins', name: 'maven-javadoc-plugin', version:'2.10.1'
+//    compile group: 'org.apache.maven.plugins', name: 'maven-source-plugin', version:'2.4'
+
+}

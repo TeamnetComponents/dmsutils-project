@@ -9,10 +9,10 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
-            ro.croco.integration.config.jms.JmsConfig,
-            ro.croco.integration.config.common.DmsConfig
-            ro.croco.integration.config.IntegrationConfig,
-            ro.croco.integration.config.common.RestConfig
+            integration.config.jms.JmsConfig,
+            integration.config.common.DmsConfig
+            integration.config.IntegrationConfig,
+            integration.config.common.RestConfig
         </param-value>
     </context-param>
 

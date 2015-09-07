@@ -2,7 +2,6 @@ package integration.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.elo.ix.client.ActivityProject;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
