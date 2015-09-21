@@ -25,17 +25,13 @@ public class JmsConfig {
        JndiTemplate jndiTemplate = new JndiTemplate();
        Properties props = new Properties();
        props.put(Context.INITIAL_CONTEXT_FACTORY, "com.ibm.websphere.naming.WsnInitialContextFactory");
-//       props.setProperty("java.naming.provider.url", "iiop://dino-dev.intranet.teamnet.ro:9810/");
-//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:alexandruk-mbl:2809");
-//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:hannab-mbl:2809");
-//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:luciandr-mbl:2809");
 
        // TODO
        // PREPROD
-       props.put(Context.PROVIDER_URL, "corbaloc:iiop:WPSFO:2810");
+//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:WPSFO:2810");
 
        // PROD
-//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:amappfo01:9810,:amappfo02:9811");
+       props.put(Context.PROVIDER_URL, "corbaloc:iiop:amappfo01:9810,:amappfo02:9811");
 
        // TST
 //       props.put(Context.PROVIDER_URL, "corbaloc:iiop:WPSFOTST:2810");
@@ -51,19 +47,16 @@ public class JmsConfig {
     public JndiObjectFactoryBean connectionFactory() {
         JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
         jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQCF1");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoQCF");
 
         // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF2");
-//
+//        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF2");
+
 //        // PROD
-////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
-//
+        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+
 //        // TST
-////        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
-//
+//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+
         return jndiObjectFactoryBean;
     }
 
@@ -71,15 +64,12 @@ public class JmsConfig {
     public JndiObjectFactoryBean queue() {
         JndiObjectFactoryBean jndiObjectFactoryBean = new JndiObjectFactoryBean();
         jndiObjectFactoryBean.setJndiTemplate(jndiTemplate());
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoDocQueueIn");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoQueue");
-//        jndiObjectFactoryBean.setJndiName("jms/CrocoHQueue");
 
         // PREPROD
-        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue2");
+//        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue2");
 
         // PROD
-//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
+        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
 
         // TST
 //        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
@@ -95,20 +85,5 @@ public class JmsConfig {
         jmsTemplate.setConnectionFactory((ConnectionFactory) connectionFactory().getObject());
         return jmsTemplate;
     }
-
-    /*@Bean
-    public ConsumerOne consumerOne() {
-        return new ConsumerOne();
-    }*/
-
-    /*@Bean
-    public DefaultMessageListenerContainer defaultMessageListenerContainer() {
-        DefaultMessageListenerContainer dmlc = new DefaultMessageListenerContainer();
-        dmlc.setConnectionFactory((ConnectionFactory) connectionFactory().getObject());
-        dmlc.setDestination((Destination) queue().getObject());
-        dmlc.setAutoStartup(false);
-
-        return dmlc;
-    }*/
 
 }
