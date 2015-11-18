@@ -31,10 +31,13 @@ public class JmsConfig {
 //       props.put(Context.PROVIDER_URL, "corbaloc:iiop:WPSFO:2810");
 
        // PROD
-       props.put(Context.PROVIDER_URL, "corbaloc:iiop:amappfo01:9810,:amappfo02:9811");
+//       props.put(Context.PROVIDER_URL, "corbaloc:iiop:amappfo01:9810,:amappfo02:9811");
 
        // TST
 //       props.put(Context.PROVIDER_URL, "corbaloc:iiop:WPSFOTST:2810");
+
+       // STAGING
+       props.put(Context.PROVIDER_URL, "corbaloc:iiop:amtstwas01:2810");
 
        props.put("org.omg.CORBA.ORBClass","com.ibm.CORBA.iiop.ORB");
 
@@ -52,10 +55,13 @@ public class JmsConfig {
 //        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueueCF2");
 
 //        // PROD
-        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
 
 //        // TST
 //        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
+
+//        // STAGING
+        jndiObjectFactoryBean.setJndiName("jms/AMFOQueueCF");
 
         return jndiObjectFactoryBean;
     }
@@ -69,10 +75,13 @@ public class JmsConfig {
 //        jndiObjectFactoryBean.setJndiName("jms/CrocoFOQueue2");
 
         // PROD
-        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
+//        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
 
         // TST
 //        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
+
+        // STAGING
+        jndiObjectFactoryBean.setJndiName("jms/AMFOQueue");
 
         return jndiObjectFactoryBean;
     }

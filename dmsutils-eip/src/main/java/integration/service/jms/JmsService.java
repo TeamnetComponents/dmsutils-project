@@ -59,7 +59,7 @@ public class JmsService {
 
     }
 
-    private static final String UPDATE_URL = "http://"+foContext+"/integration/updatedocumentupload";
+    private static final String UPDATE_URL = foContext+"/integration/updatedocumentupload";
 
 
     public Message processMessageStore(Message message) {

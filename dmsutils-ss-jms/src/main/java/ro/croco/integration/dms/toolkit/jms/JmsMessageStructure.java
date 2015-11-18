@@ -1,7 +1,7 @@
 package ro.croco.integration.dms.toolkit.jms;
 
 import java.io.Serializable;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -64,7 +64,7 @@ public class JmsMessageStructure implements Serializable {
         this.configuration = configuration;
     }
 
-    @Override
+    /*@Override
     public String toString() {
         return "JmsMessageStructure{" +
                 "date=" + date +
@@ -74,5 +74,5 @@ public class JmsMessageStructure implements Serializable {
                 ", exception=" + exception +
                 ", configuration=" + configuration +
                 '}';
-    }
+    }*/
 }
