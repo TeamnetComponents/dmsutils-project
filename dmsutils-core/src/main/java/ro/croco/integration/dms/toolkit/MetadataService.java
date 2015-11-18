@@ -179,6 +179,10 @@ public interface MetadataService extends InitableService {
             this.visible = getRealPropertyVisible(name);
         }
 
+        public MetadataProperty(MetadataPropertySpecial metadataPropertySpecial, Object value) {
+            this(metadataPropertySpecial.toString(), value);
+        }
+
         public MetadataProperty(String name, Object value, boolean visible) {
             this.name = getRealPropertyName(name);
             this.value = value;
@@ -211,6 +215,29 @@ public interface MetadataService extends InitableService {
         }
     }
 
+    public static enum MetadataPropertySpecial {
+        Code("objectCode"),
+        Context("objectContext"),
+        Name("objectName"),
+        Extension("documentExtension"),
+        VersioningType("objectVersioningType"),
+        User("objectUserName");
+
+        private String value;
+
+        private MetadataPropertySpecial(String value) {
+            this.value = value;
+        }
+
+        public boolean equalsValue(String otherValue) {
+            return (otherValue == null) ? false : value.equals(otherValue);
+        }
+
+        public String toString() {
+            return this.value;
+        }
+    }
+
     public static class MetadataProperties {
         Map<String, MetadataProperty> propertyMap;
 
@@ -221,44 +248,44 @@ public interface MetadataService extends InitableService {
                 object = new MetadataProperties();
             }
 
-            public Builder withDocumentName(String documentName) {
-                object.setMetadataProperty(new MetadataProperty("documentName", documentName));
+            public Builder withCode(String code) {
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.Code, code));
                 return this;
             }
 
-            public Builder withDocumentType(String documentType) {
-                object.setMetadataProperty(new MetadataProperty("documentType", documentType));
+            public Builder withContext(String context) {
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.Context, context));
                 return this;
             }
 
-            public Builder withDocumentContext(String documentContext) {
-                object.setMetadataProperty(new MetadataProperty("documentContext", documentContext));
+            public Builder withName(String name) {
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.Name, name));
                 return this;
             }
 
-            public Builder withDocumentExtension(String documentExtension) {
-                //!!document extension face overwrite peste extension-ul din file-name-ul
-                object.setMetadataProperty(new MetadataProperty("documentExtension", documentExtension));
-                return this;
-            }
-
-            public Builder withDocumentKey(String documentKey) {
-                object.setMetadataProperty(new MetadataProperty("documentKey", documentKey));
+            public Builder withExtension(String extension) {
+                //!!extension face overwrite peste extension-ul din file-name-ul din proprietatea name
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.Extension, extension));
                 return this;
             }
 
             public Builder withVersioningType(VersioningType versioningType) {
-                object.setMetadataProperty(new MetadataProperty("versioningType", versioningType.name()));
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.VersioningType, versioningType.name()));
                 return this;
             }
 
-            public Builder withFrontUserName(String frontUserName) {
-                object.setMetadataProperty(new MetadataProperty("frontUserName", frontUserName));
+            public Builder withUser(String user) {
+                object.setMetadataProperty(new MetadataProperty(MetadataPropertySpecial.User, user));
                 return this;
             }
 
             public Builder withProperty(String propertyName, Object propertyValue, boolean visible) {
                 object.setMetadataProperty(new MetadataProperty(propertyName, propertyValue, visible));
+                return this;
+            }
+
+            public Builder withProperty(String propertyName, Object propertyValue) {
+                object.setMetadataProperty(new MetadataProperty(propertyName, propertyValue));
                 return this;
             }
 
@@ -288,6 +315,10 @@ public interface MetadataService extends InitableService {
             for (String propertyName : properties.keySet().toArray(new String[0])) {
                 this.setMetadataProperty(new MetadataProperty(propertyName, properties.get(propertyName)));
             }
+        }
+
+        public MetadataProperty getMetadataProperty(MetadataPropertySpecial metadataPropertySpecial) {
+            return this.getMetadataProperty(metadataPropertySpecial.toString());
         }
 
         public MetadataProperty getMetadataProperty(String propertyName) {
@@ -336,9 +367,13 @@ public interface MetadataService extends InitableService {
 
     public List<String> getDocumentsSupportedForStore(StoreService storeServiceDestination, StoreContext storeContextDestination);
 
+    public Metadata<DocumentInfo> computeDocumentMetadata(StoreService storeServiceDestination, StoreContext storeContextDestination, MetadataProperties metadataProperties);
+
     public Metadata<DocumentInfo> computeDocumentMetadata(String documentCode, String documentContext, StoreService storeServiceDestination, StoreContext storeContextDestination, Properties properties);
 
     public Metadata<DocumentInfo> computeDocumentMetadata(DocumentIdentifier documentIdentifierSource, StoreService storeServiceSource, StoreContext storeContextSource, StoreService storeServiceDestination, StoreContext storeContextDestination);
+
+    public Metadata<FolderInfo> computeFolderMetadata(StoreService storeServiceDestination, StoreContext storeContextDestination, MetadataProperties metadataProperties);
 
     public Metadata<FolderInfo> computeFolderMetadata(String folderCode, String folderContext, StoreService storeServiceDestination, StoreContext storeContextDestination, Properties properties);
 

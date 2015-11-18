@@ -384,10 +384,10 @@ public abstract class StoreServiceImpl_Abstract<T extends StoreServiceSession> i
         if (getMetadataService() == null) {
             throw new StoreServiceNotDefinedException("No instance of storeMetadata is associated with this service.");
         }
-        String documentType = (String) metadataProperties.getMetadataProperty("documentType").getValue();
-        String documentContext = (String) metadataProperties.getMetadataProperty("documentContext").getValue();
+        String documentCode = (String) metadataProperties.getMetadataProperty(MetadataService.MetadataPropertySpecial.Code).getValue();
+        String documentContext = (String) metadataProperties.getMetadataProperty(MetadataService.MetadataPropertySpecial.Context).getValue();
 
-        MetadataService.Metadata<DocumentInfo> metadata = metadataService.computeDocumentMetadata(documentType, documentContext, this, storeContext, metadataProperties.getAsPproperties());
+        MetadataService.Metadata<DocumentInfo> metadata = metadataService.computeDocumentMetadata(documentCode, documentContext, this, storeContext, metadataProperties.getAsPproperties());
         return this.storeDocument(storeContext, metadata.getInfo(), inputStream, metadata.isAllowCreatePath(), metadata.getVersioningType());
     }
 

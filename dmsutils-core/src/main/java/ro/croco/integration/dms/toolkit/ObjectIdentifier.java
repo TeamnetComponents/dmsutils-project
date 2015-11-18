@@ -22,6 +22,7 @@ public abstract class ObjectIdentifier extends RequestIdentifier implements Seri
     private static ObjectMapper OBJECT_MAPPER = null;
 
     private String storeServiceName;
+
     private String id;
     private String path;
 

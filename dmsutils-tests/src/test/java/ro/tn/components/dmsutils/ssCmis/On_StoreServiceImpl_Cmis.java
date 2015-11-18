@@ -60,12 +60,12 @@ public class On_StoreServiceImpl_Cmis {
         DocumentIdentifier documentIdentifier = null;
 
         Properties properties = new Properties();
-        properties.put("frontUserName", "gigi");
-        properties.put("documentType", "CR-FCR");
-        properties.put("documentContext", "DEFAULT");
-        properties.put("documentKey", "330");
-        properties.put("documentName", "gigi.pdf");
-        properties.put("METADATA.OBJECT_CODE", "CR-FCR");
+        properties.put(MetadataService.MetadataPropertySpecial.User.toString(), "gigi");
+        properties.put(MetadataService.MetadataPropertySpecial.Code.toString(), "CR-FCR");
+        properties.put(MetadataService.MetadataPropertySpecial.Context.toString(), "DEFAULT");
+        properties.put(MetadataService.MetadataPropertySpecial.Identifier.toString(), "330");
+        properties.put(MetadataService.MetadataPropertySpecial.Name.toString(), "gigi.pdf");
+        //properties.put("METADATA.OBJECT_CODE", "CR-FCR");
 
         StoreContext sc = StoreContext.builder().build();
 

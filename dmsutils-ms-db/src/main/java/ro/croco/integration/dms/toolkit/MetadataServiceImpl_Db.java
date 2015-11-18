@@ -243,13 +243,24 @@ public class MetadataServiceImpl_Db implements MetadataService {
         return null;
     }
 
+    @Override
+    public Metadata<DocumentInfo> computeDocumentMetadata(StoreService storeServiceDestination, StoreContext storeContextDestination, MetadataProperties metadataProperties) {
+        String documentCode;
+        String documentContext;
+        documentCode = (String) metadataProperties.getMetadataProperty(MetadataPropertySpecial.Code).getValue();
+        documentContext = (String) metadataProperties.getMetadataProperty(MetadataPropertySpecial.Context).getValue();
+        return computeDocumentMetadata(documentCode, documentContext, storeServiceDestination, storeContextDestination, metadataProperties.getAsPproperties());
+    }
+
 
     @Override
     public Metadata<DocumentInfo> computeDocumentMetadata(String documentCode, String documentContext, StoreService storeServiceDestination, StoreContext storeContextDestination, Properties properties) {
-        //Metadata<DocumentInfo> metadata = new Metadata<DocumentInfo>();
+        Metadata<DocumentInfo> metadata;
         String operationName = storeContextDestination.getMetadataOperation().equals(MetadataService.RULE_DEFAULT) ? MetadataService.RULE_STORE_DEFAULT : storeContextDestination.getMetadataOperation();
         MetadataConfiguration metadataConfiguration = getConfigurationByObjectCode(documentCode, documentContext, ObjectBaseType.DOCUMENT, operationName, storeServiceDestination.getName(), MetadataService.STORE_SERVICE_NA);
-        return (Metadata<DocumentInfo>) computeMetadata(metadataConfiguration, properties);
+        metadata = (Metadata<DocumentInfo>) computeMetadata(metadataConfiguration, properties);
+        return metadata;
+
 
         // calculate object properties
         //MetadataProperties objectProperties = calculateObjectProperties(metadataConfiguration.getConnectionName(), metadataConfiguration.getSql(), properties);
@@ -268,14 +279,19 @@ public class MetadataServiceImpl_Db implements MetadataService {
     }
 
     @Override
-
     public Metadata<DocumentInfo> computeDocumentMetadata(DocumentIdentifier documentIdentifierSource, StoreService storeServiceSource, StoreContext storeContextSource, StoreService storeServiceDestination, StoreContext storeContextDestination) {
+        Metadata<DocumentInfo> metadata = new Metadata<DocumentInfo>();
+
+
         //Metadata<DocumentInfo> metadata = new Metadata<DocumentInfo>();
 //        DocumentInfo documentInfo = storeServiceSource.getDocumentInfo(storeContextSource, documentIdentifierSource);
 //        MetadataConfiguration metadataConfiguration = getConfigurationByObjectCode(documentInfo.getType(), ObjectBaseType.DOCUMENT, "MOVE", storeServiceDestination.getName(), storeServiceSource.getName());
 //        return (Metadata<FolderInfo>) computeMetadata(metadataConfiguration, properties);
-        //return metadata;
+        return metadata;
+    }
 
+    @Override
+    public Metadata<FolderInfo> computeFolderMetadata(StoreService storeServiceDestination, StoreContext storeContextDestination, MetadataProperties metadataProperties) {
         return null;
     }
 
@@ -394,8 +410,54 @@ public class MetadataServiceImpl_Db implements MetadataService {
                 resultSet = statement.executeQuery(SQL);
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 if (resultSet.next()) {
-                    for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                        metadataProperties.setMetadataProperty(new MetadataProperty(resultSetMetaData.getColumnLabel(i), resultSet.getObject(i)));
+                    //multiple property rows having PROPERTY_NAME, PROPERTY_TYPE, PROPERTY_VALUE, PROPERTY_VISIBLE
+                    if (
+                            (resultSetMetaData.getColumnCount() >= 4) &&
+                                    (
+                                            resultSetMetaData.getColumnLabel(1).equalsIgnoreCase("P_NAME") &&
+                                                    resultSetMetaData.getColumnLabel(2).equalsIgnoreCase("P_TYPE") &&
+                                                    resultSetMetaData.getColumnLabel(3).equalsIgnoreCase("P_VALUE") &&
+                                                    resultSetMetaData.getColumnLabel(4).equalsIgnoreCase("P_VISIBLE")
+                                    )
+                            ) {
+                        do {
+                            String name = resultSet.getString(1);
+                            String type = resultSet.getString(2);
+                            Object value = null;
+                            switch (type) {
+                                case "BigDecimal":
+                                    value = resultSet.getBigDecimal(3);
+                                    break;
+                                case "Boolean":
+                                    value = resultSet.getBoolean(3);
+                                    break;
+                                case "Byte":
+                                    value = resultSet.getByte(3);
+                                    break;
+                                case "Int":
+                                    value = resultSet.getInt(3);
+                                    break;
+                                case "Double":
+                                    value = resultSet.getDouble(3);
+                                    break;
+                                case "Date":
+                                    value = resultSet.getDate(3);
+                                    break;
+                                case "Long":
+                                    value = resultSet.getLong(3);
+                                    break;
+                                default:
+                                    value = resultSet.getString(3);
+                            }
+                            boolean visible = resultSet.getBoolean(4);
+                            MetadataProperty metadataProperty = new MetadataProperty(name, value, visible);
+                            metadataProperties.setMetadataProperty(metadataProperty);
+                        }
+                        while (resultSet.next());
+                    } else {
+                        for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+                            metadataProperties.setMetadataProperty(new MetadataProperty(resultSetMetaData.getColumnLabel(i), resultSet.getObject(i)));
+                        }
                     }
                 }
                 resultSet.close();
@@ -666,11 +728,14 @@ public class MetadataServiceImpl_Db implements MetadataService {
 
     }
 
+
+    /*
     public static void main(String[] args) throws ClassNotFoundException, IOException, InstantiationException, IllegalAccessException {
         StoreServiceFactory ssf = new StoreServiceFactory("C:\\TeamnetProjects\\DMS-UTILS\\cmis.properties");
         StoreService ss = ssf.getService();
         StoreContext sc = StoreContext.builder().build();
 
+        MetadataProperties metadataProperties = MetadataProperties.builder().withCode("dfsd").build().getAsPproperties();
         Properties properties = new Properties();
         properties.put("frontUserName", "gigi");
         properties.put("documentType", "CR-FCR");
@@ -720,7 +785,7 @@ public class MetadataServiceImpl_Db implements MetadataService {
             ss2.createFolder(sc2, (FolderInfo) metadataItem.getInfo(), metadataItem.isAllowCreatePath());
         }
     }
-
+    */
 }
 /*
 # script for creating the required tables

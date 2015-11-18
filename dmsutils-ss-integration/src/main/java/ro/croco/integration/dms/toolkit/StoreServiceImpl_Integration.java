@@ -460,8 +460,17 @@ public class StoreServiceImpl_Integration extends StoreServiceImpl_Abstract {
     public static void main(String[] args) throws IllegalAccessException, InstantiationException, ClassNotFoundException, IOException {
         StoreServiceFactory ssf = new StoreServiceFactory("jms");
         StoreService storeService = ssf.getService();
+
         DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath("/tmp/gigi.txt").build();
         storeService.downloadDocument(null, documentIdentifier);
+
+        StoreServiceImpl_Integration ssi = null;
+        ssi.getIntegrationService().addStoreServiceMessageListener(new StoreServiceMessageListener() {
+            @Override
+            public void onReceive(StoreServiceMessageEvent storeServiceMessageEvent) {
+
+            }
+        });
     }
 
 

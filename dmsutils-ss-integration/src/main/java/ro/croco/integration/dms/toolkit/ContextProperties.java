@@ -15,4 +15,19 @@ final public class ContextProperties {
 
     public static final class Optional{
     }
+
+    public static void main(String[] args) {
+        IntegrationService is = null;
+
+
+//        is.addStoreServiceMessageListener(new StoreServiceMessageListener() {
+//            @Override
+//            public void onReceive(StoreServiceMessageEvent storeServiceMessageEvent) {
+//                //business specific
+//                storeServiceMessageEvent.
+//            }
+//        });
+
+
+    }
 }

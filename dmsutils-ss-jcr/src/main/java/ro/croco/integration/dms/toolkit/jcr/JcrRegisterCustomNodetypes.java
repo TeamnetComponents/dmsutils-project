@@ -1,5 +1,7 @@
 package ro.croco.integration.dms.toolkit.jcr;
 
+import ro.croco.integration.dms.toolkit.MetadataService;
+
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -48,7 +50,7 @@ public class JcrRegisterCustomNodetypes {
             //frontUserName
             {
                 PropertyDefinitionTemplate pdt = nodeTypeManager.createPropertyDefinitionTemplate();
-                pdt.setName("frontUserName");
+                pdt.setName(MetadataService.MetadataPropertySpecial.User.toString()); //"frontUserName"
                 pdt.setRequiredType(PropertyType.STRING);
                 pdt.setMandatory(false);
                 ntt.getPropertyDefinitionTemplates().add(pdt);
@@ -56,7 +58,7 @@ public class JcrRegisterCustomNodetypes {
             //documentType
             {
                 PropertyDefinitionTemplate pdt = nodeTypeManager.createPropertyDefinitionTemplate();
-                pdt.setName("documentType");
+                pdt.setName(MetadataService.MetadataPropertySpecial.Code.toString()); //"documentType"
                 pdt.setRequiredType(PropertyType.STRING);
                 pdt.setMandatory(false);
                 ntt.getPropertyDefinitionTemplates().add(pdt);
@@ -64,7 +66,7 @@ public class JcrRegisterCustomNodetypes {
             //documentKey
             {
                 PropertyDefinitionTemplate pdt = nodeTypeManager.createPropertyDefinitionTemplate();
-                pdt.setName("documentKey");
+                pdt.setName(MetadataService.MetadataPropertySpecial.Identifier.toString());//"documentKey"
                 pdt.setRequiredType(PropertyType.STRING);
                 pdt.setMandatory(false);
                 ntt.getPropertyDefinitionTemplates().add(pdt);
