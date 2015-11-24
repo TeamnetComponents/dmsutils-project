@@ -3,13 +3,13 @@
     <parent>
         <artifactId>DmsUtils</artifactId>
         <groupId>DmsUtils</groupId>
-        <version>1.0</version>
+        <version>2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dmsutils-metadata-service-db</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>2.1</version>
     <name>dmsutils-metadata-service-db</name>
     <url>http://maven.apache.org</url>
 
@@ -24,18 +24,6 @@
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
-            <artifactId>dmsutils-integration-service-db</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>DmsUtils</groupId>
-            <artifactId>dmsutils-integration-service-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>DmsUtils</groupId>
-            <artifactId>dmsutils-metadata-service-db</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-cmis</artifactId>
         </dependency>
         <dependency>
@@ -44,15 +32,23 @@
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
-            <artifactId>dmsutils-store-service-integration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-jcr</artifactId>
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-store-service-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-store-service-integration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-db</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>DmsUtils</groupId>
+            <artifactId>dmsutils-integration-service-jms</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-dbcp</groupId>

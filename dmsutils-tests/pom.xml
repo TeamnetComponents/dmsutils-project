@@ -5,12 +5,13 @@
     <parent>
         <artifactId>DmsUtils</artifactId>
         <groupId>DmsUtils</groupId>
-        <version>1.0</version>
+        <version>2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dmsutils-tests</artifactId>
-    <version>1.0</version>
+    <version>2.1</version>
+    <!--<packaging>war</packaging>-->
 
     <dependencies>
         <dependency>
@@ -20,7 +21,7 @@
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-eip</artifactId>
-            <version>1.0</version>
+            <version>2.1</version>
             <type>war</type>
         </dependency>
         <dependency>
@@ -34,7 +35,6 @@
         <dependency>
             <groupId>DmsUtils</groupId>
             <artifactId>dmsutils-metadata-service-db</artifactId>
-            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>DmsUtils</groupId>

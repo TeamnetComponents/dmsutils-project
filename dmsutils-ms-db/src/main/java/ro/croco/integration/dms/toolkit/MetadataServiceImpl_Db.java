@@ -292,7 +292,11 @@ public class MetadataServiceImpl_Db implements MetadataService {
 
     @Override
     public Metadata<FolderInfo> computeFolderMetadata(StoreService storeServiceDestination, StoreContext storeContextDestination, MetadataProperties metadataProperties) {
-        return null;
+        String folderCode;
+        String folderContext;
+        folderCode = (String) metadataProperties.getMetadataProperty(MetadataPropertySpecial.Code).getValue();
+        folderContext = (String) metadataProperties.getMetadataProperty(MetadataPropertySpecial.Context).getValue();
+        return computeFolderMetadata(folderCode, folderContext, storeServiceDestination, storeContextDestination, metadataProperties.getAsPproperties());
     }
 
     @Override
@@ -503,6 +507,7 @@ public class MetadataServiceImpl_Db implements MetadataService {
         String mask = template.getValueFromTemplate(metadataConfiguration.getMaskTemplate(), objectProperties);
         String sourceIdentifier = template.getValueFromTemplate(metadataConfiguration.getSourceIdentifierTemplate(), objectProperties);
         String versioning = template.getValueFromTemplate(metadataConfiguration.getVersioningTemplate(), objectProperties);
+        Boolean allowCreatePath = metadataConfiguration.isAllowCreatePath(); //template.getValueFromTemplate(metadataConfiguration.getFolderTemplate(), objectProperties);
 
         VersioningType versioningType = VersioningType.NONE;
         if (versioning != null && !versioning.isEmpty()) {
@@ -514,20 +519,22 @@ public class MetadataServiceImpl_Db implements MetadataService {
             Metadata<FolderInfo> medatadaFolder = new Metadata<FolderInfo>();
             medatadaFolder.setInfo(folderInfo);
             medatadaFolder.setVersioningType(versioningType);
+            medatadaFolder.setAllowCreatePath(allowCreatePath);
             metadata = medatadaFolder;
         } else if (metadataConfiguration.getObjectType().equals(ObjectBaseType.DOCUMENT.name())) {
-            if (properties.containsKey("documentName")) {
+            if (properties.containsKey(MetadataPropertySpecial.Name.toString())) {
                 //overwrite extension with the real extension filename
-                name = MetadataService.fileUtils.getFileNameWithExtension(MetadataService.fileUtils.getFileBaseName(name), MetadataService.fileUtils.getFileExtension(properties.getProperty("documentName")));
+                name = MetadataService.fileUtils.getFileNameWithExtension(MetadataService.fileUtils.getFileBaseName(name), MetadataService.fileUtils.getFileExtension(properties.getProperty(MetadataPropertySpecial.Name.toString())));
             }
-            if (properties.containsKey("documentExtension")) {
-                name = MetadataService.fileUtils.getFileNameWithExtension(MetadataService.fileUtils.getFileBaseName(name), properties.getProperty("documentExtension"));
+            if (properties.containsKey(MetadataPropertySpecial.Extension.toString())) {
+                name = MetadataService.fileUtils.getFileNameWithExtension(MetadataService.fileUtils.getFileBaseName(name), properties.getProperty(MetadataPropertySpecial.Extension.toString()));
             }
 
             DocumentInfo documentInfo = new DocumentInfo(path, MetadataService.fileUtils.getFileBaseName(name), MetadataService.fileUtils.getFileExtension(name), mask, objectProperties.getAsMap(true));
             Metadata<DocumentInfo> medatadaDocument = new Metadata<DocumentInfo>();
             medatadaDocument.setInfo(documentInfo);
             medatadaDocument.setVersioningType(versioningType);
+            medatadaDocument.setAllowCreatePath(allowCreatePath);
             metadata = medatadaDocument;
         } else {
             throw new StoreServiceNotDefinedException("The provided object type is not defined.");

@@ -3,13 +3,13 @@
     <parent>
         <artifactId>DmsUtils</artifactId>
         <groupId>DmsUtils</groupId>
-        <version>1.0</version>
+        <version>2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dmsutils-integration-service-jms</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>2.1</version>
 
     <name>dmsutils-integration-service-jms</name>
     <url>http://maven.apache.org</url>
