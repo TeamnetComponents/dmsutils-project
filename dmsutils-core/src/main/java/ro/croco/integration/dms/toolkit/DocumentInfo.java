@@ -1,5 +1,7 @@
 package ro.croco.integration.dms.toolkit;
 
+import ro.croco.integration.dms.commons.FileUtils;
+
 import java.util.Arrays;
 import java.util.Map;
 
@@ -26,19 +28,33 @@ public class DocumentInfo extends ObjectInfo<DocumentIdentifier> {
         super(type, properties);
     }
 
-    public DocumentInfo(String filePathNameWithExtension, String type, Map<String, Object> properties) {
-        super(fileUtils.getParentFolderPathName(filePathNameWithExtension), fileUtils.getFileBaseName(filePathNameWithExtension),type,properties);
-        this.extension = fileUtils.getFileExtension(filePathNameWithExtension);
-    }
-
-    public DocumentInfo(String path,String name, String extension, String type, Map<String, Object> properties) {
+    public DocumentInfo(String path, String name, String extension, String type, Map<String, Object> properties) {
         super(path, name, type, properties);
         this.extension = extension;
+        String fullPathName = FileUtils.getFileUtilsDMS().concatenate(path, name);
+        DocumentIdentifier documentIdentifier = DocumentIdentifier.builder().withPath(fullPathName).build();
+        this.setIdentifier(documentIdentifier);
+    }
+
+    public DocumentInfo(String filePathNameWithExtension, String type, Map<String, Object> properties) {
+        this(
+            fileUtils.getParentFolderPathName(filePathNameWithExtension),
+            fileUtils.getFileBaseName(filePathNameWithExtension),
+            fileUtils.getFileExtension(filePathNameWithExtension),
+            type,
+            properties
+        );
     }
 
     public DocumentInfo(String filePath, String fileNameWithExtension, String type, Map<String, Object> properties) {
-        super(filePath, fileUtils.getFileBaseName(fileNameWithExtension), type, properties);
-        this.extension = fileUtils.getFileExtension(fileNameWithExtension);
+        this(
+            filePath,
+                fileUtils.getFileBaseName(fileNameWithExtension),
+                fileUtils.getFileExtension(fileNameWithExtension),
+                type,
+                properties
+        );
+
     }
 
     public DocumentIdentifier[] getDocumentIdentifierVersions() {

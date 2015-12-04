@@ -5,6 +5,7 @@ package ro.croco.integration.dms.toolkit;
 
 import org.apache.commons.lang.StringUtils;
 import ro.croco.integration.dms.commons.FileUtils;
+import ro.croco.integration.dms.commons.exceptions.ObjectNotFoundException;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceException;
 import ro.croco.integration.dms.commons.exceptions.StoreServiceNotDefinedException;
 
@@ -496,6 +497,8 @@ public abstract class StoreServiceImpl_Abstract<T extends StoreServiceSession> i
             objectInfoTree.setContent(listFolderContentTree(storeSession, storeContext, folderIdentifier, depth, includeInfo, objectBaseTypes));
             objectInfoTree.setRequestId(storeContext.getRequestIdentifier());
         } catch (StoreServiceException e) {
+            throw e;
+        } catch (ObjectNotFoundException e) {
             throw e;
         } catch (RuntimeException e) {
             throw new StoreServiceException(e);

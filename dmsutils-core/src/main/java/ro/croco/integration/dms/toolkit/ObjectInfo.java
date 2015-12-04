@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by Lucian.Dragomir on 6/24/2014.
  */
-public class ObjectInfo<T> extends RequestIdentifier implements Serializable {
+public class ObjectInfo<T extends ObjectIdentifier> extends RequestIdentifier implements Serializable {
     static FileUtils fileUtils = new FileUtils("/", "/");
 
     private T identifier;

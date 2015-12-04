@@ -1,18 +1,23 @@
+import ro.croco.integration.dms.commons.DatabaseUtils;
 import ro.croco.integration.dms.toolkit.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.sql.Connection;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by Lucian.Dragomir on 11/16/2015.
  */
 public class DmsUtils_Test_MS_Service {
 
-    private static String metadataServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ms.properties";
-    private static String storeServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ss.properties";
+    //private static String metadataServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ms.properties";
+    //private static String storeServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ss.properties";
+    private static String metadataServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ms2.properties";
+    private static String storeServiceFileLocation = "C:\\__JAVA\\jmeter\\test\\dmsutils\\SIRMES_DEV\\sirmes-ss2.properties";
 
     public static MetadataService getMetadataServiceImpl(String configFileLocation) throws IOException {
         MetadataService metadataService = null;
@@ -39,10 +44,22 @@ public class DmsUtils_Test_MS_Service {
     public static void main(String[] args) throws IOException {
 
         //instantiate DMS services
-        MetadataService metadataService = getMetadataServiceImpl(metadataServiceFileLocation);
+        MetadataServiceImpl_Db metadataService = (MetadataServiceImpl_Db) getMetadataServiceImpl(metadataServiceFileLocation);
         StoreService storeService = getStoreServiceImpl(storeServiceFileLocation);
 
+        Properties context = new Properties();
 
+        context.setProperty("connection.jdbc.SirmesDB.type", "local");
+        context.setProperty("connection.jdbc.SirmesDB.url", "jdbc:oracle:thin:@10.16.40.114:1521:sirmes");
+        context.setProperty("connection.jdbc.SirmesDB.driver", "oracle.jdbc.driver.OracleDriver");
+        context.setProperty("connection.jdbc.SirmesDB.user", "sirmes");
+        context.setProperty("connection.jdbc.SirmesDB.password", "sirmestest123$");
+        context.setProperty("connection.jdbc.SirmesDB.schema", "sirmes");
+
+        Connection appConnection = null;
+        appConnection =  DatabaseUtils.getConnection(context, "SirmesDB");
+
+        metadataService.setConnection("SirmesDB", appConnection);
 
         //compute metadata for a document
         StoreService storeServiceDestination = storeService;
@@ -52,9 +69,9 @@ public class DmsUtils_Test_MS_Service {
                 .withContext("DEFAULT")
                 .withName("gigi234")
                 .withExtension("txt")
-                .withProperty("IdIncident", "3", true)
+                .withProperty("IdIncident", "222", true)
                 .withProperty("Tip document", "test")
-                .withProperty("Data emiterii document", "2015/06/11")
+                .withProperty("Data emiterii document", "06/11/2015")
                 .withProperty("Emitent document", "test2")
                 .withProperty("Numar document", 123)
                 .withProperty("Utilizator", "portal")
@@ -73,12 +90,27 @@ public class DmsUtils_Test_MS_Service {
         MetadataService.MetadataProperties folderProperties = MetadataService.MetadataProperties.builder()
                 .withCode("DOSAR_INCIDENT")
                 .withContext("DEFAULT")
-                .withProperty("IdIncident", "3", true)
+                .withProperty("IdIncident", "952", true)
                 .build();
-        MetadataService.Metadata folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
+
+
+        System.out.println("-------------------------------------------------");
+        MetadataService.Metadata<FolderInfo> folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
         System.out.println(folderMetadata);
+        System.out.println("-------------------------------------------------");
 
+        FolderIdentifier folderIdentifier = (FolderIdentifier) folderMetadata.getInfo().getIdentifier();
+        System.out.println(folderIdentifier);
 
+        boolean includeInfo = true;
+        ObjectInfoTree objectInfoTree = storeService.listFolderContent(storeContextDestination, folderIdentifier, 1, includeInfo, ObjectBaseType.DOCUMENT);
+        List<ObjectInfo> objectInfos = objectInfoTree.listContent();
+        System.out.println("-------------------------------------------------");
+        for (ObjectInfo objectInfo : objectInfos) {
+            System.out.println(objectInfo.getIdentifier());
+            System.out.println(objectInfo);
+        }
+        System.out.println("-------------------------------------------------");
 
 
 //        MetadataService.Metadata<DocumentInfo> metadata = storeService.getMetadataService().computeDocumentMetadata(properties.getProperty("documentType"), properties.getProperty("documentContext"), storeService, sc, properties);

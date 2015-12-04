@@ -47,7 +47,7 @@
         <commons-pool.version>1.6</commons-pool.version>
         <jms-api.version>1.1-rev-1</jms-api.version>
         <ApacheJMeter.version>2.12</ApacheJMeter.version>
-        <chemistry-opencmis.version>0.12.0</chemistry-opencmis.version>
+        <chemistry-opencmis.version>0.13.0</chemistry-opencmis.version>
         <commons-lang3.version>3.4</commons-lang3.version>
     </properties>
 
@@ -110,11 +110,6 @@
             <dependency>
                 <groupId>DmsUtils</groupId>
                 <artifactId>dmsutils-eip</artifactId>
-                <version>2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>DmsUtils</groupId>
-                <artifactId>dmsutils-integration-service-db</artifactId>
                 <version>2.1</version>
             </dependency>
             <dependency>

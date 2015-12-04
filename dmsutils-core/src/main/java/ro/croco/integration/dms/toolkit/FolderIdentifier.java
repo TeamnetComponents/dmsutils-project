@@ -33,7 +33,6 @@ public class FolderIdentifier extends ObjectIdentifier {
             return this;
         }
 
-
         public FolderIdentifier build() {
             return object;
         }
@@ -41,5 +40,10 @@ public class FolderIdentifier extends ObjectIdentifier {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public String toString() {
+        return "FolderIdentifier{} " + super.toString();
     }
 }

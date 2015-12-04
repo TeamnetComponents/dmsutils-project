@@ -198,8 +198,7 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
             documentIdentifier.setRequestId(storeContext.getRequestIdentifier());
         } catch (RuntimeException e) {
             throw e;
-        }
-        finally {
+        } finally {
             closeSession(storeSession);
         }
         return documentIdentifier;
@@ -211,7 +210,7 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
         StoreServiceSessionImpl_Cmis storeSession = null;
         try {
             storeSession = openSession(storeContext);
-            Document document = (Document)getObject(documentIdentifier, storeSession);
+            Document document = (Document) getObject(documentIdentifier, storeSession);
             System.out.println("ContentStreamId = " + document.getContentStreamId());
             if (!"null".equals(document.getContentStreamId())) {
                 documentStream = new DocumentStream(document.getContentStream().getFileName(), document.getContentStream().getStream(), document.getContentStream().getMimeType());
@@ -419,8 +418,10 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
     protected FolderInfo getFolderInfo(StoreServiceSessionImpl_Cmis storeSession, StoreContext storeContext, FolderIdentifier folderIdentifier) {
         ObjectInfo objectInfo = null;
         Folder folder = (Folder) getObject(folderIdentifier, storeSession);
-        objectInfo = toObjectInfo(folder, true, this);
-        objectInfo.setRequestId(storeContext.getRequestIdentifier());
+        if (folder != null) {
+            objectInfo = toObjectInfo(folder, true, this);
+            objectInfo.setRequestId(storeContext.getRequestIdentifier());
+        }
         return (FolderInfo) objectInfo;
     }
 
@@ -465,6 +466,9 @@ public class StoreServiceImpl_Cmis extends StoreServiceImpl_Abstract<StoreServic
         List<ObjectBaseType> objectBaseTypeList = Arrays.asList(objectBaseTypes);
 
         Folder folder = (Folder) getObject(folderIdentifier, storeSession);
+        if (folder == null) {
+            throw new ObjectNotFoundException("The folder " + folderIdentifier.getIdentifier() + " does not exist.");
+        }
         OperationContext operationContext = storeSession.getCmisSession().createOperationContext();
         operationContext.setMaxItemsPerPage(maxItemsPerPage);
         //System.out.println(folder.getPath());

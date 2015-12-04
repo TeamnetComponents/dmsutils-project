@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.Executor;
 
 /**
  * Created by Lucian.Dragomir on 8/13/2014.
@@ -33,6 +34,9 @@ public class MetadataServiceImpl_Db implements MetadataService {
     private static final String CONNECTION_SCHEMA = "jdbc.${connectionName}.schema";
     private static final String CONNECTION_TYPE_LOCAL = "local";
     private static final String CONNECTION_TYPE_JNDI = "jndi";
+    private static final String CONNECTION_TYPE_PROVIDED = "provided";
+
+    private Map<String, Connection> providedConnections;
 
     private static final String SQL_CONFIGURATION_BY_OBJECT_CODE =
             "             SELECT M.* " + '\n' +
@@ -215,6 +219,7 @@ public class MetadataServiceImpl_Db implements MetadataService {
     }
 
     public MetadataServiceImpl_Db() {
+        this.providedConnections = new HashMap<String, Connection>();
     }
 
     @Override
@@ -352,6 +357,294 @@ public class MetadataServiceImpl_Db implements MetadataService {
         return (String) this.getContextProperty(template.getValueFromTemplate(CONNECTION_SCHEMA, "connectionName", connectionName));
     }
 
+    public synchronized void setConnection(String connectionName, final Connection providedConnection) {
+        if (providedConnection != null) {
+            Connection connectionWrapper = new Connection() {
+                private Connection connection = providedConnection;
+
+                @Override
+                public Statement createStatement() throws SQLException {
+                    return this.connection.createStatement();
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql) throws SQLException {
+                    return this.connection.prepareStatement(sql);
+                }
+
+                @Override
+                public CallableStatement prepareCall(String sql) throws SQLException {
+                    return this.connection.prepareCall(sql);
+                }
+
+                @Override
+                public String nativeSQL(String sql) throws SQLException {
+                    return this.connection.nativeSQL(sql);
+                }
+
+                @Override
+                public void setAutoCommit(boolean autoCommit) throws SQLException {
+                    this.connection.setAutoCommit(autoCommit);
+                }
+
+                @Override
+                public boolean getAutoCommit() throws SQLException {
+                    return this.connection.getAutoCommit();
+                }
+
+                @Override
+                public void commit() throws SQLException {
+                    this.connection.commit();
+                }
+
+                @Override
+                public void rollback() throws SQLException {
+                    this.connection.rollback();
+                }
+
+                @Override
+                public void close() throws SQLException {
+                    //DO NOTHING; IT IS AN EXTERNAL CONNECTION
+                    //this.connection.close();
+                }
+
+                @Override
+                public boolean isClosed() throws SQLException {
+                    return this.connection.isClosed();
+                }
+
+                @Override
+                public DatabaseMetaData getMetaData() throws SQLException {
+                    return this.connection.getMetaData();
+                }
+
+                @Override
+                public void setReadOnly(boolean readOnly) throws SQLException {
+                    this.connection.setReadOnly(readOnly);
+                }
+
+                @Override
+                public boolean isReadOnly() throws SQLException {
+                    return this.connection.isReadOnly();
+                }
+
+                @Override
+                public void setCatalog(String catalog) throws SQLException {
+                    this.connection.setCatalog(catalog);
+                }
+
+                @Override
+                public String getCatalog() throws SQLException {
+                    return this.connection.getCatalog();
+                }
+
+                @Override
+                public void setTransactionIsolation(int level) throws SQLException {
+                    this.connection.setTransactionIsolation(level);
+                }
+
+                @Override
+                public int getTransactionIsolation() throws SQLException {
+                    return this.connection.getTransactionIsolation();
+                }
+
+                @Override
+                public SQLWarning getWarnings() throws SQLException {
+                    return this.connection.getWarnings();
+                }
+
+                @Override
+                public void clearWarnings() throws SQLException {
+                    this.connection.clearWarnings();
+                }
+
+                @Override
+                public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+                    return this.connection.createStatement(resultSetType, resultSetConcurrency);
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+                    return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
+                }
+
+                @Override
+                public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+                    return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency);
+                }
+
+                @Override
+                public Map<String, Class<?>> getTypeMap() throws SQLException {
+                    return this.connection.getTypeMap();
+                }
+
+                @Override
+                public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
+                    this.connection.setTypeMap(map);
+                }
+
+                @Override
+                public void setHoldability(int holdability) throws SQLException {
+                    this.connection.setHoldability(holdability);
+                }
+
+                @Override
+                public int getHoldability() throws SQLException {
+                    return this.connection.getHoldability();
+                }
+
+                @Override
+                public Savepoint setSavepoint() throws SQLException {
+                    return this.connection.setSavepoint();
+                }
+
+                @Override
+                public Savepoint setSavepoint(String name) throws SQLException {
+                    return this.connection.setSavepoint(name);
+                }
+
+                @Override
+                public void rollback(Savepoint savepoint) throws SQLException {
+                    this.connection.rollback(savepoint);
+                }
+
+                @Override
+                public void releaseSavepoint(Savepoint savepoint) throws SQLException {
+                    this.connection.releaseSavepoint(savepoint);
+                }
+
+                @Override
+                public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+                    return this.connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+                    return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+                }
+
+                @Override
+                public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+                    return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
+                    return this.connection.prepareStatement(sql, autoGeneratedKeys);
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
+                    return this.connection.prepareStatement(sql, columnIndexes);
+                }
+
+                @Override
+                public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
+                    return this.connection.prepareStatement(sql, columnNames);
+                }
+
+                @Override
+                public Clob createClob() throws SQLException {
+                    return this.connection.createClob();
+                }
+
+                @Override
+                public Blob createBlob() throws SQLException {
+                    return this.connection.createBlob();
+                }
+
+                @Override
+                public NClob createNClob() throws SQLException {
+                    return this.connection.createNClob();
+                }
+
+                @Override
+                public SQLXML createSQLXML() throws SQLException {
+                    return this.connection.createSQLXML();
+                }
+
+                @Override
+                public boolean isValid(int timeout) throws SQLException {
+                    return this.connection.isValid(timeout);
+                }
+
+                @Override
+                public void setClientInfo(String name, String value) throws SQLClientInfoException {
+                    this.connection.setClientInfo(name, value);
+                }
+
+                @Override
+                public void setClientInfo(Properties properties) throws SQLClientInfoException {
+                    this.connection.setClientInfo(properties);
+                }
+
+                @Override
+                public String getClientInfo(String name) throws SQLException {
+                    return this.connection.getClientInfo(name);
+                }
+
+                @Override
+                public Properties getClientInfo() throws SQLException {
+                    return this.connection.getClientInfo();
+                }
+
+                @Override
+                public Array createArrayOf(String typeName, Object[] elements) throws SQLException {
+                    return this.connection.createArrayOf(typeName, elements);
+                }
+
+                @Override
+                public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
+                    return this.connection.createStruct(typeName, attributes);
+                }
+
+                @Override
+                public void setSchema(String schema) throws SQLException {
+                    this.connection.setSchema(schema);
+                }
+
+                @Override
+                public String getSchema() throws SQLException {
+                    return this.connection.getSchema();
+                }
+
+                @Override
+                public void abort(Executor executor) throws SQLException {
+                    this.connection.abort(executor);
+                }
+
+                @Override
+                public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+                    this.connection.setNetworkTimeout(executor, milliseconds);
+                }
+
+                @Override
+                public int getNetworkTimeout() throws SQLException {
+                    return this.connection.getNetworkTimeout();
+                }
+
+                @Override
+                public <T> T unwrap(Class<T> iface) throws SQLException {
+                    return this.connection.unwrap(iface);
+                }
+
+                @Override
+                public boolean isWrapperFor(Class<?> iface) throws SQLException {
+                    return this.connection.isWrapperFor(iface);
+                }
+            };
+            this.providedConnections.put(connectionName, connectionWrapper);
+        } else {
+            if (this.providedConnections.containsKey(connectionName)) {
+                this.providedConnections.remove(connectionName);
+            }
+        }
+    }
+
+    public void removeConnection(String connectionName) {
+        this.setConnection(connectionName, null);
+    }
+
     private Connection getConnection(String connectionName) {
         DataSource dataSource = null;
         Connection connection = null;
@@ -375,6 +668,12 @@ public class MetadataServiceImpl_Db implements MetadataService {
                 e.printStackTrace();
                 throw new StoreServiceException(e);
             }
+        } else if (CONNECTION_TYPE_PROVIDED.equalsIgnoreCase(connectionType)) {
+            connection = providedConnections.get(connectionName);
+            if (connection == null) {
+                throw new StoreServiceNotDefinedException("The connection name " + connectionName + " is not defined.");
+            }
+            return connection;
         } else {
             throw new StoreServiceNotDefinedException("The connection name " + connectionName + " is not defined.");
         }
@@ -496,17 +795,18 @@ public class MetadataServiceImpl_Db implements MetadataService {
 
     private Metadata<? extends ObjectInfo> computeMetadata(MetadataConfiguration metadataConfiguration, Properties properties) {
         Metadata<? extends ObjectInfo> metadata = null;
+        boolean throwIfReplaceIncomplete = true;
         String nameWithExtension = null;
         // calculate object properties
         MetadataProperties objectProperties = calculateObjectProperties(metadataConfiguration.getConnectionName(), metadataConfiguration.getSql(), properties);
         //System.out.println(objectProperties);
 
         //calculate values based on properties
-        String path = template.getValueFromTemplate(metadataConfiguration.getFolderTemplate(), objectProperties);
-        String name = template.getValueFromTemplate(metadataConfiguration.getNameTemplate(), objectProperties);
-        String mask = template.getValueFromTemplate(metadataConfiguration.getMaskTemplate(), objectProperties);
-        String sourceIdentifier = template.getValueFromTemplate(metadataConfiguration.getSourceIdentifierTemplate(), objectProperties);
-        String versioning = template.getValueFromTemplate(metadataConfiguration.getVersioningTemplate(), objectProperties);
+        String path = template.getValueFromTemplate(metadataConfiguration.getFolderTemplate(), objectProperties, throwIfReplaceIncomplete);
+        String name = template.getValueFromTemplate(metadataConfiguration.getNameTemplate(), objectProperties, throwIfReplaceIncomplete);
+        String mask = template.getValueFromTemplate(metadataConfiguration.getMaskTemplate(), objectProperties, throwIfReplaceIncomplete);
+        String sourceIdentifier = template.getValueFromTemplate(metadataConfiguration.getSourceIdentifierTemplate(), objectProperties, throwIfReplaceIncomplete);
+        String versioning = template.getValueFromTemplate(metadataConfiguration.getVersioningTemplate(), objectProperties, throwIfReplaceIncomplete);
         Boolean allowCreatePath = metadataConfiguration.isAllowCreatePath(); //template.getValueFromTemplate(metadataConfiguration.getFolderTemplate(), objectProperties);
 
         VersioningType versioningType = VersioningType.NONE;
