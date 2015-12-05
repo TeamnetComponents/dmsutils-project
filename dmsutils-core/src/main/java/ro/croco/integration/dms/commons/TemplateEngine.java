@@ -108,11 +108,13 @@ public abstract class TemplateEngine {
 
     public boolean hasPlaceholders(String content) {
         boolean containFlag = false;
-        int iStart = content.indexOf("${");
-        if (iStart >= 0) {
-            int iEnd = content.indexOf("}", iStart);
-            if (iStart > 0 && iEnd > iStart) {
-                containFlag = true;
+        if (content != null) {
+            int iStart = content.indexOf("${");
+            if (iStart >= 0) {
+                int iEnd = content.indexOf("}", iStart);
+                if (iStart >= 0 && iEnd > iStart) {
+                    containFlag = true;
+                }
             }
         }
         return containFlag;
@@ -125,14 +127,14 @@ public abstract class TemplateEngine {
         int iLastPos = 0;
 
         while (iLastPos >= 0) {
-            iStart = template.indexOf("${", iLastPos + 1);
+            iStart = template.indexOf("${", iLastPos);
             iEnd = template.indexOf("}", iStart);
             if (iStart >= 0 && iEnd > iStart) {
                 String placeholder = template.substring(iStart + 2, iEnd);
                 if (!placeholderList.contains(placeholder)) {
                     placeholderList.add(placeholder);
                 }
-                iLastPos = iEnd;
+                iLastPos = iEnd + 1;
             } else {
                 iLastPos = -1;
             }

@@ -41,7 +41,28 @@ public class DmsUtils_Test_MS_Service {
         }
     }
 
+    public static void listFolder(StoreService storeService, StoreContext storeContextDestination, FolderIdentifier folderIdentifier) {
+        boolean includeInfo = true;
+        System.out.println("-------------------------------------------------");
+        System.out.println("Listing folder content for " + folderIdentifier.toString());
+        try {
+            ObjectInfoTree objectInfoTree = storeService.listFolderContent(storeContextDestination, folderIdentifier, 1, includeInfo, ObjectBaseType.DOCUMENT);
+            List<ObjectInfo> objectInfos = objectInfoTree.listContent();
+            for (ObjectInfo objectInfo : objectInfos) {
+                System.out.println(objectInfo.getIdentifier());
+                System.out.println(objectInfo);
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        System.out.println("-------------------------------------------------");
+    }
+
     public static void main(String[] args) throws IOException {
+
+        String exemplu = "INCIDENT";
+        exemplu = "CAZ";
+        exemplu = "REGISTRATURA";
 
         //instantiate DMS services
         MetadataServiceImpl_Db metadataService = (MetadataServiceImpl_Db) getMetadataServiceImpl(metadataServiceFileLocation);
@@ -57,60 +78,169 @@ public class DmsUtils_Test_MS_Service {
         context.setProperty("connection.jdbc.SirmesDB.schema", "sirmes");
 
         Connection appConnection = null;
-        appConnection =  DatabaseUtils.getConnection(context, "SirmesDB");
+        appConnection = DatabaseUtils.getConnection(context, "SirmesDB");
 
         metadataService.setConnection("SirmesDB", appConnection);
 
-        //compute metadata for a document
         StoreService storeServiceDestination = storeService;
         StoreContext storeContextDestination = StoreContext.builder().metadataOperation("STORE").build();
-        MetadataService.MetadataProperties metadataProperties = MetadataService.MetadataProperties.builder()
-                .withCode("DOC_JUST_INCIDENT")
-                .withContext("DEFAULT")
-                .withName("gigi234")
-                .withExtension("txt")
-                .withProperty("IdIncident", "222", true)
-                .withProperty("Tip document", "test")
-                .withProperty("Data emiterii document", "06/11/2015")
-                .withProperty("Emitent document", "test2")
-                .withProperty("Numar document", 123)
-                .withProperty("Utilizator", "portal")
-                .build();
-
-        MetadataService.Metadata documentMetadata = metadataService.computeDocumentMetadata(storeServiceDestination, storeContextDestination, metadataProperties);
-        System.out.println(documentMetadata);
-        //documentMetadata.setAllowCreatePath(true);
-
-        InputStream byteArrayInputStream = new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8));
-        DocumentIdentifier documentIdentifier = storeService.storeDocument(storeContextDestination,
-                (DocumentInfo) documentMetadata.getInfo(),
-                byteArrayInputStream, documentMetadata.isAllowCreatePath(), documentMetadata.getVersioningType());
 
 
-        MetadataService.MetadataProperties folderProperties = MetadataService.MetadataProperties.builder()
-                .withCode("DOSAR_INCIDENT")
-                .withContext("DEFAULT")
-                .withProperty("IdIncident", "952", true)
-                .build();
+        //INCIDENT
+        if (exemplu.equalsIgnoreCase("INCIDENT")) {
+            String idIncident = "1356";
+
+            //getting folder info
+            MetadataService.MetadataProperties folderProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOSAR_INCIDENT")
+                    .withContext("DEFAULT")
+                    .withProperty("IdIncident", idIncident, true)
+                    .build();
 
 
-        System.out.println("-------------------------------------------------");
-        MetadataService.Metadata<FolderInfo> folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
-        System.out.println(folderMetadata);
-        System.out.println("-------------------------------------------------");
+            System.out.println("-------------------------------------------------");
+            MetadataService.Metadata<FolderInfo> folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
+            System.out.println(folderMetadata);
+            System.out.println("-------------------------------------------------");
+            FolderIdentifier folderIdentifier = (FolderIdentifier) folderMetadata.getInfo().getIdentifier();
 
-        FolderIdentifier folderIdentifier = (FolderIdentifier) folderMetadata.getInfo().getIdentifier();
-        System.out.println(folderIdentifier);
+            //list folder before upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
 
-        boolean includeInfo = true;
-        ObjectInfoTree objectInfoTree = storeService.listFolderContent(storeContextDestination, folderIdentifier, 1, includeInfo, ObjectBaseType.DOCUMENT);
-        List<ObjectInfo> objectInfos = objectInfoTree.listContent();
-        System.out.println("-------------------------------------------------");
-        for (ObjectInfo objectInfo : objectInfos) {
-            System.out.println(objectInfo.getIdentifier());
-            System.out.println(objectInfo);
+            //upload document
+            MetadataService.MetadataProperties metadataProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOC_JUST_INCIDENT")
+                    .withContext("DEFAULT")
+                    .withName("doc_test_incident")
+                    .withExtension("txt")
+                    .withProperty("IdIncident", idIncident, true)
+                    .withProperty("Tip document", "Tip document - test")
+                    .withProperty("Data emiterii document", "06/11/2015")
+                    .withProperty("Emitent document", "Emitent document test")
+                    .withProperty("Numar document", 1241234)
+                    .withProperty("Utilizator", "portal")
+                    .build();
+
+            MetadataService.Metadata documentMetadata = metadataService.computeDocumentMetadata(storeServiceDestination, storeContextDestination, metadataProperties);
+            System.out.println(documentMetadata);
+
+            InputStream byteArrayInputStream = new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8));
+            DocumentIdentifier documentIdentifier = storeService.storeDocument(storeContextDestination,
+                    (DocumentInfo) documentMetadata.getInfo(),
+                    byteArrayInputStream, documentMetadata.isAllowCreatePath(), documentMetadata.getVersioningType());
+
+
+            //list folder after upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
+
+            //delete document
+            //storeService.deleteDocument(storeContextDestination, documentIdentifier);
+
         }
-        System.out.println("-------------------------------------------------");
+
+        //CAZ
+        if (exemplu.equalsIgnoreCase("CAZ")) {
+            String idCaz = "954";
+
+            //getting folder info
+            MetadataService.MetadataProperties folderProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOSAR_CAZ")
+                    .withContext("DEFAULT")
+                    .withProperty("IdCaz", idCaz, true)
+                    .build();
+
+
+            System.out.println("-------------------------------------------------");
+            MetadataService.Metadata<FolderInfo> folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
+            System.out.println(folderMetadata);
+            System.out.println("-------------------------------------------------");
+            FolderIdentifier folderIdentifier = (FolderIdentifier) folderMetadata.getInfo().getIdentifier();
+
+            //list folder before upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
+
+            //upload document
+            MetadataService.MetadataProperties metadataProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOC_JUST_CAZ")
+                    .withContext("DEFAULT")
+                    .withName("doc_test_caz")
+                    .withExtension("txt")
+                    .withProperty("IdCaz", idCaz, true)
+                    .withProperty("Tip document", "Tip document - test")
+                    .withProperty("Data emiterii document", "06/11/2015")
+                    .withProperty("Emitent document", "Emitent document test")
+                    .withProperty("Numar document", 1241234)
+                    .withProperty("Utilizator", "portal")
+                    .build();
+
+            MetadataService.Metadata documentMetadata = metadataService.computeDocumentMetadata(storeServiceDestination, storeContextDestination, metadataProperties);
+            System.out.println(documentMetadata);
+
+            InputStream byteArrayInputStream = new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8));
+            DocumentIdentifier documentIdentifier = storeService.storeDocument(storeContextDestination,
+                    (DocumentInfo) documentMetadata.getInfo(),
+                    byteArrayInputStream, documentMetadata.isAllowCreatePath(), documentMetadata.getVersioningType());
+
+
+            //list folder after upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
+
+            //delete document
+            //storeService.deleteDocument(storeContextDestination, documentIdentifier);
+        }
+
+
+        //REGISTRATURA
+        if (exemplu.equalsIgnoreCase("REGISTRATURA")) {
+            String idRie = "244";
+            String type = "OUT";
+
+            //getting folder info
+            MetadataService.MetadataProperties folderProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOSAR_REGISTRATURA_" + type)
+                    .withContext("DEFAULT")
+                    .withProperty("IdRie", idRie, true)
+                    .build();
+
+
+            System.out.println("-------------------------------------------------");
+            MetadataService.Metadata<FolderInfo> folderMetadata = metadataService.computeFolderMetadata(storeServiceDestination, storeContextDestination, folderProperties);
+            System.out.println(folderMetadata);
+            System.out.println("-------------------------------------------------");
+            FolderIdentifier folderIdentifier = (FolderIdentifier) folderMetadata.getInfo().getIdentifier();
+
+            //list folder before upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
+
+            //upload document
+            MetadataService.MetadataProperties metadataProperties = MetadataService.MetadataProperties.builder()
+                    .withCode("DOC_REGISTRATURA_" + type)
+                    .withContext("DEFAULT")
+                    .withName("doc_test_registratura")
+                    .withExtension("txt")
+                    .withProperty("IdRie", idRie, true)
+                    .withProperty("Tip document", "Tip document - test")
+                    .withProperty("Data emiterii document", "06/11/2015")
+                    .withProperty("Emitent document", "Emitent document test")
+                    .withProperty("Numar document", 1241234)
+                    .withProperty("Utilizator", "portal")
+                    .build();
+
+            MetadataService.Metadata documentMetadata = metadataService.computeDocumentMetadata(storeServiceDestination, storeContextDestination, metadataProperties);
+            System.out.println(documentMetadata);
+
+            InputStream byteArrayInputStream = new ByteArrayInputStream("ABC".getBytes(StandardCharsets.UTF_8));
+            DocumentIdentifier documentIdentifier = storeService.storeDocument(storeContextDestination,
+                    (DocumentInfo) documentMetadata.getInfo(),
+                    byteArrayInputStream, documentMetadata.isAllowCreatePath(), documentMetadata.getVersioningType());
+
+
+            //list folder after upload
+            listFolder(storeService, storeContextDestination, folderIdentifier);
+
+            //delete document
+            //storeService.deleteDocument(storeContextDestination, documentIdentifier);
+        }
 
 
 //        MetadataService.Metadata<DocumentInfo> metadata = storeService.getMetadataService().computeDocumentMetadata(properties.getProperty("documentType"), properties.getProperty("documentContext"), storeService, sc, properties);
